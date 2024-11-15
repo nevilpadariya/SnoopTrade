@@ -1,0 +1,1050 @@
+2024-11-12 22:03:33,244 [INFO] Processing AAPL with CIK 0000320193
+2024-11-12 22:04:13,838 [INFO] Processing AAPL with CIK 0000320193
+2024-11-12 22:04:14,252 [INFO] Fetching Form 4 links for CIK: 0000320193
+2024-11-12 22:04:23,671 [INFO] Fetched 46 Form 4 links for CIK 0000320193
+2024-11-12 22:04:23,671 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000126/0000320193-24-000126.txt
+2024-11-12 22:04:23,857 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000126/0000320193-24-000126.txt
+2024-11-12 22:04:23,857 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000116/0000320193-24-000116.txt
+2024-11-12 22:04:24,030 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000116/0000320193-24-000116.txt
+2024-11-12 22:04:24,031 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000114/0000320193-24-000114.txt
+2024-11-12 22:04:24,271 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000114/0000320193-24-000114.txt
+2024-11-12 22:04:24,271 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000112/0000320193-24-000112.txt
+2024-11-12 22:04:24,589 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000112/0000320193-24-000112.txt
+2024-11-12 22:04:24,589 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000111/0000320193-24-000111.txt
+2024-11-12 22:04:24,694 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000111/0000320193-24-000111.txt
+2024-11-12 22:04:24,695 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000110/0000320193-24-000110.txt
+2024-11-12 22:04:24,914 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000110/0000320193-24-000110.txt
+2024-11-12 22:04:24,914 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000109/0000320193-24-000109.txt
+2024-11-12 22:04:25,066 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000109/0000320193-24-000109.txt
+2024-11-12 22:04:25,067 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000108/0000320193-24-000108.txt
+2024-11-12 22:04:25,267 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000108/0000320193-24-000108.txt
+2024-11-12 22:04:25,268 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000101/0000320193-24-000101.txt
+2024-11-12 22:04:25,545 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000101/0000320193-24-000101.txt
+2024-11-12 22:04:25,545 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000100/0000320193-24-000100.txt
+2024-11-12 22:04:25,699 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000100/0000320193-24-000100.txt
+2024-11-12 22:04:25,699 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000099/0000320193-24-000099.txt
+2024-11-12 22:04:25,874 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000099/0000320193-24-000099.txt
+2024-11-12 22:04:25,874 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000098/0000320193-24-000098.txt
+2024-11-12 22:04:26,110 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000098/0000320193-24-000098.txt
+2024-11-12 22:04:26,110 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000097/0000320193-24-000097.txt
+2024-11-12 22:04:26,317 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000097/0000320193-24-000097.txt
+2024-11-12 22:04:26,317 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000096/0000320193-24-000096.txt
+2024-11-12 22:04:26,576 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000096/0000320193-24-000096.txt
+2024-11-12 22:04:26,576 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000088/0000320193-24-000088.txt
+2024-11-12 22:04:26,795 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000088/0000320193-24-000088.txt
+2024-11-12 22:04:26,796 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000086/0000320193-24-000086.txt
+2024-11-12 22:04:27,033 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000086/0000320193-24-000086.txt
+2024-11-12 22:04:27,035 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000084/0000320193-24-000084.txt
+2024-11-12 22:04:27,149 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000084/0000320193-24-000084.txt
+2024-11-12 22:04:27,149 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000075/0000320193-24-000075.txt
+2024-11-12 22:04:27,306 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000075/0000320193-24-000075.txt
+2024-11-12 22:04:27,306 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000073/0000320193-24-000073.txt
+2024-11-12 22:04:27,526 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000073/0000320193-24-000073.txt
+2024-11-12 22:04:27,526 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000071/0000320193-24-000071.txt
+2024-11-12 22:04:27,623 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000071/0000320193-24-000071.txt
+2024-11-12 22:04:27,624 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000058/0000320193-24-000058.txt
+2024-11-12 22:04:27,772 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000058/0000320193-24-000058.txt
+2024-11-12 22:04:27,772 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000056/0000320193-24-000056.txt
+2024-11-12 22:04:27,943 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000056/0000320193-24-000056.txt
+2024-11-12 22:04:27,943 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000055/0000320193-24-000055.txt
+2024-11-12 22:04:28,094 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000055/0000320193-24-000055.txt
+2024-11-12 22:04:28,095 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000052/0000320193-24-000052.txt
+2024-11-12 22:04:28,216 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000052/0000320193-24-000052.txt
+2024-11-12 22:04:28,216 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000051/0000320193-24-000051.txt
+2024-11-12 22:04:28,309 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000051/0000320193-24-000051.txt
+2024-11-12 22:04:28,310 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000050/0000320193-24-000050.txt
+2024-11-12 22:04:28,595 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000050/0000320193-24-000050.txt
+2024-11-12 22:04:28,595 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000049/0000320193-24-000049.txt
+2024-11-12 22:04:28,756 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000049/0000320193-24-000049.txt
+2024-11-12 22:04:28,757 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000048/0000320193-24-000048.txt
+2024-11-12 22:04:28,901 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000048/0000320193-24-000048.txt
+2024-11-12 22:04:28,901 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000039/0000320193-24-000039.txt
+2024-11-12 22:04:29,117 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000039/0000320193-24-000039.txt
+2024-11-12 22:04:29,117 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000038/0000320193-24-000038.txt
+2024-11-12 22:04:29,346 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000038/0000320193-24-000038.txt
+2024-11-12 22:04:29,346 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000037/0000320193-24-000037.txt
+2024-11-12 22:04:29,733 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000037/0000320193-24-000037.txt
+2024-11-12 22:04:29,734 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000036/0000320193-24-000036.txt
+2024-11-12 22:04:29,891 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000036/0000320193-24-000036.txt
+2024-11-12 22:04:29,891 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000035/0000320193-24-000035.txt
+2024-11-12 22:04:30,012 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000035/0000320193-24-000035.txt
+2024-11-12 22:04:30,013 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000034/0000320193-24-000034.txt
+2024-11-12 22:04:30,119 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000034/0000320193-24-000034.txt
+2024-11-12 22:04:30,119 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000033/0000320193-24-000033.txt
+2024-11-12 22:04:30,225 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000033/0000320193-24-000033.txt
+2024-11-12 22:04:30,226 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000022/0000320193-24-000022.txt
+2024-11-12 22:04:30,340 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000022/0000320193-24-000022.txt
+2024-11-12 22:04:30,340 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000021/0000320193-24-000021.txt
+2024-11-12 22:04:30,493 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000021/0000320193-24-000021.txt
+2024-11-12 22:04:30,493 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000020/0000320193-24-000020.txt
+2024-11-12 22:04:30,605 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000020/0000320193-24-000020.txt
+2024-11-12 22:04:30,606 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000019/0000320193-24-000019.txt
+2024-11-12 22:04:30,756 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000019/0000320193-24-000019.txt
+2024-11-12 22:04:30,756 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000018/0000320193-24-000018.txt
+2024-11-12 22:04:30,883 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000018/0000320193-24-000018.txt
+2024-11-12 22:04:30,883 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000017/0000320193-24-000017.txt
+2024-11-12 22:04:31,031 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000017/0000320193-24-000017.txt
+2024-11-12 22:04:31,031 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000016/0000320193-24-000016.txt
+2024-11-12 22:04:31,146 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000016/0000320193-24-000016.txt
+2024-11-12 22:04:31,146 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019324000015/0000320193-24-000015.txt
+2024-11-12 22:04:31,241 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019324000015/0000320193-24-000015.txt
+2024-11-12 22:04:31,242 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019323000113/0000320193-23-000113.txt
+2024-11-12 22:04:31,371 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019323000113/0000320193-23-000113.txt
+2024-11-12 22:04:31,371 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019323000111/0000320193-23-000111.txt
+2024-11-12 22:04:31,502 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019323000111/0000320193-23-000111.txt
+2024-11-12 22:04:31,502 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/320193/000032019323000109/0000320193-23-000109.txt
+2024-11-12 22:04:31,618 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/320193/000032019323000109/0000320193-23-000109.txt
+2024-11-12 22:04:32,722 [INFO] Inserted 123 records for AAPL (CIK: 0000320193)
+2024-11-12 22:04:32,724 [INFO] Processing NVDA with CIK 0001045810
+2024-11-12 22:04:32,754 [INFO] Fetching Form 4 links for CIK: 0001045810
+2024-11-12 22:04:55,884 [INFO] Fetched 126 Form 4 links for CIK 0001045810
+2024-11-12 22:04:55,885 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000298/0001045810-24-000298.txt
+2024-11-12 22:04:55,977 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000298/0001045810-24-000298.txt
+2024-11-12 22:04:55,977 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000296/0001045810-24-000296.txt
+2024-11-12 22:04:56,238 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000296/0001045810-24-000296.txt
+2024-11-12 22:04:56,238 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000294/0001045810-24-000294.txt
+2024-11-12 22:04:56,347 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000294/0001045810-24-000294.txt
+2024-11-12 22:04:56,347 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000292/0001045810-24-000292.txt
+2024-11-12 22:04:56,542 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000292/0001045810-24-000292.txt
+2024-11-12 22:04:56,542 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000290/0001045810-24-000290.txt
+2024-11-12 22:04:56,640 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000290/0001045810-24-000290.txt
+2024-11-12 22:04:56,641 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000122520824008806/0001225208-24-008806.txt
+2024-11-12 22:04:56,951 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000122520824008806/0001225208-24-008806.txt
+2024-11-12 22:04:56,952 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000288/0001045810-24-000288.txt
+2024-11-12 22:04:57,041 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000288/0001045810-24-000288.txt
+2024-11-12 22:04:57,041 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000287/0001045810-24-000287.txt
+2024-11-12 22:04:57,146 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000287/0001045810-24-000287.txt
+2024-11-12 22:04:57,147 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000286/0001045810-24-000286.txt
+2024-11-12 22:04:57,378 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000286/0001045810-24-000286.txt
+2024-11-12 22:04:57,378 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000284/0001045810-24-000284.txt
+2024-11-12 22:04:57,557 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000284/0001045810-24-000284.txt
+2024-11-12 22:04:57,557 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000283/0001045810-24-000283.txt
+2024-11-12 22:04:57,872 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000283/0001045810-24-000283.txt
+2024-11-12 22:04:57,872 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000281/0001045810-24-000281.txt
+2024-11-12 22:04:58,203 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000281/0001045810-24-000281.txt
+2024-11-12 22:04:58,204 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000274/0001045810-24-000274.txt
+2024-11-12 22:04:58,376 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000274/0001045810-24-000274.txt
+2024-11-12 22:04:58,376 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000272/0001045810-24-000272.txt
+2024-11-12 22:04:58,570 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000272/0001045810-24-000272.txt
+2024-11-12 22:04:58,570 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000270/0001045810-24-000270.txt
+2024-11-12 22:04:58,832 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000270/0001045810-24-000270.txt
+2024-11-12 22:04:58,832 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000268/0001045810-24-000268.txt
+2024-11-12 22:04:58,934 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000268/0001045810-24-000268.txt
+2024-11-12 22:04:58,935 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000266/0001045810-24-000266.txt
+2024-11-12 22:04:59,110 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000266/0001045810-24-000266.txt
+2024-11-12 22:04:59,111 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000253/0001045810-24-000253.txt
+2024-11-12 22:04:59,219 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000253/0001045810-24-000253.txt
+2024-11-12 22:04:59,219 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000251/0001045810-24-000251.txt
+2024-11-12 22:04:59,344 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000251/0001045810-24-000251.txt
+2024-11-12 22:04:59,344 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000249/0001045810-24-000249.txt
+2024-11-12 22:04:59,735 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000249/0001045810-24-000249.txt
+2024-11-12 22:04:59,736 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000247/0001045810-24-000247.txt
+2024-11-12 22:05:00,085 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000247/0001045810-24-000247.txt
+2024-11-12 22:05:00,085 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000245/0001045810-24-000245.txt
+2024-11-12 22:05:00,307 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000245/0001045810-24-000245.txt
+2024-11-12 22:05:00,308 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000243/0001045810-24-000243.txt
+2024-11-12 22:05:00,613 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000243/0001045810-24-000243.txt
+2024-11-12 22:05:00,613 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000239/0001045810-24-000239.txt
+2024-11-12 22:05:00,722 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000239/0001045810-24-000239.txt
+2024-11-12 22:05:00,722 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000237/0001045810-24-000237.txt
+2024-11-12 22:05:00,862 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000237/0001045810-24-000237.txt
+2024-11-12 22:05:00,862 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000234/0001045810-24-000234.txt
+2024-11-12 22:05:00,994 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000234/0001045810-24-000234.txt
+2024-11-12 22:05:00,994 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000232/0001045810-24-000232.txt
+2024-11-12 22:05:01,097 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000232/0001045810-24-000232.txt
+2024-11-12 22:05:01,098 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000226/0001045810-24-000226.txt
+2024-11-12 22:05:01,234 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000226/0001045810-24-000226.txt
+2024-11-12 22:05:01,235 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000221/0001045810-24-000221.txt
+2024-11-12 22:05:01,369 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000221/0001045810-24-000221.txt
+2024-11-12 22:05:01,369 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000220/0001045810-24-000220.txt
+2024-11-12 22:05:01,547 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000220/0001045810-24-000220.txt
+2024-11-12 22:05:01,548 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000219/0001045810-24-000219.txt
+2024-11-12 22:05:01,664 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000219/0001045810-24-000219.txt
+2024-11-12 22:05:01,665 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000215/0001045810-24-000215.txt
+2024-11-12 22:05:01,832 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000215/0001045810-24-000215.txt
+2024-11-12 22:05:01,832 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000214/0001045810-24-000214.txt
+2024-11-12 22:05:01,949 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000214/0001045810-24-000214.txt
+2024-11-12 22:05:01,949 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000211/0001045810-24-000211.txt
+2024-11-12 22:05:02,093 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000211/0001045810-24-000211.txt
+2024-11-12 22:05:02,093 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000209/0001045810-24-000209.txt
+2024-11-12 22:05:02,244 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000209/0001045810-24-000209.txt
+2024-11-12 22:05:02,244 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000207/0001045810-24-000207.txt
+2024-11-12 22:05:02,357 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000207/0001045810-24-000207.txt
+2024-11-12 22:05:02,357 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000122520824007115/0001225208-24-007115.txt
+2024-11-12 22:05:02,511 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000122520824007115/0001225208-24-007115.txt
+2024-11-12 22:05:02,511 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000202/0001045810-24-000202.txt
+2024-11-12 22:05:02,630 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000202/0001045810-24-000202.txt
+2024-11-12 22:05:02,630 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000201/0001045810-24-000201.txt
+2024-11-12 22:05:02,759 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000201/0001045810-24-000201.txt
+2024-11-12 22:05:02,760 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000200/0001045810-24-000200.txt
+2024-11-12 22:05:02,851 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000200/0001045810-24-000200.txt
+2024-11-12 22:05:02,852 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000199/0001045810-24-000199.txt
+2024-11-12 22:05:02,950 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000199/0001045810-24-000199.txt
+2024-11-12 22:05:02,951 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000198/0001045810-24-000198.txt
+2024-11-12 22:05:03,156 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000198/0001045810-24-000198.txt
+2024-11-12 22:05:03,157 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000197/0001045810-24-000197.txt
+2024-11-12 22:05:03,267 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000197/0001045810-24-000197.txt
+2024-11-12 22:05:03,267 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000196/0001045810-24-000196.txt
+2024-11-12 22:05:03,402 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000196/0001045810-24-000196.txt
+2024-11-12 22:05:03,402 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000195/0001045810-24-000195.txt
+2024-11-12 22:05:03,565 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000195/0001045810-24-000195.txt
+2024-11-12 22:05:03,566 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000194/0001045810-24-000194.txt
+2024-11-12 22:05:03,682 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000194/0001045810-24-000194.txt
+2024-11-12 22:05:03,682 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000193/0001045810-24-000193.txt
+2024-11-12 22:05:03,777 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000193/0001045810-24-000193.txt
+2024-11-12 22:05:03,777 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000181/0001045810-24-000181.txt
+2024-11-12 22:05:03,945 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000181/0001045810-24-000181.txt
+2024-11-12 22:05:03,945 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000179/0001045810-24-000179.txt
+2024-11-12 22:05:04,044 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000179/0001045810-24-000179.txt
+2024-11-12 22:05:04,045 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000177/0001045810-24-000177.txt
+2024-11-12 22:05:04,204 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000177/0001045810-24-000177.txt
+2024-11-12 22:05:04,204 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000176/0001045810-24-000176.txt
+2024-11-12 22:05:04,400 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000176/0001045810-24-000176.txt
+2024-11-12 22:05:04,400 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000174/0001045810-24-000174.txt
+2024-11-12 22:05:04,569 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000174/0001045810-24-000174.txt
+2024-11-12 22:05:04,569 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000170/0001045810-24-000170.txt
+2024-11-12 22:05:04,718 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000170/0001045810-24-000170.txt
+2024-11-12 22:05:04,718 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000169/0001045810-24-000169.txt
+2024-11-12 22:05:05,084 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000169/0001045810-24-000169.txt
+2024-11-12 22:05:05,084 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000166/0001045810-24-000166.txt
+2024-11-12 22:05:05,201 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000166/0001045810-24-000166.txt
+2024-11-12 22:05:05,201 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000165/0001045810-24-000165.txt
+2024-11-12 22:05:05,396 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000165/0001045810-24-000165.txt
+2024-11-12 22:05:05,396 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000164/0001045810-24-000164.txt
+2024-11-12 22:05:05,524 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000164/0001045810-24-000164.txt
+2024-11-12 22:05:05,525 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000163/0001045810-24-000163.txt
+2024-11-12 22:05:05,671 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000163/0001045810-24-000163.txt
+2024-11-12 22:05:05,671 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000157/0001045810-24-000157.txt
+2024-11-12 22:05:05,765 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000157/0001045810-24-000157.txt
+2024-11-12 22:05:05,765 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000155/0001045810-24-000155.txt
+2024-11-12 22:05:05,915 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000155/0001045810-24-000155.txt
+2024-11-12 22:05:05,916 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000153/0001045810-24-000153.txt
+2024-11-12 22:05:06,010 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000153/0001045810-24-000153.txt
+2024-11-12 22:05:06,010 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000151/0001045810-24-000151.txt
+2024-11-12 22:05:06,666 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000151/0001045810-24-000151.txt
+2024-11-12 22:05:06,667 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000141588924016244/0001415889-24-016244.txt
+2024-11-12 22:05:06,791 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000141588924016244/0001415889-24-016244.txt
+2024-11-12 22:05:06,792 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000149/0001045810-24-000149.txt
+2024-11-12 22:05:07,542 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000149/0001045810-24-000149.txt
+2024-11-12 22:05:07,543 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000148/0001045810-24-000148.txt
+2024-11-12 22:05:07,809 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000148/0001045810-24-000148.txt
+2024-11-12 22:05:07,809 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000147/0001045810-24-000147.txt
+2024-11-12 22:05:07,940 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000147/0001045810-24-000147.txt
+2024-11-12 22:05:07,941 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000140/0001045810-24-000140.txt
+2024-11-12 22:05:08,638 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000140/0001045810-24-000140.txt
+2024-11-12 22:05:08,638 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000139/0001045810-24-000139.txt
+2024-11-12 22:05:09,199 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000139/0001045810-24-000139.txt
+2024-11-12 22:05:09,200 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000138/0001045810-24-000138.txt
+2024-11-12 22:05:09,321 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000138/0001045810-24-000138.txt
+2024-11-12 22:05:09,321 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000134/0001045810-24-000134.txt
+2024-11-12 22:05:09,431 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000134/0001045810-24-000134.txt
+2024-11-12 22:05:09,431 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000132/0001045810-24-000132.txt
+2024-11-12 22:05:09,586 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000132/0001045810-24-000132.txt
+2024-11-12 22:05:09,586 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000130/0001045810-24-000130.txt
+2024-11-12 22:05:09,681 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000130/0001045810-24-000130.txt
+2024-11-12 22:05:09,681 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000129/0001045810-24-000129.txt
+2024-11-12 22:05:09,810 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000129/0001045810-24-000129.txt
+2024-11-12 22:05:09,810 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000128/0001045810-24-000128.txt
+2024-11-12 22:05:10,020 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000128/0001045810-24-000128.txt
+2024-11-12 22:05:10,020 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000122/0001045810-24-000122.txt
+2024-11-12 22:05:10,157 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000122/0001045810-24-000122.txt
+2024-11-12 22:05:10,157 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000121/0001045810-24-000121.txt
+2024-11-12 22:05:10,253 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000121/0001045810-24-000121.txt
+2024-11-12 22:05:10,253 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000094/0001045810-24-000094.txt
+2024-11-12 22:05:10,501 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000094/0001045810-24-000094.txt
+2024-11-12 22:05:10,501 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000092/0001045810-24-000092.txt
+2024-11-12 22:05:10,609 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000092/0001045810-24-000092.txt
+2024-11-12 22:05:10,609 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000090/0001045810-24-000090.txt
+2024-11-12 22:05:10,703 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000090/0001045810-24-000090.txt
+2024-11-12 22:05:10,703 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000088/0001045810-24-000088.txt
+2024-11-12 22:05:10,797 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000088/0001045810-24-000088.txt
+2024-11-12 22:05:10,797 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000085/0001045810-24-000085.txt
+2024-11-12 22:05:10,909 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000085/0001045810-24-000085.txt
+2024-11-12 22:05:10,910 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000083/0001045810-24-000083.txt
+2024-11-12 22:05:11,005 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000083/0001045810-24-000083.txt
+2024-11-12 22:05:11,006 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000081/0001045810-24-000081.txt
+2024-11-12 22:05:11,126 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000081/0001045810-24-000081.txt
+2024-11-12 22:05:11,126 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000080/0001045810-24-000080.txt
+2024-11-12 22:05:11,232 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000080/0001045810-24-000080.txt
+2024-11-12 22:05:11,232 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000079/0001045810-24-000079.txt
+2024-11-12 22:05:11,326 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000079/0001045810-24-000079.txt
+2024-11-12 22:05:11,327 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000078/0001045810-24-000078.txt
+2024-11-12 22:05:11,439 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000078/0001045810-24-000078.txt
+2024-11-12 22:05:11,440 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000077/0001045810-24-000077.txt
+2024-11-12 22:05:11,553 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000077/0001045810-24-000077.txt
+2024-11-12 22:05:11,553 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000076/0001045810-24-000076.txt
+2024-11-12 22:05:11,672 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000076/0001045810-24-000076.txt
+2024-11-12 22:05:11,672 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000065/0001045810-24-000065.txt
+2024-11-12 22:05:11,786 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000065/0001045810-24-000065.txt
+2024-11-12 22:05:11,786 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000064/0001045810-24-000064.txt
+2024-11-12 22:05:11,871 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000064/0001045810-24-000064.txt
+2024-11-12 22:05:11,871 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000063/0001045810-24-000063.txt
+2024-11-12 22:05:12,024 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000063/0001045810-24-000063.txt
+2024-11-12 22:05:12,024 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000062/0001045810-24-000062.txt
+2024-11-12 22:05:12,197 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000062/0001045810-24-000062.txt
+2024-11-12 22:05:12,197 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000057/0001045810-24-000057.txt
+2024-11-12 22:05:12,290 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000057/0001045810-24-000057.txt
+2024-11-12 22:05:12,290 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000056/0001045810-24-000056.txt
+2024-11-12 22:05:12,423 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000056/0001045810-24-000056.txt
+2024-11-12 22:05:12,423 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000055/0001045810-24-000055.txt
+2024-11-12 22:05:12,545 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000055/0001045810-24-000055.txt
+2024-11-12 22:05:12,545 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000054/0001045810-24-000054.txt
+2024-11-12 22:05:12,650 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000054/0001045810-24-000054.txt
+2024-11-12 22:05:12,651 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000053/0001045810-24-000053.txt
+2024-11-12 22:05:12,754 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000053/0001045810-24-000053.txt
+2024-11-12 22:05:12,754 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000052/0001045810-24-000052.txt
+2024-11-12 22:05:12,854 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000052/0001045810-24-000052.txt
+2024-11-12 22:05:12,854 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000051/0001045810-24-000051.txt
+2024-11-12 22:05:13,136 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000051/0001045810-24-000051.txt
+2024-11-12 22:05:13,136 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000050/0001045810-24-000050.txt
+2024-11-12 22:05:13,250 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000050/0001045810-24-000050.txt
+2024-11-12 22:05:13,251 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000122520824003814/0001225208-24-003814.txt
+2024-11-12 22:05:13,396 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000122520824003814/0001225208-24-003814.txt
+2024-11-12 22:05:13,396 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000041/0001045810-24-000041.txt
+2024-11-12 22:05:13,488 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000041/0001045810-24-000041.txt
+2024-11-12 22:05:13,488 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000040/0001045810-24-000040.txt
+2024-11-12 22:05:13,593 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000040/0001045810-24-000040.txt
+2024-11-12 22:05:13,593 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000038/0001045810-24-000038.txt
+2024-11-12 22:05:13,687 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000038/0001045810-24-000038.txt
+2024-11-12 22:05:13,687 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000037/0001045810-24-000037.txt
+2024-11-12 22:05:13,798 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000037/0001045810-24-000037.txt
+2024-11-12 22:05:13,798 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000011/0001045810-24-000011.txt
+2024-11-12 22:05:13,942 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000011/0001045810-24-000011.txt
+2024-11-12 22:05:13,942 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000009/0001045810-24-000009.txt
+2024-11-12 22:05:14,051 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000009/0001045810-24-000009.txt
+2024-11-12 22:05:14,051 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000006/0001045810-24-000006.txt
+2024-11-12 22:05:14,159 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000006/0001045810-24-000006.txt
+2024-11-12 22:05:14,160 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581024000004/0001045810-24-000004.txt
+2024-11-12 22:05:14,246 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581024000004/0001045810-24-000004.txt
+2024-11-12 22:05:14,246 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000275/0001045810-23-000275.txt
+2024-11-12 22:05:14,347 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000275/0001045810-23-000275.txt
+2024-11-12 22:05:14,347 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000273/0001045810-23-000273.txt
+2024-11-12 22:05:14,518 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000273/0001045810-23-000273.txt
+2024-11-12 22:05:14,518 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000272/0001045810-23-000272.txt
+2024-11-12 22:05:14,629 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000272/0001045810-23-000272.txt
+2024-11-12 22:05:14,629 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000267/0001045810-23-000267.txt
+2024-11-12 22:05:14,745 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000267/0001045810-23-000267.txt
+2024-11-12 22:05:14,745 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000265/0001045810-23-000265.txt
+2024-11-12 22:05:14,861 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000265/0001045810-23-000265.txt
+2024-11-12 22:05:14,861 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000263/0001045810-23-000263.txt
+2024-11-12 22:05:14,959 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000263/0001045810-23-000263.txt
+2024-11-12 22:05:14,960 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000261/0001045810-23-000261.txt
+2024-11-12 22:05:15,073 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000261/0001045810-23-000261.txt
+2024-11-12 22:05:15,073 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000258/0001045810-23-000258.txt
+2024-11-12 22:05:15,207 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000258/0001045810-23-000258.txt
+2024-11-12 22:05:15,207 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000256/0001045810-23-000256.txt
+2024-11-12 22:05:15,313 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000256/0001045810-23-000256.txt
+2024-11-12 22:05:15,313 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000254/0001045810-23-000254.txt
+2024-11-12 22:05:15,464 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000254/0001045810-23-000254.txt
+2024-11-12 22:05:15,464 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000243/0001045810-23-000243.txt
+2024-11-12 22:05:15,570 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000243/0001045810-23-000243.txt
+2024-11-12 22:05:15,570 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000241/0001045810-23-000241.txt
+2024-11-12 22:05:15,659 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000241/0001045810-23-000241.txt
+2024-11-12 22:05:15,659 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000237/0001045810-23-000237.txt
+2024-11-12 22:05:15,763 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000237/0001045810-23-000237.txt
+2024-11-12 22:05:15,764 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000235/0001045810-23-000235.txt
+2024-11-12 22:05:15,869 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000235/0001045810-23-000235.txt
+2024-11-12 22:05:15,869 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000234/0001045810-23-000234.txt
+2024-11-12 22:05:15,962 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000234/0001045810-23-000234.txt
+2024-11-12 22:05:15,962 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000233/0001045810-23-000233.txt
+2024-11-12 22:05:16,053 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000233/0001045810-23-000233.txt
+2024-11-12 22:05:16,053 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581023000232/0001045810-23-000232.txt
+2024-11-12 22:05:16,144 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1045810/000104581023000232/0001045810-23-000232.txt
+2024-11-12 22:05:18,409 [INFO] Inserted 682 records for NVDA (CIK: 0001045810)
+2024-11-12 22:05:18,417 [INFO] Processing META with CIK 0001326801
+2024-11-12 22:05:18,449 [INFO] Fetching Form 4 links for CIK: 0001326801
+2024-11-12 22:06:21,763 [INFO] Fetched 346 Form 4 links for CIK 0001326801
+2024-11-12 22:06:21,765 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324016101/0000950103-24-016101.txt
+2024-11-12 22:06:21,901 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324016101/0000950103-24-016101.txt
+2024-11-12 22:06:21,902 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324016020/0000950103-24-016020.txt
+2024-11-12 22:06:22,041 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324016020/0000950103-24-016020.txt
+2024-11-12 22:06:22,041 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324016019/0000950103-24-016019.txt
+2024-11-12 22:06:22,151 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324016019/0000950103-24-016019.txt
+2024-11-12 22:06:22,151 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015834/0000950103-24-015834.txt
+2024-11-12 22:06:22,253 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015834/0000950103-24-015834.txt
+2024-11-12 22:06:22,254 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015743/0000950103-24-015743.txt
+2024-11-12 22:06:22,581 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015743/0000950103-24-015743.txt
+2024-11-12 22:06:22,582 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015650/0000950103-24-015650.txt
+2024-11-12 22:06:22,838 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015650/0000950103-24-015650.txt
+2024-11-12 22:06:22,838 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015534/0000950103-24-015534.txt
+2024-11-12 22:06:22,960 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015534/0000950103-24-015534.txt
+2024-11-12 22:06:22,960 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015360/0000950103-24-015360.txt
+2024-11-12 22:06:23,303 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015360/0000950103-24-015360.txt
+2024-11-12 22:06:23,303 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015282/0000950103-24-015282.txt
+2024-11-12 22:06:23,522 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015282/0000950103-24-015282.txt
+2024-11-12 22:06:23,522 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015093/0000950103-24-015093.txt
+2024-11-12 22:06:23,667 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015093/0000950103-24-015093.txt
+2024-11-12 22:06:23,667 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324015015/0000950103-24-015015.txt
+2024-11-12 22:06:23,919 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324015015/0000950103-24-015015.txt
+2024-11-12 22:06:23,920 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014962/0000950103-24-014962.txt
+2024-11-12 22:06:24,030 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014962/0000950103-24-014962.txt
+2024-11-12 22:06:24,030 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014831/0000950103-24-014831.txt
+2024-11-12 22:06:24,136 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014831/0000950103-24-014831.txt
+2024-11-12 22:06:24,136 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014828/0000950103-24-014828.txt
+2024-11-12 22:06:24,378 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014828/0000950103-24-014828.txt
+2024-11-12 22:06:24,378 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014767/0000950103-24-014767.txt
+2024-11-12 22:06:24,667 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014767/0000950103-24-014767.txt
+2024-11-12 22:06:24,667 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014728/0000950103-24-014728.txt
+2024-11-12 22:06:24,806 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014728/0000950103-24-014728.txt
+2024-11-12 22:06:24,806 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014595/0000950103-24-014595.txt
+2024-11-12 22:06:25,053 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014595/0000950103-24-014595.txt
+2024-11-12 22:06:25,054 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014373/0000950103-24-014373.txt
+2024-11-12 22:06:25,200 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014373/0000950103-24-014373.txt
+2024-11-12 22:06:25,201 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324014008/0000950103-24-014008.txt
+2024-11-12 22:06:25,322 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324014008/0000950103-24-014008.txt
+2024-11-12 22:06:25,322 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013949/0000950103-24-013949.txt
+2024-11-12 22:06:25,457 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013949/0000950103-24-013949.txt
+2024-11-12 22:06:25,458 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013900/0000950103-24-013900.txt
+2024-11-12 22:06:25,600 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013900/0000950103-24-013900.txt
+2024-11-12 22:06:25,600 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013855/0000950103-24-013855.txt
+2024-11-12 22:06:25,810 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013855/0000950103-24-013855.txt
+2024-11-12 22:06:25,810 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013771/0000950103-24-013771.txt
+2024-11-12 22:06:25,937 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013771/0000950103-24-013771.txt
+2024-11-12 22:06:25,937 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013689/0000950103-24-013689.txt
+2024-11-12 22:06:26,058 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013689/0000950103-24-013689.txt
+2024-11-12 22:06:26,058 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013517/0000950103-24-013517.txt
+2024-11-12 22:06:26,259 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013517/0000950103-24-013517.txt
+2024-11-12 22:06:26,259 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013418/0000950103-24-013418.txt
+2024-11-12 22:06:26,397 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013418/0000950103-24-013418.txt
+2024-11-12 22:06:26,397 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013265/0000950103-24-013265.txt
+2024-11-12 22:06:26,520 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013265/0000950103-24-013265.txt
+2024-11-12 22:06:26,520 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013192/0000950103-24-013192.txt
+2024-11-12 22:06:26,615 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013192/0000950103-24-013192.txt
+2024-11-12 22:06:26,615 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013062/0000950103-24-013062.txt
+2024-11-12 22:06:26,712 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013062/0000950103-24-013062.txt
+2024-11-12 22:06:26,712 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324013061/0000950103-24-013061.txt
+2024-11-12 22:06:26,822 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324013061/0000950103-24-013061.txt
+2024-11-12 22:06:26,823 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012868/0000950103-24-012868.txt
+2024-11-12 22:06:26,925 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012868/0000950103-24-012868.txt
+2024-11-12 22:06:26,926 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012867/0000950103-24-012867.txt
+2024-11-12 22:06:27,021 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012867/0000950103-24-012867.txt
+2024-11-12 22:06:27,021 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012761/0000950103-24-012761.txt
+2024-11-12 22:06:27,114 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012761/0000950103-24-012761.txt
+2024-11-12 22:06:27,115 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012760/0000950103-24-012760.txt
+2024-11-12 22:06:27,242 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012760/0000950103-24-012760.txt
+2024-11-12 22:06:27,243 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012759/0000950103-24-012759.txt
+2024-11-12 22:06:27,359 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012759/0000950103-24-012759.txt
+2024-11-12 22:06:27,359 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012688/0000950103-24-012688.txt
+2024-11-12 22:06:27,485 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012688/0000950103-24-012688.txt
+2024-11-12 22:06:27,485 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012636/0000950103-24-012636.txt
+2024-11-12 22:06:27,585 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012636/0000950103-24-012636.txt
+2024-11-12 22:06:27,586 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012635/0000950103-24-012635.txt
+2024-11-12 22:06:27,683 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012635/0000950103-24-012635.txt
+2024-11-12 22:06:27,683 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012547/0000950103-24-012547.txt
+2024-11-12 22:06:27,783 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012547/0000950103-24-012547.txt
+2024-11-12 22:06:27,783 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012546/0000950103-24-012546.txt
+2024-11-12 22:06:27,874 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012546/0000950103-24-012546.txt
+2024-11-12 22:06:27,874 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012509/0000950103-24-012509.txt
+2024-11-12 22:06:28,029 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012509/0000950103-24-012509.txt
+2024-11-12 22:06:28,029 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012508/0000950103-24-012508.txt
+2024-11-12 22:06:28,236 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012508/0000950103-24-012508.txt
+2024-11-12 22:06:28,236 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012505/0000950103-24-012505.txt
+2024-11-12 22:06:28,336 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012505/0000950103-24-012505.txt
+2024-11-12 22:06:28,336 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012410/0000950103-24-012410.txt
+2024-11-12 22:06:28,453 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012410/0000950103-24-012410.txt
+2024-11-12 22:06:28,453 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012409/0000950103-24-012409.txt
+2024-11-12 22:06:28,549 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012409/0000950103-24-012409.txt
+2024-11-12 22:06:28,550 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012408/0000950103-24-012408.txt
+2024-11-12 22:06:28,647 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012408/0000950103-24-012408.txt
+2024-11-12 22:06:28,647 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012407/0000950103-24-012407.txt
+2024-11-12 22:06:28,746 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012407/0000950103-24-012407.txt
+2024-11-12 22:06:28,747 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012406/0000950103-24-012406.txt
+2024-11-12 22:06:28,974 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012406/0000950103-24-012406.txt
+2024-11-12 22:06:28,974 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012405/0000950103-24-012405.txt
+2024-11-12 22:06:29,171 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012405/0000950103-24-012405.txt
+2024-11-12 22:06:29,172 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012404/0000950103-24-012404.txt
+2024-11-12 22:06:29,323 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012404/0000950103-24-012404.txt
+2024-11-12 22:06:29,323 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012403/0000950103-24-012403.txt
+2024-11-12 22:06:29,586 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012403/0000950103-24-012403.txt
+2024-11-12 22:06:29,586 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012402/0000950103-24-012402.txt
+2024-11-12 22:06:29,696 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012402/0000950103-24-012402.txt
+2024-11-12 22:06:29,696 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012401/0000950103-24-012401.txt
+2024-11-12 22:06:30,046 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012401/0000950103-24-012401.txt
+2024-11-12 22:06:30,047 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012400/0000950103-24-012400.txt
+2024-11-12 22:06:30,195 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012400/0000950103-24-012400.txt
+2024-11-12 22:06:30,195 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012399/0000950103-24-012399.txt
+2024-11-12 22:06:30,313 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012399/0000950103-24-012399.txt
+2024-11-12 22:06:30,313 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012231/0000950103-24-012231.txt
+2024-11-12 22:06:30,451 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012231/0000950103-24-012231.txt
+2024-11-12 22:06:30,452 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012230/0000950103-24-012230.txt
+2024-11-12 22:06:30,583 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012230/0000950103-24-012230.txt
+2024-11-12 22:06:30,584 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012229/0000950103-24-012229.txt
+2024-11-12 22:06:30,724 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012229/0000950103-24-012229.txt
+2024-11-12 22:06:30,724 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012221/0000950103-24-012221.txt
+2024-11-12 22:06:30,834 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012221/0000950103-24-012221.txt
+2024-11-12 22:06:30,834 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012082/0000950103-24-012082.txt
+2024-11-12 22:06:30,931 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012082/0000950103-24-012082.txt
+2024-11-12 22:06:30,931 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324012081/0000950103-24-012081.txt
+2024-11-12 22:06:31,171 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324012081/0000950103-24-012081.txt
+2024-11-12 22:06:31,171 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011957/0000950103-24-011957.txt
+2024-11-12 22:06:31,331 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011957/0000950103-24-011957.txt
+2024-11-12 22:06:31,331 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011890/0000950103-24-011890.txt
+2024-11-12 22:06:31,515 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011890/0000950103-24-011890.txt
+2024-11-12 22:06:31,515 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011889/0000950103-24-011889.txt
+2024-11-12 22:06:31,626 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011889/0000950103-24-011889.txt
+2024-11-12 22:06:31,626 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011875/0000950103-24-011875.txt
+2024-11-12 22:06:31,739 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011875/0000950103-24-011875.txt
+2024-11-12 22:06:31,739 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011722/0000950103-24-011722.txt
+2024-11-12 22:06:31,842 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011722/0000950103-24-011722.txt
+2024-11-12 22:06:31,843 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011721/0000950103-24-011721.txt
+2024-11-12 22:06:32,181 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011721/0000950103-24-011721.txt
+2024-11-12 22:06:32,181 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011719/0000950103-24-011719.txt
+2024-11-12 22:06:32,483 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011719/0000950103-24-011719.txt
+2024-11-12 22:06:32,483 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011707/0000950103-24-011707.txt
+2024-11-12 22:06:32,644 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011707/0000950103-24-011707.txt
+2024-11-12 22:06:32,644 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011469/0000950103-24-011469.txt
+2024-11-12 22:06:32,796 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011469/0000950103-24-011469.txt
+2024-11-12 22:06:32,796 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324011015/0000950103-24-011015.txt
+2024-11-12 22:06:32,933 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324011015/0000950103-24-011015.txt
+2024-11-12 22:06:32,933 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010789/0000950103-24-010789.txt
+2024-11-12 22:06:33,039 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010789/0000950103-24-010789.txt
+2024-11-12 22:06:33,039 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010423/0000950103-24-010423.txt
+2024-11-12 22:06:33,155 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010423/0000950103-24-010423.txt
+2024-11-12 22:06:33,156 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010140/0000950103-24-010140.txt
+2024-11-12 22:06:33,270 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010140/0000950103-24-010140.txt
+2024-11-12 22:06:33,270 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010139/0000950103-24-010139.txt
+2024-11-12 22:06:33,381 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010139/0000950103-24-010139.txt
+2024-11-12 22:06:33,381 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010132/0000950103-24-010132.txt
+2024-11-12 22:06:33,471 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010132/0000950103-24-010132.txt
+2024-11-12 22:06:33,471 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010035/0000950103-24-010035.txt
+2024-11-12 22:06:33,600 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010035/0000950103-24-010035.txt
+2024-11-12 22:06:33,600 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010034/0000950103-24-010034.txt
+2024-11-12 22:06:33,707 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010034/0000950103-24-010034.txt
+2024-11-12 22:06:33,707 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010033/0000950103-24-010033.txt
+2024-11-12 22:06:33,818 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010033/0000950103-24-010033.txt
+2024-11-12 22:06:33,818 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324010032/0000950103-24-010032.txt
+2024-11-12 22:06:33,944 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324010032/0000950103-24-010032.txt
+2024-11-12 22:06:33,944 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009860/0000950103-24-009860.txt
+2024-11-12 22:06:34,054 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009860/0000950103-24-009860.txt
+2024-11-12 22:06:34,054 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009859/0000950103-24-009859.txt
+2024-11-12 22:06:34,167 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009859/0000950103-24-009859.txt
+2024-11-12 22:06:34,168 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009858/0000950103-24-009858.txt
+2024-11-12 22:06:34,286 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009858/0000950103-24-009858.txt
+2024-11-12 22:06:34,286 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009857/0000950103-24-009857.txt
+2024-11-12 22:06:34,461 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009857/0000950103-24-009857.txt
+2024-11-12 22:06:34,461 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009791/0000950103-24-009791.txt
+2024-11-12 22:06:34,578 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009791/0000950103-24-009791.txt
+2024-11-12 22:06:34,578 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009735/0000950103-24-009735.txt
+2024-11-12 22:06:34,691 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009735/0000950103-24-009735.txt
+2024-11-12 22:06:34,691 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009734/0000950103-24-009734.txt
+2024-11-12 22:06:34,793 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009734/0000950103-24-009734.txt
+2024-11-12 22:06:34,793 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009663/0000950103-24-009663.txt
+2024-11-12 22:06:34,902 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009663/0000950103-24-009663.txt
+2024-11-12 22:06:34,902 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009662/0000950103-24-009662.txt
+2024-11-12 22:06:35,022 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009662/0000950103-24-009662.txt
+2024-11-12 22:06:35,022 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009661/0000950103-24-009661.txt
+2024-11-12 22:06:35,140 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009661/0000950103-24-009661.txt
+2024-11-12 22:06:35,140 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009659/0000950103-24-009659.txt
+2024-11-12 22:06:35,490 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009659/0000950103-24-009659.txt
+2024-11-12 22:06:35,491 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009395/0000950103-24-009395.txt
+2024-11-12 22:06:35,887 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009395/0000950103-24-009395.txt
+2024-11-12 22:06:35,887 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009388/0000950103-24-009388.txt
+2024-11-12 22:06:35,992 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009388/0000950103-24-009388.txt
+2024-11-12 22:06:35,992 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009357/0000950103-24-009357.txt
+2024-11-12 22:06:36,085 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009357/0000950103-24-009357.txt
+2024-11-12 22:06:36,086 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324009074/0000950103-24-009074.txt
+2024-11-12 22:06:36,205 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324009074/0000950103-24-009074.txt
+2024-11-12 22:06:36,205 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008923/0000950103-24-008923.txt
+2024-11-12 22:06:36,315 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008923/0000950103-24-008923.txt
+2024-11-12 22:06:36,316 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008922/0000950103-24-008922.txt
+2024-11-12 22:06:36,572 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008922/0000950103-24-008922.txt
+2024-11-12 22:06:36,572 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008920/0000950103-24-008920.txt
+2024-11-12 22:06:36,704 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008920/0000950103-24-008920.txt
+2024-11-12 22:06:36,704 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008718/0000950103-24-008718.txt
+2024-11-12 22:06:36,906 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008718/0000950103-24-008718.txt
+2024-11-12 22:06:36,906 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008717/0000950103-24-008717.txt
+2024-11-12 22:06:37,064 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008717/0000950103-24-008717.txt
+2024-11-12 22:06:37,064 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008716/0000950103-24-008716.txt
+2024-11-12 22:06:37,189 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008716/0000950103-24-008716.txt
+2024-11-12 22:06:37,189 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008601/0000950103-24-008601.txt
+2024-11-12 22:06:37,404 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008601/0000950103-24-008601.txt
+2024-11-12 22:06:37,405 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008595/0000950103-24-008595.txt
+2024-11-12 22:06:37,555 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008595/0000950103-24-008595.txt
+2024-11-12 22:06:37,555 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008594/0000950103-24-008594.txt
+2024-11-12 22:06:37,669 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008594/0000950103-24-008594.txt
+2024-11-12 22:06:37,669 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008593/0000950103-24-008593.txt
+2024-11-12 22:06:37,784 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008593/0000950103-24-008593.txt
+2024-11-12 22:06:37,784 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008592/0000950103-24-008592.txt
+2024-11-12 22:06:37,936 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008592/0000950103-24-008592.txt
+2024-11-12 22:06:37,936 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008591/0000950103-24-008591.txt
+2024-11-12 22:06:38,119 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008591/0000950103-24-008591.txt
+2024-11-12 22:06:38,119 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008590/0000950103-24-008590.txt
+2024-11-12 22:06:38,258 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008590/0000950103-24-008590.txt
+2024-11-12 22:06:38,259 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008589/0000950103-24-008589.txt
+2024-11-12 22:06:38,613 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008589/0000950103-24-008589.txt
+2024-11-12 22:06:38,613 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008588/0000950103-24-008588.txt
+2024-11-12 22:06:38,712 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008588/0000950103-24-008588.txt
+2024-11-12 22:06:38,713 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008587/0000950103-24-008587.txt
+2024-11-12 22:06:38,820 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008587/0000950103-24-008587.txt
+2024-11-12 22:06:38,821 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008586/0000950103-24-008586.txt
+2024-11-12 22:06:38,943 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008586/0000950103-24-008586.txt
+2024-11-12 22:06:38,943 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008585/0000950103-24-008585.txt
+2024-11-12 22:06:39,060 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008585/0000950103-24-008585.txt
+2024-11-12 22:06:39,060 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008432/0000950103-24-008432.txt
+2024-11-12 22:06:39,163 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008432/0000950103-24-008432.txt
+2024-11-12 22:06:39,163 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008431/0000950103-24-008431.txt
+2024-11-12 22:06:39,267 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008431/0000950103-24-008431.txt
+2024-11-12 22:06:39,267 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008430/0000950103-24-008430.txt
+2024-11-12 22:06:39,402 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008430/0000950103-24-008430.txt
+2024-11-12 22:06:39,403 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008320/0000950103-24-008320.txt
+2024-11-12 22:06:39,496 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008320/0000950103-24-008320.txt
+2024-11-12 22:06:39,496 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008263/0000950103-24-008263.txt
+2024-11-12 22:06:39,598 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008263/0000950103-24-008263.txt
+2024-11-12 22:06:39,599 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008262/0000950103-24-008262.txt
+2024-11-12 22:06:39,730 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008262/0000950103-24-008262.txt
+2024-11-12 22:06:39,730 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008261/0000950103-24-008261.txt
+2024-11-12 22:06:39,824 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008261/0000950103-24-008261.txt
+2024-11-12 22:06:39,825 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008143/0000950103-24-008143.txt
+2024-11-12 22:06:39,934 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008143/0000950103-24-008143.txt
+2024-11-12 22:06:39,934 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008135/0000950103-24-008135.txt
+2024-11-12 22:06:40,057 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008135/0000950103-24-008135.txt
+2024-11-12 22:06:40,057 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324008022/0000950103-24-008022.txt
+2024-11-12 22:06:40,162 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324008022/0000950103-24-008022.txt
+2024-11-12 22:06:40,162 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324007672/0000950103-24-007672.txt
+2024-11-12 22:06:40,265 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324007672/0000950103-24-007672.txt
+2024-11-12 22:06:40,265 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324007571/0000950103-24-007571.txt
+2024-11-12 22:06:40,440 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324007571/0000950103-24-007571.txt
+2024-11-12 22:06:40,441 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324007436/0000950103-24-007436.txt
+2024-11-12 22:06:40,559 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324007436/0000950103-24-007436.txt
+2024-11-12 22:06:40,560 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324007198/0000950103-24-007198.txt
+2024-11-12 22:06:40,748 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324007198/0000950103-24-007198.txt
+2024-11-12 22:06:40,748 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324007073/0000950103-24-007073.txt
+2024-11-12 22:06:40,994 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324007073/0000950103-24-007073.txt
+2024-11-12 22:06:40,994 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006861/0000950103-24-006861.txt
+2024-11-12 22:06:41,194 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006861/0000950103-24-006861.txt
+2024-11-12 22:06:41,194 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006860/0000950103-24-006860.txt
+2024-11-12 22:06:41,285 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006860/0000950103-24-006860.txt
+2024-11-12 22:06:41,286 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006859/0000950103-24-006859.txt
+2024-11-12 22:06:41,395 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006859/0000950103-24-006859.txt
+2024-11-12 22:06:41,395 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006858/0000950103-24-006858.txt
+2024-11-12 22:06:41,517 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006858/0000950103-24-006858.txt
+2024-11-12 22:06:41,517 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006857/0000950103-24-006857.txt
+2024-11-12 22:06:41,611 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006857/0000950103-24-006857.txt
+2024-11-12 22:06:41,612 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006856/0000950103-24-006856.txt
+2024-11-12 22:06:41,712 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006856/0000950103-24-006856.txt
+2024-11-12 22:06:41,712 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006855/0000950103-24-006855.txt
+2024-11-12 22:06:41,813 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006855/0000950103-24-006855.txt
+2024-11-12 22:06:41,813 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006854/0000950103-24-006854.txt
+2024-11-12 22:06:41,925 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006854/0000950103-24-006854.txt
+2024-11-12 22:06:41,926 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006853/0000950103-24-006853.txt
+2024-11-12 22:06:42,022 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006853/0000950103-24-006853.txt
+2024-11-12 22:06:42,022 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006852/0000950103-24-006852.txt
+2024-11-12 22:06:42,117 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006852/0000950103-24-006852.txt
+2024-11-12 22:06:42,118 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006851/0000950103-24-006851.txt
+2024-11-12 22:06:42,221 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006851/0000950103-24-006851.txt
+2024-11-12 22:06:42,221 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006850/0000950103-24-006850.txt
+2024-11-12 22:06:42,328 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006850/0000950103-24-006850.txt
+2024-11-12 22:06:42,328 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006849/0000950103-24-006849.txt
+2024-11-12 22:06:42,470 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006849/0000950103-24-006849.txt
+2024-11-12 22:06:42,471 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006848/0000950103-24-006848.txt
+2024-11-12 22:06:42,568 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006848/0000950103-24-006848.txt
+2024-11-12 22:06:42,568 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006847/0000950103-24-006847.txt
+2024-11-12 22:06:42,668 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006847/0000950103-24-006847.txt
+2024-11-12 22:06:42,669 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006846/0000950103-24-006846.txt
+2024-11-12 22:06:42,766 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006846/0000950103-24-006846.txt
+2024-11-12 22:06:42,766 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006845/0000950103-24-006845.txt
+2024-11-12 22:06:42,907 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006845/0000950103-24-006845.txt
+2024-11-12 22:06:42,907 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006514/0000950103-24-006514.txt
+2024-11-12 22:06:43,153 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006514/0000950103-24-006514.txt
+2024-11-12 22:06:43,153 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006438/0000950103-24-006438.txt
+2024-11-12 22:06:43,282 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006438/0000950103-24-006438.txt
+2024-11-12 22:06:43,282 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006289/0000950103-24-006289.txt
+2024-11-12 22:06:43,476 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006289/0000950103-24-006289.txt
+2024-11-12 22:06:43,477 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006055/0000950103-24-006055.txt
+2024-11-12 22:06:43,681 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006055/0000950103-24-006055.txt
+2024-11-12 22:06:43,681 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324006054/0000950103-24-006054.txt
+2024-11-12 22:06:43,784 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324006054/0000950103-24-006054.txt
+2024-11-12 22:06:43,785 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005771/0000950103-24-005771.txt
+2024-11-12 22:06:43,911 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005771/0000950103-24-005771.txt
+2024-11-12 22:06:43,911 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005644/0000950103-24-005644.txt
+2024-11-12 22:06:44,055 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005644/0000950103-24-005644.txt
+2024-11-12 22:06:44,056 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005489/0000950103-24-005489.txt
+2024-11-12 22:06:44,171 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005489/0000950103-24-005489.txt
+2024-11-12 22:06:44,172 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005369/0000950103-24-005369.txt
+2024-11-12 22:06:44,273 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005369/0000950103-24-005369.txt
+2024-11-12 22:06:44,274 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005198/0000950103-24-005198.txt
+2024-11-12 22:06:44,404 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005198/0000950103-24-005198.txt
+2024-11-12 22:06:44,405 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324005088/0000950103-24-005088.txt
+2024-11-12 22:06:44,580 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324005088/0000950103-24-005088.txt
+2024-11-12 22:06:44,580 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004867/0000950103-24-004867.txt
+2024-11-12 22:06:44,716 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004867/0000950103-24-004867.txt
+2024-11-12 22:06:44,717 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004866/0000950103-24-004866.txt
+2024-11-12 22:06:44,830 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004866/0000950103-24-004866.txt
+2024-11-12 22:06:44,830 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004865/0000950103-24-004865.txt
+2024-11-12 22:06:44,986 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004865/0000950103-24-004865.txt
+2024-11-12 22:06:44,987 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004764/0000950103-24-004764.txt
+2024-11-12 22:06:45,112 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004764/0000950103-24-004764.txt
+2024-11-12 22:06:45,112 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004510/0000950103-24-004510.txt
+2024-11-12 22:06:45,250 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004510/0000950103-24-004510.txt
+2024-11-12 22:06:45,250 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004508/0000950103-24-004508.txt
+2024-11-12 22:06:45,430 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004508/0000950103-24-004508.txt
+2024-11-12 22:06:45,430 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004504/0000950103-24-004504.txt
+2024-11-12 22:06:45,547 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004504/0000950103-24-004504.txt
+2024-11-12 22:06:45,547 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004501/0000950103-24-004501.txt
+2024-11-12 22:06:45,696 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004501/0000950103-24-004501.txt
+2024-11-12 22:06:45,697 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004499/0000950103-24-004499.txt
+2024-11-12 22:06:45,918 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004499/0000950103-24-004499.txt
+2024-11-12 22:06:45,918 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004498/0000950103-24-004498.txt
+2024-11-12 22:06:46,028 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004498/0000950103-24-004498.txt
+2024-11-12 22:06:46,028 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004313/0000950103-24-004313.txt
+2024-11-12 22:06:46,142 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004313/0000950103-24-004313.txt
+2024-11-12 22:06:46,142 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004241/0000950103-24-004241.txt
+2024-11-12 22:06:46,274 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004241/0000950103-24-004241.txt
+2024-11-12 22:06:46,275 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004240/0000950103-24-004240.txt
+2024-11-12 22:06:46,430 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004240/0000950103-24-004240.txt
+2024-11-12 22:06:46,431 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004199/0000950103-24-004199.txt
+2024-11-12 22:06:46,526 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004199/0000950103-24-004199.txt
+2024-11-12 22:06:46,526 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004198/0000950103-24-004198.txt
+2024-11-12 22:06:46,633 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004198/0000950103-24-004198.txt
+2024-11-12 22:06:46,633 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004197/0000950103-24-004197.txt
+2024-11-12 22:06:46,731 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004197/0000950103-24-004197.txt
+2024-11-12 22:06:46,731 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004196/0000950103-24-004196.txt
+2024-11-12 22:06:46,833 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004196/0000950103-24-004196.txt
+2024-11-12 22:06:46,833 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004195/0000950103-24-004195.txt
+2024-11-12 22:06:46,926 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004195/0000950103-24-004195.txt
+2024-11-12 22:06:46,926 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004194/0000950103-24-004194.txt
+2024-11-12 22:06:47,030 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004194/0000950103-24-004194.txt
+2024-11-12 22:06:47,030 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004136/0000950103-24-004136.txt
+2024-11-12 22:06:47,131 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004136/0000950103-24-004136.txt
+2024-11-12 22:06:47,132 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004094/0000950103-24-004094.txt
+2024-11-12 22:06:47,250 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004094/0000950103-24-004094.txt
+2024-11-12 22:06:47,251 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004093/0000950103-24-004093.txt
+2024-11-12 22:06:47,418 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004093/0000950103-24-004093.txt
+2024-11-12 22:06:47,418 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004092/0000950103-24-004092.txt
+2024-11-12 22:06:47,544 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004092/0000950103-24-004092.txt
+2024-11-12 22:06:47,545 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004091/0000950103-24-004091.txt
+2024-11-12 22:06:47,668 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004091/0000950103-24-004091.txt
+2024-11-12 22:06:47,668 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004090/0000950103-24-004090.txt
+2024-11-12 22:06:47,780 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004090/0000950103-24-004090.txt
+2024-11-12 22:06:47,780 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004089/0000950103-24-004089.txt
+2024-11-12 22:06:47,890 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004089/0000950103-24-004089.txt
+2024-11-12 22:06:47,890 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324004038/0000950103-24-004038.txt
+2024-11-12 22:06:47,989 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324004038/0000950103-24-004038.txt
+2024-11-12 22:06:47,989 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003959/0000950103-24-003959.txt
+2024-11-12 22:06:48,103 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003959/0000950103-24-003959.txt
+2024-11-12 22:06:48,103 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003957/0000950103-24-003957.txt
+2024-11-12 22:06:48,227 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003957/0000950103-24-003957.txt
+2024-11-12 22:06:48,227 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003956/0000950103-24-003956.txt
+2024-11-12 22:06:48,330 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003956/0000950103-24-003956.txt
+2024-11-12 22:06:48,330 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003868/0000950103-24-003868.txt
+2024-11-12 22:06:48,497 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003868/0000950103-24-003868.txt
+2024-11-12 22:06:48,497 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003801/0000950103-24-003801.txt
+2024-11-12 22:06:48,634 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003801/0000950103-24-003801.txt
+2024-11-12 22:06:48,635 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003800/0000950103-24-003800.txt
+2024-11-12 22:06:48,742 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003800/0000950103-24-003800.txt
+2024-11-12 22:06:48,742 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003799/0000950103-24-003799.txt
+2024-11-12 22:06:48,916 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003799/0000950103-24-003799.txt
+2024-11-12 22:06:48,916 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003798/0000950103-24-003798.txt
+2024-11-12 22:06:49,070 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003798/0000950103-24-003798.txt
+2024-11-12 22:06:49,070 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003796/0000950103-24-003796.txt
+2024-11-12 22:06:49,192 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003796/0000950103-24-003796.txt
+2024-11-12 22:06:49,192 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003795/0000950103-24-003795.txt
+2024-11-12 22:06:49,306 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003795/0000950103-24-003795.txt
+2024-11-12 22:06:49,306 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003794/0000950103-24-003794.txt
+2024-11-12 22:06:49,459 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003794/0000950103-24-003794.txt
+2024-11-12 22:06:49,460 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003739/0000950103-24-003739.txt
+2024-11-12 22:06:49,581 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003739/0000950103-24-003739.txt
+2024-11-12 22:06:49,581 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003680/0000950103-24-003680.txt
+2024-11-12 22:06:49,699 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003680/0000950103-24-003680.txt
+2024-11-12 22:06:49,699 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003679/0000950103-24-003679.txt
+2024-11-12 22:06:49,811 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003679/0000950103-24-003679.txt
+2024-11-12 22:06:49,811 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003678/0000950103-24-003678.txt
+2024-11-12 22:06:49,926 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003678/0000950103-24-003678.txt
+2024-11-12 22:06:49,926 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003677/0000950103-24-003677.txt
+2024-11-12 22:06:50,116 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003677/0000950103-24-003677.txt
+2024-11-12 22:06:50,116 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003676/0000950103-24-003676.txt
+2024-11-12 22:06:50,227 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003676/0000950103-24-003676.txt
+2024-11-12 22:06:50,227 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003675/0000950103-24-003675.txt
+2024-11-12 22:06:50,330 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003675/0000950103-24-003675.txt
+2024-11-12 22:06:50,330 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003554/0000950103-24-003554.txt
+2024-11-12 22:06:50,484 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003554/0000950103-24-003554.txt
+2024-11-12 22:06:50,484 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003508/0000950103-24-003508.txt
+2024-11-12 22:06:50,611 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003508/0000950103-24-003508.txt
+2024-11-12 22:06:50,611 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003507/0000950103-24-003507.txt
+2024-11-12 22:06:50,797 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003507/0000950103-24-003507.txt
+2024-11-12 22:06:50,797 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003506/0000950103-24-003506.txt
+2024-11-12 22:06:50,910 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003506/0000950103-24-003506.txt
+2024-11-12 22:06:50,911 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003460/0000950103-24-003460.txt
+2024-11-12 22:06:51,024 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003460/0000950103-24-003460.txt
+2024-11-12 22:06:51,025 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003404/0000950103-24-003404.txt
+2024-11-12 22:06:51,179 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003404/0000950103-24-003404.txt
+2024-11-12 22:06:51,180 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003400/0000950103-24-003400.txt
+2024-11-12 22:06:51,325 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003400/0000950103-24-003400.txt
+2024-11-12 22:06:51,326 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003399/0000950103-24-003399.txt
+2024-11-12 22:06:51,476 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003399/0000950103-24-003399.txt
+2024-11-12 22:06:51,476 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003184/0000950103-24-003184.txt
+2024-11-12 22:06:51,580 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003184/0000950103-24-003184.txt
+2024-11-12 22:06:51,581 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003095/0000950103-24-003095.txt
+2024-11-12 22:06:51,702 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003095/0000950103-24-003095.txt
+2024-11-12 22:06:51,702 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003094/0000950103-24-003094.txt
+2024-11-12 22:06:51,853 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003094/0000950103-24-003094.txt
+2024-11-12 22:06:51,853 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324003093/0000950103-24-003093.txt
+2024-11-12 22:06:51,964 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324003093/0000950103-24-003093.txt
+2024-11-12 22:06:51,964 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002926/0000950103-24-002926.txt
+2024-11-12 22:06:52,071 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002926/0000950103-24-002926.txt
+2024-11-12 22:06:52,071 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002791/0000950103-24-002791.txt
+2024-11-12 22:06:52,226 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002791/0000950103-24-002791.txt
+2024-11-12 22:06:52,226 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002790/0000950103-24-002790.txt
+2024-11-12 22:06:52,338 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002790/0000950103-24-002790.txt
+2024-11-12 22:06:52,339 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002789/0000950103-24-002789.txt
+2024-11-12 22:06:52,497 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002789/0000950103-24-002789.txt
+2024-11-12 22:06:52,498 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002787/0000950103-24-002787.txt
+2024-11-12 22:06:52,606 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002787/0000950103-24-002787.txt
+2024-11-12 22:06:52,606 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002784/0000950103-24-002784.txt
+2024-11-12 22:06:52,750 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002784/0000950103-24-002784.txt
+2024-11-12 22:06:52,750 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002656/0000950103-24-002656.txt
+2024-11-12 22:06:52,849 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002656/0000950103-24-002656.txt
+2024-11-12 22:06:52,849 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002563/0000950103-24-002563.txt
+2024-11-12 22:06:52,967 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002563/0000950103-24-002563.txt
+2024-11-12 22:06:52,967 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002562/0000950103-24-002562.txt
+2024-11-12 22:06:53,060 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002562/0000950103-24-002562.txt
+2024-11-12 22:06:53,060 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002561/0000950103-24-002561.txt
+2024-11-12 22:06:53,161 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002561/0000950103-24-002561.txt
+2024-11-12 22:06:53,161 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002478/0000950103-24-002478.txt
+2024-11-12 22:06:53,315 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002478/0000950103-24-002478.txt
+2024-11-12 22:06:53,316 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002477/0000950103-24-002477.txt
+2024-11-12 22:06:53,537 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002477/0000950103-24-002477.txt
+2024-11-12 22:06:53,538 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002473/0000950103-24-002473.txt
+2024-11-12 22:06:53,693 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002473/0000950103-24-002473.txt
+2024-11-12 22:06:53,694 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002472/0000950103-24-002472.txt
+2024-11-12 22:06:53,829 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002472/0000950103-24-002472.txt
+2024-11-12 22:06:53,829 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002471/0000950103-24-002471.txt
+2024-11-12 22:06:53,940 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002471/0000950103-24-002471.txt
+2024-11-12 22:06:53,940 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002470/0000950103-24-002470.txt
+2024-11-12 22:06:54,059 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002470/0000950103-24-002470.txt
+2024-11-12 22:06:54,060 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002469/0000950103-24-002469.txt
+2024-11-12 22:06:54,180 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002469/0000950103-24-002469.txt
+2024-11-12 22:06:54,180 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002468/0000950103-24-002468.txt
+2024-11-12 22:06:54,285 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002468/0000950103-24-002468.txt
+2024-11-12 22:06:54,285 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002467/0000950103-24-002467.txt
+2024-11-12 22:06:54,426 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002467/0000950103-24-002467.txt
+2024-11-12 22:06:54,427 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002466/0000950103-24-002466.txt
+2024-11-12 22:06:54,537 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002466/0000950103-24-002466.txt
+2024-11-12 22:06:54,537 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002465/0000950103-24-002465.txt
+2024-11-12 22:06:54,642 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002465/0000950103-24-002465.txt
+2024-11-12 22:06:54,642 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002464/0000950103-24-002464.txt
+2024-11-12 22:06:54,759 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002464/0000950103-24-002464.txt
+2024-11-12 22:06:54,760 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002462/0000950103-24-002462.txt
+2024-11-12 22:06:54,867 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002462/0000950103-24-002462.txt
+2024-11-12 22:06:54,868 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002461/0000950103-24-002461.txt
+2024-11-12 22:06:54,987 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002461/0000950103-24-002461.txt
+2024-11-12 22:06:54,988 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002460/0000950103-24-002460.txt
+2024-11-12 22:06:55,093 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002460/0000950103-24-002460.txt
+2024-11-12 22:06:55,094 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002459/0000950103-24-002459.txt
+2024-11-12 22:06:55,195 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002459/0000950103-24-002459.txt
+2024-11-12 22:06:55,195 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002458/0000950103-24-002458.txt
+2024-11-12 22:06:55,304 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002458/0000950103-24-002458.txt
+2024-11-12 22:06:55,305 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002457/0000950103-24-002457.txt
+2024-11-12 22:06:55,463 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002457/0000950103-24-002457.txt
+2024-11-12 22:06:55,463 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002456/0000950103-24-002456.txt
+2024-11-12 22:06:55,590 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002456/0000950103-24-002456.txt
+2024-11-12 22:06:55,590 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002230/0000950103-24-002230.txt
+2024-11-12 22:06:55,706 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002230/0000950103-24-002230.txt
+2024-11-12 22:06:55,706 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002229/0000950103-24-002229.txt
+2024-11-12 22:06:55,829 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002229/0000950103-24-002229.txt
+2024-11-12 22:06:55,829 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002228/0000950103-24-002228.txt
+2024-11-12 22:06:55,943 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002228/0000950103-24-002228.txt
+2024-11-12 22:06:55,944 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002227/0000950103-24-002227.txt
+2024-11-12 22:06:56,052 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002227/0000950103-24-002227.txt
+2024-11-12 22:06:56,053 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002226/0000950103-24-002226.txt
+2024-11-12 22:06:56,157 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002226/0000950103-24-002226.txt
+2024-11-12 22:06:56,158 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002225/0000950103-24-002225.txt
+2024-11-12 22:06:56,264 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002225/0000950103-24-002225.txt
+2024-11-12 22:06:56,264 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002082/0000950103-24-002082.txt
+2024-11-12 22:06:56,402 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002082/0000950103-24-002082.txt
+2024-11-12 22:06:56,402 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324002081/0000950103-24-002081.txt
+2024-11-12 22:06:56,533 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324002081/0000950103-24-002081.txt
+2024-11-12 22:06:56,533 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001900/0000950103-24-001900.txt
+2024-11-12 22:06:56,645 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001900/0000950103-24-001900.txt
+2024-11-12 22:06:56,645 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001899/0000950103-24-001899.txt
+2024-11-12 22:06:56,750 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001899/0000950103-24-001899.txt
+2024-11-12 22:06:56,751 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001898/0000950103-24-001898.txt
+2024-11-12 22:06:56,843 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001898/0000950103-24-001898.txt
+2024-11-12 22:06:56,843 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001897/0000950103-24-001897.txt
+2024-11-12 22:06:56,942 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001897/0000950103-24-001897.txt
+2024-11-12 22:06:56,943 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001896/0000950103-24-001896.txt
+2024-11-12 22:06:57,044 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001896/0000950103-24-001896.txt
+2024-11-12 22:06:57,044 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001895/0000950103-24-001895.txt
+2024-11-12 22:06:57,169 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001895/0000950103-24-001895.txt
+2024-11-12 22:06:57,170 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001894/0000950103-24-001894.txt
+2024-11-12 22:06:57,291 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001894/0000950103-24-001894.txt
+2024-11-12 22:06:57,292 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001752/0000950103-24-001752.txt
+2024-11-12 22:06:57,447 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001752/0000950103-24-001752.txt
+2024-11-12 22:06:57,448 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001751/0000950103-24-001751.txt
+2024-11-12 22:06:57,687 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001751/0000950103-24-001751.txt
+2024-11-12 22:06:57,688 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001750/0000950103-24-001750.txt
+2024-11-12 22:06:57,837 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001750/0000950103-24-001750.txt
+2024-11-12 22:06:57,837 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001749/0000950103-24-001749.txt
+2024-11-12 22:06:57,990 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001749/0000950103-24-001749.txt
+2024-11-12 22:06:57,991 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001748/0000950103-24-001748.txt
+2024-11-12 22:06:58,113 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001748/0000950103-24-001748.txt
+2024-11-12 22:06:58,113 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001631/0000950103-24-001631.txt
+2024-11-12 22:06:58,327 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001631/0000950103-24-001631.txt
+2024-11-12 22:06:58,327 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001543/0000950103-24-001543.txt
+2024-11-12 22:06:58,509 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001543/0000950103-24-001543.txt
+2024-11-12 22:06:58,510 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001542/0000950103-24-001542.txt
+2024-11-12 22:06:58,646 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001542/0000950103-24-001542.txt
+2024-11-12 22:06:58,646 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001541/0000950103-24-001541.txt
+2024-11-12 22:06:58,794 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001541/0000950103-24-001541.txt
+2024-11-12 22:06:58,794 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001530/0000950103-24-001530.txt
+2024-11-12 22:06:58,928 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001530/0000950103-24-001530.txt
+2024-11-12 22:06:58,928 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001253/0000950103-24-001253.txt
+2024-11-12 22:06:59,073 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001253/0000950103-24-001253.txt
+2024-11-12 22:06:59,073 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001251/0000950103-24-001251.txt
+2024-11-12 22:06:59,197 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001251/0000950103-24-001251.txt
+2024-11-12 22:06:59,197 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001190/0000950103-24-001190.txt
+2024-11-12 22:06:59,423 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001190/0000950103-24-001190.txt
+2024-11-12 22:06:59,424 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001152/0000950103-24-001152.txt
+2024-11-12 22:06:59,582 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001152/0000950103-24-001152.txt
+2024-11-12 22:06:59,582 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001096/0000950103-24-001096.txt
+2024-11-12 22:06:59,720 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001096/0000950103-24-001096.txt
+2024-11-12 22:06:59,720 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001095/0000950103-24-001095.txt
+2024-11-12 22:06:59,840 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001095/0000950103-24-001095.txt
+2024-11-12 22:06:59,841 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001094/0000950103-24-001094.txt
+2024-11-12 22:06:59,968 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001094/0000950103-24-001094.txt
+2024-11-12 22:06:59,968 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324001091/0000950103-24-001091.txt
+2024-11-12 22:07:00,100 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324001091/0000950103-24-001091.txt
+2024-11-12 22:07:00,100 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000981/0000950103-24-000981.txt
+2024-11-12 22:07:00,254 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000981/0000950103-24-000981.txt
+2024-11-12 22:07:00,254 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000979/0000950103-24-000979.txt
+2024-11-12 22:07:00,372 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000979/0000950103-24-000979.txt
+2024-11-12 22:07:00,373 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000847/0000950103-24-000847.txt
+2024-11-12 22:07:00,484 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000847/0000950103-24-000847.txt
+2024-11-12 22:07:00,484 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000753/0000950103-24-000753.txt
+2024-11-12 22:07:00,622 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000753/0000950103-24-000753.txt
+2024-11-12 22:07:00,623 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000752/0000950103-24-000752.txt
+2024-11-12 22:07:00,743 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000752/0000950103-24-000752.txt
+2024-11-12 22:07:00,744 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000705/0000950103-24-000705.txt
+2024-11-12 22:07:00,871 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000705/0000950103-24-000705.txt
+2024-11-12 22:07:00,871 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000703/0000950103-24-000703.txt
+2024-11-12 22:07:00,987 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000703/0000950103-24-000703.txt
+2024-11-12 22:07:00,988 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000603/0000950103-24-000603.txt
+2024-11-12 22:07:01,167 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000603/0000950103-24-000603.txt
+2024-11-12 22:07:01,167 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000543/0000950103-24-000543.txt
+2024-11-12 22:07:01,295 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000543/0000950103-24-000543.txt
+2024-11-12 22:07:01,295 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000542/0000950103-24-000542.txt
+2024-11-12 22:07:01,448 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000542/0000950103-24-000542.txt
+2024-11-12 22:07:01,448 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000541/0000950103-24-000541.txt
+2024-11-12 22:07:01,630 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000541/0000950103-24-000541.txt
+2024-11-12 22:07:01,630 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000540/0000950103-24-000540.txt
+2024-11-12 22:07:01,758 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000540/0000950103-24-000540.txt
+2024-11-12 22:07:01,759 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000447/0000950103-24-000447.txt
+2024-11-12 22:07:01,945 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000447/0000950103-24-000447.txt
+2024-11-12 22:07:01,945 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000228/0000950103-24-000228.txt
+2024-11-12 22:07:02,113 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000228/0000950103-24-000228.txt
+2024-11-12 22:07:02,114 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000216/0000950103-24-000216.txt
+2024-11-12 22:07:02,266 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000216/0000950103-24-000216.txt
+2024-11-12 22:07:02,266 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000068/0000950103-24-000068.txt
+2024-11-12 22:07:02,396 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000068/0000950103-24-000068.txt
+2024-11-12 22:07:02,397 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000063/0000950103-24-000063.txt
+2024-11-12 22:07:02,516 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000063/0000950103-24-000063.txt
+2024-11-12 22:07:02,516 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010324000062/0000950103-24-000062.txt
+2024-11-12 22:07:02,624 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010324000062/0000950103-24-000062.txt
+2024-11-12 22:07:02,624 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323018067/0000950103-23-018067.txt
+2024-11-12 22:07:02,761 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323018067/0000950103-23-018067.txt
+2024-11-12 22:07:02,761 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323018004/0000950103-23-018004.txt
+2024-11-12 22:07:02,874 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323018004/0000950103-23-018004.txt
+2024-11-12 22:07:02,874 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323018003/0000950103-23-018003.txt
+2024-11-12 22:07:03,010 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323018003/0000950103-23-018003.txt
+2024-11-12 22:07:03,011 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017928/0000950103-23-017928.txt
+2024-11-12 22:07:03,139 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017928/0000950103-23-017928.txt
+2024-11-12 22:07:03,139 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017927/0000950103-23-017927.txt
+2024-11-12 22:07:03,299 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017927/0000950103-23-017927.txt
+2024-11-12 22:07:03,299 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017796/0000950103-23-017796.txt
+2024-11-12 22:07:03,437 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017796/0000950103-23-017796.txt
+2024-11-12 22:07:03,437 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017795/0000950103-23-017795.txt
+2024-11-12 22:07:03,649 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017795/0000950103-23-017795.txt
+2024-11-12 22:07:03,649 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017757/0000950103-23-017757.txt
+2024-11-12 22:07:03,889 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017757/0000950103-23-017757.txt
+2024-11-12 22:07:03,889 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017756/0000950103-23-017756.txt
+2024-11-12 22:07:04,030 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017756/0000950103-23-017756.txt
+2024-11-12 22:07:04,030 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017755/0000950103-23-017755.txt
+2024-11-12 22:07:04,165 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017755/0000950103-23-017755.txt
+2024-11-12 22:07:04,166 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017629/0000950103-23-017629.txt
+2024-11-12 22:07:04,310 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017629/0000950103-23-017629.txt
+2024-11-12 22:07:04,310 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017628/0000950103-23-017628.txt
+2024-11-12 22:07:04,424 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017628/0000950103-23-017628.txt
+2024-11-12 22:07:04,425 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017496/0000950103-23-017496.txt
+2024-11-12 22:07:04,527 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017496/0000950103-23-017496.txt
+2024-11-12 22:07:04,528 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017466/0000950103-23-017466.txt
+2024-11-12 22:07:04,659 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017466/0000950103-23-017466.txt
+2024-11-12 22:07:04,659 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017465/0000950103-23-017465.txt
+2024-11-12 22:07:04,770 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017465/0000950103-23-017465.txt
+2024-11-12 22:07:04,771 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017464/0000950103-23-017464.txt
+2024-11-12 22:07:04,887 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017464/0000950103-23-017464.txt
+2024-11-12 22:07:04,887 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017384/0000950103-23-017384.txt
+2024-11-12 22:07:04,990 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017384/0000950103-23-017384.txt
+2024-11-12 22:07:04,990 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017383/0000950103-23-017383.txt
+2024-11-12 22:07:05,111 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017383/0000950103-23-017383.txt
+2024-11-12 22:07:05,112 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017310/0000950103-23-017310.txt
+2024-11-12 22:07:05,216 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017310/0000950103-23-017310.txt
+2024-11-12 22:07:05,216 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017274/0000950103-23-017274.txt
+2024-11-12 22:07:05,327 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017274/0000950103-23-017274.txt
+2024-11-12 22:07:05,327 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017273/0000950103-23-017273.txt
+2024-11-12 22:07:05,459 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017273/0000950103-23-017273.txt
+2024-11-12 22:07:05,460 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017271/0000950103-23-017271.txt
+2024-11-12 22:07:05,556 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017271/0000950103-23-017271.txt
+2024-11-12 22:07:05,556 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017185/0000950103-23-017185.txt
+2024-11-12 22:07:05,654 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017185/0000950103-23-017185.txt
+2024-11-12 22:07:05,654 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017184/0000950103-23-017184.txt
+2024-11-12 22:07:05,770 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017184/0000950103-23-017184.txt
+2024-11-12 22:07:05,771 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323017039/0000950103-23-017039.txt
+2024-11-12 22:07:05,865 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323017039/0000950103-23-017039.txt
+2024-11-12 22:07:05,865 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016909/0000950103-23-016909.txt
+2024-11-12 22:07:05,966 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016909/0000950103-23-016909.txt
+2024-11-12 22:07:05,966 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016832/0000950103-23-016832.txt
+2024-11-12 22:07:06,070 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016832/0000950103-23-016832.txt
+2024-11-12 22:07:06,070 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016831/0000950103-23-016831.txt
+2024-11-12 22:07:06,179 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016831/0000950103-23-016831.txt
+2024-11-12 22:07:06,180 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016830/0000950103-23-016830.txt
+2024-11-12 22:07:06,359 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016830/0000950103-23-016830.txt
+2024-11-12 22:07:06,359 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016650/0000950103-23-016650.txt
+2024-11-12 22:07:06,485 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016650/0000950103-23-016650.txt
+2024-11-12 22:07:06,485 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016649/0000950103-23-016649.txt
+2024-11-12 22:07:06,618 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016649/0000950103-23-016649.txt
+2024-11-12 22:07:06,619 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016591/0000950103-23-016591.txt
+2024-11-12 22:07:06,739 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016591/0000950103-23-016591.txt
+2024-11-12 22:07:06,739 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016590/0000950103-23-016590.txt
+2024-11-12 22:07:06,873 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016590/0000950103-23-016590.txt
+2024-11-12 22:07:06,873 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016589/0000950103-23-016589.txt
+2024-11-12 22:07:06,966 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016589/0000950103-23-016589.txt
+2024-11-12 22:07:06,966 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016588/0000950103-23-016588.txt
+2024-11-12 22:07:07,065 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016588/0000950103-23-016588.txt
+2024-11-12 22:07:07,065 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016587/0000950103-23-016587.txt
+2024-11-12 22:07:07,226 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016587/0000950103-23-016587.txt
+2024-11-12 22:07:07,226 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016490/0000950103-23-016490.txt
+2024-11-12 22:07:07,377 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016490/0000950103-23-016490.txt
+2024-11-12 22:07:07,378 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016489/0000950103-23-016489.txt
+2024-11-12 22:07:07,529 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016489/0000950103-23-016489.txt
+2024-11-12 22:07:07,530 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016458/0000950103-23-016458.txt
+2024-11-12 22:07:07,640 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016458/0000950103-23-016458.txt
+2024-11-12 22:07:07,640 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016457/0000950103-23-016457.txt
+2024-11-12 22:07:07,745 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016457/0000950103-23-016457.txt
+2024-11-12 22:07:07,745 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016456/0000950103-23-016456.txt
+2024-11-12 22:07:07,879 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016456/0000950103-23-016456.txt
+2024-11-12 22:07:07,880 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016455/0000950103-23-016455.txt
+2024-11-12 22:07:07,994 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016455/0000950103-23-016455.txt
+2024-11-12 22:07:07,994 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016454/0000950103-23-016454.txt
+2024-11-12 22:07:08,149 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016454/0000950103-23-016454.txt
+2024-11-12 22:07:08,149 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016453/0000950103-23-016453.txt
+2024-11-12 22:07:08,303 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016453/0000950103-23-016453.txt
+2024-11-12 22:07:08,304 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016452/0000950103-23-016452.txt
+2024-11-12 22:07:08,457 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016452/0000950103-23-016452.txt
+2024-11-12 22:07:08,457 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016451/0000950103-23-016451.txt
+2024-11-12 22:07:08,582 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016451/0000950103-23-016451.txt
+2024-11-12 22:07:08,582 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016450/0000950103-23-016450.txt
+2024-11-12 22:07:08,757 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016450/0000950103-23-016450.txt
+2024-11-12 22:07:08,757 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016449/0000950103-23-016449.txt
+2024-11-12 22:07:09,043 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016449/0000950103-23-016449.txt
+2024-11-12 22:07:09,044 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016448/0000950103-23-016448.txt
+2024-11-12 22:07:09,370 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016448/0000950103-23-016448.txt
+2024-11-12 22:07:09,371 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016447/0000950103-23-016447.txt
+2024-11-12 22:07:09,647 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016447/0000950103-23-016447.txt
+2024-11-12 22:07:09,647 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016312/0000950103-23-016312.txt
+2024-11-12 22:07:09,875 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016312/0000950103-23-016312.txt
+2024-11-12 22:07:09,876 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016311/0000950103-23-016311.txt
+2024-11-12 22:07:10,012 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016311/0000950103-23-016311.txt
+2024-11-12 22:07:10,012 [INFO] Extracting details from Form 4 URL: https://www.sec.gov/Archives/edgar/data/1326801/000095010323016310/0000950103-23-016310.txt
+2024-11-12 22:07:10,170 [INFO] Extracted data from https://www.sec.gov/Archives/edgar/data/1326801/000095010323016310/0000950103-23-016310.txt
+2024-11-12 22:07:14,167 [INFO] Inserted 4087 records for META (CIK: 0001326801)
+2024-11-12 22:07:14,213 [INFO] Finished processing all tickers

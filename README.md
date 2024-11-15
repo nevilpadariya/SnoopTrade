@@ -1,46 +1,30 @@
-# Getting Started with Create React App
+# Project Name: CleverTradeWatch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Project Description
+This project investigates the relationship between insider trading activity and stock price movements. By analyzing insider trading data (e.g., Form 4 filings from the SEC EDGAR database) alongside historical stock price data, the project aims to identify patterns and correlations that can help retail investors better understand how insider trades may influence stock performance. The ultimate goal is to develop a prototype system that visualizes these trends and offers insights into potential stock price impacts based on insider trading activity.
+// more infomation for the project is mentiond in Class project-insider trades.docx
 
-## Available Scripts
+## About the Team
 
-In the project directory, you can run:
+### Team Members:
 
-### `npm start`
+1. Pratikkumar Dalsukhbhai Korat
+3. Nevil Padariya
+4. Nagaraj Gireppa Kanni
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Microservice Architecture Diagram:
+![Architecture-Diagram](https://github.com/user-attachments/assets/9f898961-ebec-49cd-8453-320a7937e5e3)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+> This is just an initial thought on how we are going to implement this project. We will refine our architecture diagram as the project progresses.
+## User Persona Summary Document
+[View User Persona Summary](https://docs.google.com/document/d/1M36ZfJ77DTIMX9P-NQI2_S8Kb-T7aSXh_dai-61QxJ4/edit)
 
-### `npm test`
+## Product Backlog
+[View Product Backlog ](https://docs.google.com/spreadsheets/d/1-6SNRWafSqVvoitA6lYNFqx0OGWtVJPsw2Rxw7qgCcU/edit?usp=sharing) 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Technologies Stack:
+* Backend -> Python, FastAPI
+* Database -> MongoDB
+* Frontend -> Streamlit / Kiwi
+* Deployment -> AWS/GCP
+# SnoopTrade

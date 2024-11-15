@@ -1,0 +1,100 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-size: cover;
+    background-position: center;
+    color: white;
+  }
+main.css-1cpckqd{padding: 0;}
+  
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    color: white;
+    margin: 0;
+    padding: 0;
+  }
+  
+  p {
+    color: white;
+    margin: 0;
+  }
+  
+  /* Form Elements */
+  input {
+    color: white;
+    background: transparent;
+    border: 1px solid white;
+    padding: 10px;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  input:focus {
+    border-color: #73C2A0;
+  }
+  
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  a {
+    color: #73C2A0;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Flex Container */
+  .flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Wrapper for Forms and Text */
+  .wrapper {
+    max-width: 1200px;
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .left-section, .right-section {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .left-section {
+    text-align: left;
+  }
+  
+  .right-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .wrapper {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  

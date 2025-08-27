@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
 
 interface GoogleLoginButtonProps {
@@ -8,14 +9,27 @@ interface GoogleLoginButtonProps {
 
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess, onError }) => {
   return (
-    <GoogleLogin
-      onSuccess={onSuccess}
-      onError={onError}
-      width="100%"
-      theme="outline"
-      text="signin_with"
-      logo_alignment="center"
-    />
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: 'center',
+      '& > div': { 
+        width: '100% !important',
+        transition: 'transform 0.2s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+        }
+      } 
+    }}>
+      <GoogleLogin
+        onSuccess={onSuccess}
+        onError={onError}
+        theme="outline"
+        text="signin_with"
+        shape="rectangular"
+        logo_alignment="center"
+        width="100%"
+      />
+    </Box>
   );
 };
 

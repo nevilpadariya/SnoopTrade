@@ -1,8 +1,95 @@
-// src/pages/Account.tsx
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, Paper, IconButton, InputAdornment } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  IconButton,
+  InputAdornment,
+  Container,
+} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import API_ENDPOINTS from '../utils/apiEndpoints';
+
+// Color palette matching Dashboard theme
+const COLORS = {
+  primary: '#00D09C',
+  secondary: '#1A1A1A',
+  accent: '#73C2A0',
+  background: {
+    main: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9))',
+    paper: 'rgba(115, 194, 160, 0.1)',
+    card: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
+  },
+  text: {
+    primary: '#FFFFFF',
+    secondary: 'rgba(255, 255, 255, 0.8)',
+    muted: 'rgba(255, 255, 255, 0.7)',
+  },
+};
+
+const Navbar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/');
+  };
+
+  return (
+    <Box
+      component="nav"
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1100,
+        background: COLORS.background.main,
+        py: 2,
+        px: 4,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          color: COLORS.accent,
+          fontWeight: 700,
+          cursor: 'pointer',
+          '&:hover': { 
+            textDecoration: 'none',
+            opacity: 0.8,
+            transform: 'translateY(-1px)',
+            transition: 'all 0.2s ease-in-out',
+          },
+        }}
+        onClick={() => navigate('/dashboard')}
+      >
+        SnoopTrade
+      </Typography>
+      <Button
+        variant="outlined"
+        onClick={handleLogout}
+        sx={{
+          textTransform: 'none',
+          borderColor: COLORS.accent,
+          color: COLORS.text.primary,
+          '&:hover': {
+            borderColor: COLORS.primary,
+            backgroundColor: 'rgba(115, 194, 160, 0.1)',
+          },
+        }}
+      >
+        Logout
+      </Button>
+    </Box>
+  );
+};
 
 const Account: React.FC = () => {
   const [name, setName] = useState('');
@@ -18,19 +105,16 @@ const Account: React.FC = () => {
     confirmPassword: '',
   });
 
-  // Fetch user data
   const fetchUserData = async () => {
     const token = localStorage.getItem('authToken');
-
     try {
-      const response = await fetch('http://127.0.0.1:8000/auth/me', {
+      const response = await fetch(API_ENDPOINTS.getUserDetails, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-
       if (response.ok) {
         const data = await response.json();
         setName(data.name);
@@ -48,7 +132,8 @@ const Account: React.FC = () => {
   }, []);
 
   const validateName = (name: string) => (name.length > 0 ? '' : 'Name is required');
-  const validatePassword = (password: string) => (password.length >= 6 ? '' : 'Password must be at least 6 characters');
+  const validatePassword = (password: string) =>
+    password.length >= 6 ? '' : 'Password must be at least 6 characters';
   const validateConfirmPassword = (password: string, confirmPassword: string) =>
     password === confirmPassword ? '' : 'Passwords do not match';
 
@@ -61,14 +146,12 @@ const Account: React.FC = () => {
     if (!nameError && !passwordError && !confirmPasswordError) {
       try {
         const token = localStorage.getItem('authToken');
-
-        // Prepare the data to be sent in the update request
         const updateData: any = { name };
         if (password) {
           updateData.password = password;
         }
 
-        const response = await fetch('http://127.0.0.1:8000/auth/me/update', {
+        const response = await fetch(API_ENDPOINTS.updateUserProfile, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,7 +162,7 @@ const Account: React.FC = () => {
 
         if (response.ok) {
           alert('Account details updated!');
-          setPassword(''); // Clear password fields
+          setPassword('');
           setConfirmPassword('');
         } else {
           console.error('Failed to update account');
@@ -90,7 +173,7 @@ const Account: React.FC = () => {
     } else {
       setErrors({
         name: nameError,
-        email: '', // No error for email, as it shouldn't be editable
+        email: '',
         password: passwordError,
         confirmPassword: confirmPasswordError,
       });
@@ -98,89 +181,234 @@ const Account: React.FC = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#f0f4f8">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: COLORS.background.main,
+        color: COLORS.text.primary,
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'radial-gradient(circle at 30% 30%, rgba(115, 194, 160, 0.1) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        },
+      }}
+    >
       <Helmet>
         <title>Account | SnoopTrade</title>
       </Helmet>
-      <Paper elevation={3} style={{ padding: '2rem', maxWidth: '400px', width: '100%' }}>
-        <Typography variant="h4" gutterBottom align="center">
-          Account Settings
-        </Typography>
 
-        <TextField
-          label="Name"
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={Boolean(errors.name)}
-          helperText={errors.name}
-        />
-
-        <TextField
-          label="Email"
-          type="email"
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          value={email}
-          disabled // Disable editing email
-        />
-
-        <TextField
-          label="New Password"
-          type={showPassword ? 'text' : 'password'}
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={Boolean(errors.password)}
-          helperText={errors.password}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
+      <Navbar />
+      
+      <Container maxWidth="lg" sx={{ pt: 12, pb: 8 }}>
+        <Typography
+          variant="h1"
+          align="center"
+          sx={{
+            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            fontWeight: 800,
+            color: COLORS.text.primary,
+            mb: 3,
+            '& span': {
+              background: 'linear-gradient(45deg, #73C2A0 30%, #A8E6CF 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            },
           }}
-        />
-
-        <TextField
-          label="Confirm New Password"
-          type={showConfirmPassword ? 'text' : 'password'}
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={Boolean(errors.confirmPassword)}
-          helperText={errors.confirmPassword}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          style={{ marginTop: '1rem' }}
-          onClick={handleSubmit}
         >
-          Update Account
-        </Button>
-      </Paper>
+          Account <span>Settings</span>
+        </Typography>
+        
+        <Box
+          sx={{
+            mt: 6,
+            mx: 'auto',
+            maxWidth: '500px',
+            background: COLORS.background.card,
+            borderRadius: '16px',
+            p: 4,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+            },
+          }}
+        >
+          <TextField
+            label="Name"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={Boolean(errors.name)}
+            helperText={errors.name}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(115, 194, 160, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: COLORS.accent,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: COLORS.primary,
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: COLORS.text.secondary,
+              },
+              '& .MuiOutlinedInput-input': {
+                color: COLORS.text.primary,
+              },
+            }}
+          />
+
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={email}
+            disabled
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(115, 194, 160, 0.3)',
+                },
+                '&.Mui-disabled': {
+                  '& fieldset': {
+                    borderColor: 'rgba(115, 194, 160, 0.1)',
+                  },
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: COLORS.text.muted,
+              },
+              '& .MuiOutlinedInput-input': {
+                color: COLORS.text.muted,
+              },
+            }}
+          />
+
+          <TextField
+            label="New Password"
+            type={showPassword ? 'text' : 'password'}
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={Boolean(errors.password)}
+            helperText={errors.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                    sx={{ color: COLORS.text.secondary }}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(115, 194, 160, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: COLORS.accent,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: COLORS.primary,
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: COLORS.text.secondary,
+              },
+              '& .MuiOutlinedInput-input': {
+                color: COLORS.text.primary,
+              },
+            }}
+          />
+
+          <TextField
+            label="Confirm New Password"
+            type={showConfirmPassword ? 'text' : 'password'}
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={Boolean(errors.confirmPassword)}
+            helperText={errors.confirmPassword}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    edge="end"
+                    sx={{ color: COLORS.text.secondary }}
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'rgba(115, 194, 160, 0.3)',
+                },
+                '&:hover fieldset': {
+                  borderColor: COLORS.accent,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: COLORS.primary,
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: COLORS.text.secondary,
+              },
+              '& .MuiOutlinedInput-input': {
+                color: COLORS.text.primary,
+              },
+            }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            onClick={handleSubmit}
+            sx={{
+              mt: 3,
+              mb: 2,
+              bgcolor: COLORS.accent,
+              color: COLORS.secondary,
+              textTransform: 'none',
+              py: 1.5,
+              fontSize: '1.1rem',
+              '&:hover': {
+                bgcolor: COLORS.primary,
+                transform: 'translateY(-2px)',
+                transition: 'all 0.2s ease-in-out',
+              },
+            }}
+          >
+            Update Account
+          </Button>
+        </Box>
+      </Container>
     </Box>
   );
 };

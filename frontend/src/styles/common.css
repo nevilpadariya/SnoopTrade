@@ -89,6 +89,14 @@ main.css-1cpckqd{padding: 0;}
     flex-direction: column;
     justify-content: center;
   }
+
+  .MuiBox-root .MuiList-root.MuiList-padding{
+background-color: white;
+width: 100%;
+margin: 10px 0;
+border-radius: 8px;
+  }
+  .MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-4{align-items: center;}
   
   /* Responsive Styles */
   @media (max-width: 768px) {

@@ -6,8 +6,8 @@ from typing import Union, List, Optional
 
 from bson import ObjectId
 from pymongo.errors import PyMongoError
-from backend.database.database import sec_db as db
-from backend.models.sec_form4 import TransactionModel
+from database.database import sec_db as db
+from models.sec_form4 import TransactionModel
 
 # Set up logging configuration
 logging.basicConfig(
@@ -71,11 +71,13 @@ def get_all_transactions(ticker: str, time_period: Optional[str] = None) -> Unio
             if time_period == "1w":
                 start_date = end_date - timedelta(weeks=1)
             elif time_period == "1m":
-                start_date = end_date - timedelta(weeks=4)
+                start_date = end_date - timedelta(weeks=5)
             elif time_period == "3m":
                 start_date = end_date - timedelta(weeks=12)
             elif time_period == "6m":
                 start_date = end_date - timedelta(weeks=24)
+            elif time_period == "1y":
+                start_date = end_date - timedelta(weeks=52)
             else:
                 logging.warning(f"Invalid time period '{time_period}' specified.")
                 return None
@@ -85,7 +87,9 @@ def get_all_transactions(ticker: str, time_period: Optional[str] = None) -> Unio
         # Fetch transactions with the date filter applied
         cursor = collection.find(date_filter)
 
+
         transactions = [TransactionModel(**doc) for doc in cursor]
+
 
         if transactions:
             logging.info(f"Retrieved {len(transactions)} transactions for ticker '{ticker}' in period '{time_period}'")

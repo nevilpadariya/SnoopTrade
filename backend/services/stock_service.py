@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from backend.database.database import stock_db
+from database.database import stock_db
 from typing import List
-from backend.models.stock_data import StockDataModel
+from models.stock_data import StockDataModel
 
 # Time period mappings for filtering
 TIME_PERIOD_DAYS = {

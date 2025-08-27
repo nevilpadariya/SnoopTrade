@@ -1,12 +1,13 @@
 # auth_router.py
+from datetime import datetime
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, status, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
-from backend.database.database import user_db as db
-from backend.models.users import User, UpdateUser, MessageResponse, TokenResponse
-from backend.services.auth_services import hash_password, verify_password, create_access_token, decode_access_token
+from database.database import user_db as db
+from models.users import User, UpdateUser, MessageResponse, TokenResponse
+from services.auth_services import hash_password, verify_password, create_access_token, decode_access_token, decode_access_google_token
 
 auth_router = APIRouter()
 
@@ -43,63 +44,101 @@ async def signup(user: User) -> MessageResponse:
         "name": user.name,
         "email": user.email,
         "hashed_password": hashed_password,
+        "created_at": datetime.utcnow(),
+        "login_type": "normal",
+        "first_name": user.name.split(" ")[0],
+        "family_name": user.name.split(" ")[1]
     }
 
     # Insert the user into the database
     db.users.insert_one(new_user)
     return MessageResponse(message="User created successfully")
 
-
 @auth_router.post("/token", response_model=TokenResponse)
 async def login(
     username: str = Form(...),
     password: Optional[str] = Form(None),
-    login_type: str = Form("normal")  # Default to "normal" if not provided
+    login_type: str = Form("normal"),  # Default to "normal" if not provided
+    token: str = Form("token")  # Token for Google login
 ) -> TokenResponse:
     """
     Authenticates a user and generates an access token.
-
-    Parameters:
-    - username: str - The user's email.
-    - password: Optional[str] - The user's password (ignored for Google login).
-    - login_type: str - Type of login ("normal" or "google").
-
-    Returns:
-    - A token response containing the access token, token type, and user's email.
     """
-    # Check if the user exists in the database
+    # Fetch user by email
     user = db.users.find_one({"email": username})
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found, Please sign up to access our services"
-        )
 
-    # Verify password if login type is "normal"
     if login_type == "normal":
+        # Handle normal login
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found. Please sign up to access our services."
+            )
         if not password or not verify_password(password, user["hashed_password"]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect password"
+                detail="Incorrect password."
             )
+
     elif login_type == "google":
-        # Skip password verification for Google login
-        print("Google login detected, skipping password check")
+        # Validate the Google token
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Google token is required for Google login."
+            )
+
+        decoded_token = decode_access_google_token(token)  # Validate and decode Google token
+        if not decoded_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Google token."
+            )
+
+        email = decoded_token.get("email")
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Google token is missing email information."
+            )
+
+        if not user:
+            # Create a new user for Google login
+            new_user = {
+                "first_name": decoded_token.get("given_name", ""),
+                "last_name": decoded_token.get("family_name", ""),
+                "name": decoded_token.get("given_name", "") + " " + decoded_token.get("family_name", ""),
+                "email": email,
+                "hashed_password": None,
+                "created_at": datetime.utcnow(),
+                "login_type": "google"
+            }
+
+            # Insert the new user into the database
+            try:
+                db.users.insert_one(new_user)
+                user = new_user
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to create new user for Google login."
+                )
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid login type"
+            detail="Invalid login type."
         )
 
-    # Create access token
+    # Generate access token
     access_token = create_access_token(data={"sub": user["email"]})
 
-    # Return access token with user's email
+    # Return access token
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
         email=user["email"]
     )
+
 
 
 @auth_router.get("/me", response_model=Dict[str, Any])

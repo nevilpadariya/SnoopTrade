@@ -33,7 +33,7 @@ ticker_cik_mapping = {
 
 # Headers for SEC requests
 headers = {
-    'User-Agent': 'YourName (your_email@example.com)'  # Replace with your actual name and email
+    'User-Agent': 'korat pratik (pratikkorat1@gmail.com)'  # Replace with your actual name and email
 }
 
 def fetch_form_4_links(cik):

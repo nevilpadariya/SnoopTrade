@@ -1,44 +1,35 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
-  clearToken: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setTokenState] = useState<string | null>(() => {
-    // Initialize token from localStorage
-    return localStorage.getItem('authToken');
-  });
+  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
 
-  const setToken = (token: string | null) => {
-    if (token) {
-      localStorage.setItem('authToken', token);
+  // Save the token to localStorage when it's set
+  const updateToken = (newToken: string | null) => {
+    if (newToken) {
+      localStorage.setItem('authToken', newToken);
     } else {
       localStorage.removeItem('authToken');
     }
-    setTokenState(token);
-  };
-
-  const clearToken = () => {
-    localStorage.removeItem('authToken');
-    setTokenState(null);
+    setToken(newToken);
   };
 
   return (
-    <AuthContext.Provider value={{ token, setToken, clearToken }}>
+    <AuthContext.Provider value={{ token, setToken: updateToken }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+export const useAuth = ()  => {
+  const token =
+  localStorage.getItem('authToken')
+
+  return {token};
 };

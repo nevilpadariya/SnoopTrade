@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import List
 import pandas as pd
 import numpy as np
-from prophet import Prophet
 from starlette import status
 from datetime import timedelta
 from services.auth_services import decode_access_token
@@ -95,6 +94,7 @@ async def generate_forecast(
 ):
     """Generate a 30-day forecast using enhanced Prophet model without seasonality."""
     try:
+        from prophet import Prophet
         # Prepare training data
         df = prepare_training_data(data)
 

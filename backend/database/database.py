@@ -1,10 +1,13 @@
 from pymongo import MongoClient, errors
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
 
-DATABASE_URL = "mongodb+srv://koratpratik2001:3UTSYp6E2nlQixgW@cmpe272project.j7rxj.mongodb.net/?retryWrites=true&w=majority&appName=Cmpe272Project"
+DATABASE_URL = os.getenv("MONGODB_URI") or os.getenv("MONGO_URI")
+if not DATABASE_URL:
+    raise RuntimeError("Missing MongoDB connection string. Set MONGODB_URI or MONGO_URI.")
 
 client = MongoClient(DATABASE_URL)
 

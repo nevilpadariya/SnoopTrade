@@ -1,4 +1,4 @@
-const BASE_URL = "http://cmpe272teamsnooptrade.us-west-2.elasticbeanstalk.com";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://cmpe272teamsnooptrade.us-west-2.elasticbeanstalk.com";
 
 const API_ENDPOINTS = {
   // Dashboard

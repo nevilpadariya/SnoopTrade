@@ -1,69 +1,58 @@
 import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import { Helmet } from 'react-helmet';
 import Navbar from '../components/Navbar';
+import Section from '../components/about/Section';
 import FeatureList from '../components/about/FeatureList';
-import TeamMembers from '../components/about/TeamMembers';
 import ArchitectureDiagram from '../components/about/ArchitectureDiagram';
+import TeamMembers from '../components/about/TeamMembers';
 
-const AboutPage = () => {
+const About: React.FC = () => {
   return (
-    <>
+    <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About Us | SnoopTrade</title>
+      </Helmet>
+
       <Navbar />
-      <Box
-        sx={{
-          py: { xs: 8, md: 12 },
-          background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%)',
-          minHeight: '100vh',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Typography
-            variant="h2"
-            align="center"
-            sx={{
-              fontSize: { xs: '2rem', md: '2.5rem' },
-              fontWeight: 700,
-              color: 'white',
-              mb: 2,
-            }}
-          >
-            About Our Project
-          </Typography>
-          <Typography
-            variant="h6"
-            align="center"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.7)',
-              mb: 8,
-              maxWidth: '800px',
-              mx: 'auto',
-            }}
-          >
-            Learn more about the vision, technology, and team behind our insider trading analysis platform.
-          </Typography>
 
-          <FeatureList />
+      <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
+        <div className="text-center pt-12 mb-16">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-foreground mb-6 font-display">
+            About <span className="text-primary-strong">SnoopTrade</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Empowering investors with real-time insider trading intelligence and advanced analytics.
+          </p>
+        </div>
 
-          <ArchitectureDiagram />
+        <Section
+          title="Our Mission"
+          content="SnoopTrade is dedicated to democratizing access to insider trading information. We believe that all investors deserve transparent, real-time insights into market-moving insider activities. Our platform leverages cutting-edge technology to track, analyze, and present SEC filings in an intuitive, actionable format."
+        />
 
-          <Typography
-            variant="h2"
-            align="center"
-            sx={{
-              fontSize: { xs: '2rem', md: '2.5rem' },
-              fontWeight: 700,
-              color: 'white',
-              mb: 4,
-            }}
-          >
-            Meet the Team
-          </Typography>
+        <Section
+          title="What We Offer"
+          content="Our platform provides comprehensive insider trading data, advanced analytics, and predictive insights. Whether you're a retail investor or institutional trader, SnoopTrade gives you the tools to make informed decisions based on real-time insider activities."
+        />
 
-          <TeamMembers />
-        </Container>
-      </Box>
-    </>
+        <FeatureList />
+
+        <Section
+          title="Technology & Architecture"
+          content="Built with modern cloud-native technologies, SnoopTrade delivers reliable, scalable performance. Our system architecture ensures real-time data processing and seamless user experience."
+        />
+
+        <ArchitectureDiagram />
+
+        <Section
+          title="Meet Our Team"
+          content="We're a team of passionate developers, data scientists, and financial experts committed to bringing transparency to the markets."
+        />
+
+        <TeamMembers />
+      </div>
+    </div>
   );
 };
 
-export default AboutPage;
+export default About;

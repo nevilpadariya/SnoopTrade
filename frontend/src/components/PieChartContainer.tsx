@@ -1,15 +1,6 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Box, Typography, useTheme } from '@mui/material';
-
-// Mapping of transaction codes to descriptions
-const transactionDescriptions: { [key: string]: string } = {
-  M: 'Transactions related to monetary transfers, such as cash payments or transfers.',
-  S: 'Stock transactions, including buying or selling company shares.',
-  A: 'Transactions involving asset management, such as property or equipment.',
-  F: 'Fee-related transactions, such as commissions or fines.',
-  G: 'Transactions involving grants or special adjustments, such as bonuses or subsidies.',
-};
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Card, CardContent } from './ui/card';
 
 interface PieChartContainerProps {
   title: string;
@@ -26,90 +17,44 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
   nameKey,
   colors,
 }) => {
-  const theme = useTheme();
-
-  // Custom tooltip to display transaction details
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const { name, value } = payload[0];
-      const description = transactionDescriptions[name] || 'No description available';
-      return (
-        <Box
-          p={2}
-          bgcolor={theme.palette.background.default}
-          boxShadow={3}
-          borderRadius={4}
-          border={`1px solid ${theme.palette.divider}`}
-        >
-          <Typography variant="subtitle1" fontWeight="bold" color={theme.palette.text.primary}>
-            {name}
-          </Typography>
-          <Typography variant="body2" color={theme.palette.text.secondary}>
-            {description}
-          </Typography>
-          <Typography variant="body2" fontWeight="bold" color={theme.palette.text.primary}>
-            Value: {value}
-          </Typography>
-        </Box>
-      );
-    }
-    return null;
-  };
-
   return (
-    <Box
-      width="100%"
-      maxWidth="500px"
-      m={3}
-      p={2}
-      boxShadow={3}
-      borderRadius={4}
-      bgcolor={theme.palette.background.paper}
-    >
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-        fontWeight="bold"
-        color={theme.palette.text.primary}
-      >
-        {title}
-      </Typography>
-      <ResponsiveContainer width="100%" height={320}>
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey={dataKey}
-            nameKey={nameKey}
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            innerRadius={60}
-            paddingAngle={5}
-            fill="#8884d8"
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-          >
-            {data.map((_, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={colors[index % colors.length]}
-                stroke={theme.palette.divider}
-                strokeWidth={1}
-              />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            align="center"
-            verticalAlign="bottom"
-            wrapperStyle={{
-              marginTop: 10,
-              textAlign: 'center',
-            }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    </Box>
+    <Card className="p-6 bg-card border-border shadow-md">
+      <CardContent className="p-0">
+        <h3 className="text-2xl font-semibold mb-6 text-card-foreground font-display">
+          {title}
+        </h3>
+        <ResponsiveContainer width="100%" height={400}>
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey={dataKey}
+              nameKey={nameKey}
+              cx="50%"
+              cy="50%"
+              outerRadius={120}
+              label
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                color: 'hsl(var(--card-foreground))',
+              }}
+            />
+            <Legend 
+              wrapperStyle={{ 
+                color: 'hsl(var(--card-foreground))' 
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 };
 

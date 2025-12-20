@@ -1,19 +1,18 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Area,
-  ResponsiveContainer,
-  Brush,
+import { 
+  LineChart, 
+  Line, 
+  CartesianGrid, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer, 
+  Area 
 } from 'recharts';
+import { Card, CardContent } from './ui/card';
 
-interface LineProps {
+interface AdditionalLine {
   dataKey: string;
   lineColor: string;
   title: string;
@@ -25,25 +24,10 @@ interface ForecastChartContainerProps {
   dataKey: string;
   lineColor: string;
   isLogScale: boolean;
-  additionalLines: LineProps[];
-  areaDataKeyLower: string;
-  areaDataKeyUpper: string;
+  additionalLines?: AdditionalLine[];
+  areaDataKeyLower?: string;
+  areaDataKeyUpper?: string;
 }
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <Box sx={{ backgroundColor: '#73C2A0', padding: '10px', borderRadius: '8px', color: '#1A1A1A' }}>
-        <Typography variant="body2">{`Date: ${label}`}</Typography>
-        {payload.map((entry: any, index: number) => (
-          <Typography key={`item-${index}`} variant="body2">{`${entry.name}: ${entry.value}`}</Typography>
-        ))}
-      </Box>
-    );
-  }
-
-  return null;
-};
 
 const ForecastChartContainer: React.FC<ForecastChartContainerProps> = ({
   title,
@@ -51,67 +35,72 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = ({
   dataKey,
   lineColor,
   isLogScale,
-  additionalLines,
+  additionalLines = [],
   areaDataKeyLower,
   areaDataKeyUpper,
 }) => {
   return (
-    <Box
-      mb={6}
-      sx={{
-        background: 'linear-gradient(135deg, #2E3440, #3B4252)',
-        padding: '20px',
-        borderRadius: '12px',
-        boxShadow: '0px 6px 18px rgba(0, 0, 0, 0.3)',
-      }}
-    >
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{
-          color: '#ECEFF4',
-          fontWeight: 600,
-          marginBottom: '10px',
-        }}
-      >
-        {title}
-      </Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart
-          data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#4C566A" />
-          <XAxis
-            dataKey="date"
-            tick={{ fill: '#ECEFF4', fontSize: 12 }}
-            tickLine={false}
-            axisLine={{ stroke: '#ECEFF4' }}
-          />
-          <YAxis
-            scale={isLogScale ? 'log' : 'auto'}
-            tick={{ fill: '#ECEFF4', fontSize: 12 }}
-            tickLine={false}
-            axisLine={{ stroke: '#ECEFF4' }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line type="monotone" dataKey={dataKey} stroke={lineColor} />
-          {additionalLines.map((line, index) => (
-            <Line key={index} type="monotone" dataKey={line.dataKey} stroke={line.lineColor} name={line.title} />
-          ))}
-          <Line type="monotone" dataKey="yhat_lower" stroke="#FF0000" name="Possible Open Lower" />
-          <Line type="monotone" dataKey="yhat_upper" stroke="#00FF00" name="Possible Open Upper" />
-          <Area type="monotone" dataKey="trend_lower" stroke="none" fillOpacity={0.3} fill="#FFA500" />
-          <Area type="monotone" dataKey="trend_upper" stroke="none" fillOpacity={0.3} fill="#FFA500" />
-          <Area type="monotone" dataKey={areaDataKeyLower} stroke={lineColor} fillOpacity={0.3} fill={lineColor} />
-          <Area type="monotone" dataKey={areaDataKeyUpper} stroke={lineColor} fillOpacity={0.3} fill={lineColor} />
-          <Line type="monotone" dataKey="momentum" stroke="#FF00FF" name="Momentum" />
-          <Line type="monotone" dataKey="acceleration" stroke="#00FFFF" name="Acceleration" />
-          <Brush dataKey="date" height={30} stroke="#8884d8" />
-        </LineChart>
-      </ResponsiveContainer>
-    </Box>
+    <Card className="p-6 bg-card border-border shadow-md">
+      <CardContent className="p-0">
+        <h3 className="text-2xl font-semibold mb-6 text-card-foreground font-display">
+          {title}
+        </h3>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis 
+              dataKey="date" 
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <YAxis 
+              scale={isLogScale ? 'log' : 'auto'} 
+              domain={isLogScale ? ['auto', 'auto'] : undefined} 
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                color: 'hsl(var(--card-foreground))',
+              }}
+            />
+            <Legend 
+              wrapperStyle={{ 
+                color: 'hsl(var(--card-foreground))' 
+              }}
+            />
+            
+            {areaDataKeyLower && areaDataKeyUpper && (
+              <Area
+                type="monotone"
+                dataKey={areaDataKeyLower}
+                stackId="1"
+                stroke="none"
+                fill={lineColor}
+                fillOpacity={0.3}
+              />
+            )}
+            
+            <Line type="monotone" dataKey={dataKey} stroke={lineColor} strokeWidth={3} dot={false} />
+            
+            {additionalLines.map((line, index) => (
+              <Line
+                key={index}
+                type="monotone"
+                dataKey={line.dataKey}
+                stroke={line.lineColor}
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 };
 

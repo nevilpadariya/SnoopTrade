@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  IconButton,
-  Box,
-  CircularProgress,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Eye, EyeOff } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void;
@@ -29,99 +23,58 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, error }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        label="Email"
-        type="email"
-        variant="outlined"
-        margin="normal"
-        fullWidth
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            '&:hover fieldset': {
-              borderColor: '#73C2A0',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#73C2A0',
-            },
-          },
-          '& label.Mui-focused': {
-            color: '#73C2A0',
-          },
-        }}
-      />
-      <TextField
-        label="Password"
-        type={showPassword ? 'text' : 'password'}
-        variant="outlined"
-        margin="normal"
-        fullWidth
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            '&:hover fieldset': {
-              borderColor: '#73C2A0',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#73C2A0',
-            },
-          },
-          '& label.Mui-focused': {
-            color: '#73C2A0',
-          },
-        }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={() => setShowPassword(!showPassword)}
-                edge="end"
-                sx={{ color: '#6D727B' }}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-card-foreground">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="h-11"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="password" className="text-card-foreground">Password</Label>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="h-11 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+      </div>
+
       {error && (
-        <Box sx={{ 
-          backgroundColor: 'rgba(211, 47, 47, 0.1)', 
-          padding: '8px', 
-          borderRadius: '4px',
-          marginTop: 1 
-        }}>
-          <Typography color="error" variant="body2" align="center">
-            {error}
-          </Typography>
-        </Box>
+        <div className="bg-destructive/20 border border-destructive/50 text-destructive text-sm p-3 rounded-md text-center font-medium">
+          {error}
+        </div>
       )}
+
       <Button
         type="submit"
-        variant="contained"
-        fullWidth
         disabled={isLoading}
-        sx={{
-          backgroundColor: '#73C2A0',
-          color: 'white',
-          marginTop: 2,
-          height: '48px',
-          fontSize: '1rem',
-          fontWeight: 600,
-          textTransform: 'none',
-          '&:hover': { 
-            backgroundColor: '#5DA583',
-            transform: 'translateY(-1px)',
-            boxShadow: '0 4px 12px rgba(115, 194, 160, 0.4)',
-          },
-          transition: 'all 0.2s ease-in-out',
-        }}
+        className="w-full h-12 text-base font-semibold"
       >
         {isLoading ? (
-          <CircularProgress size={24} sx={{ color: 'white' }} />
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+            <span>Signing in...</span>
+          </div>
         ) : (
           'Sign In'
         )}

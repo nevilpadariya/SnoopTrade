@@ -1,49 +1,56 @@
 import React from 'react';
 import PieChartContainer from './PieChartContainer';
-import { Box } from "@mui/material";
 
-interface InsiderTradingChartsProps {
-  tradeData: any[];
+interface TradeData {
+  transaction_code: string;
+  shares: number;
 }
 
-// Function to generate dynamic colors based on the number of types
-const generateDynamicColors = (totalTypes: number): string[] => {
-  const colors = [];
-  for (let i = 0; i < totalTypes; i++) {
-    const hue = (360 / totalTypes) * i; // Spread colors evenly across the hue spectrum
-    colors.push(`hsl(${hue}, 70%, 50%)`); // Use HSL for vibrant, evenly spaced colors
-  }
-  return colors;
-};
+interface InsiderTradingChatsProps {
+  tradeData: TradeData[];
+}
 
-const InsiderTradingCharts: React.FC<InsiderTradingChartsProps> = ({ tradeData }) => {
-  // Transform the trade data for pie chart insights (e.g., transaction codes breakdown)
-  const transactionTypeData = tradeData.reduce((acc: any, trade: any) => {
-    const type = trade.transaction_code;
-    acc[type] = acc[type] ? acc[type] + 1 : 1;
+const COLORS = ['hsl(var(--primary-strong))', 'hsl(var(--accent))', '#ef4444', '#f97316', '#3b82f6'];
+
+const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) => {
+  const transactionTypeData = tradeData.reduce((acc: any, trade) => {
+    const existingType = acc.find((item: any) => item.name === trade.transaction_code);
+    if (existingType) {
+      existingType.value += 1;
+    } else {
+      acc.push({ name: trade.transaction_code, value: 1 });
+    }
     return acc;
-  }, {});
+  }, []);
 
-  const pieData = Object.entries(transactionTypeData).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  // Generate dynamic colors based on the number of transaction types
-  const colors = generateDynamicColors(Object.keys(transactionTypeData).length);
+  const sharesData = tradeData.reduce((acc: any, trade) => {
+    const existingType = acc.find((item: any) => item.name === trade.transaction_code);
+    if (existingType) {
+      existingType.value += trade.shares;
+    } else {
+      acc.push({ name: trade.transaction_code, value: trade.shares });
+    }
+    return acc;
+  }, []);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <PieChartContainer
-        title="Transaction Types Breakdown"
-        data={pieData}
+        title="Transaction Types Distribution"
+        data={transactionTypeData}
         dataKey="value"
         nameKey="name"
-        colors={colors}
+        colors={COLORS}
       />
-      {/* Additional charts (e.g., bar chart or line chart for ownership type) can go here */}
-    </Box>
+      <PieChartContainer
+        title="Shares Distribution"
+        data={sharesData}
+        dataKey="value"
+        nameKey="name"
+        colors={COLORS}
+      />
+    </div>
   );
 };
 
-export default InsiderTradingCharts;
+export default InsiderTradingChats;

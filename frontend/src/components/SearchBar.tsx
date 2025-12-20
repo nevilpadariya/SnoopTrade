@@ -1,35 +1,25 @@
 import React from 'react';
-import { TextField, InputAdornment, IconButton } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { Search } from 'lucide-react';
+import { Input } from './ui/input';
 
 interface SearchBarProps {
   searchTerm: string;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => (
-  <TextField
-    variant="outlined"
-    placeholder="Search for a company"
-    value={searchTerm}
-    onChange={onSearchChange}
-    sx={{
-      backgroundColor: 'white',
-      borderRadius: 2,
-      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-      width: '100%',
-    }}
-    InputProps={{
-      startAdornment: (
-        <InputAdornment position="start">
-          <IconButton>
-            <Search />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-    fullWidth
-  />
-);
+const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => {
+  return (
+    <div className="relative w-full max-w-2xl mx-auto">
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+      <Input
+        type="text"
+        placeholder="Search for a company..."
+        value={searchTerm}
+        onChange={onSearchChange}
+        className="pl-12 h-14 text-lg bg-card border-border focus:ring-2 focus:ring-primary"
+      />
+    </div>
+  );
+};
 
 export default SearchBar;

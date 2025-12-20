@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Container,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-} from '@mui/material';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -16,6 +8,7 @@ import ForecastChartContainer from '../components/ForecastChartContainer';
 import SearchBar from '../components/SearchBar';
 import CompanyList from '../components/CompanyList';
 import InsiderTradingChats from '../components/InsiderTradingChats';
+import { Button } from '../components/ui/button';
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
@@ -29,26 +22,11 @@ const TIME_PERIODS = {
 const COMPANIES = ['AAPL', 'META', 'NVDA'];
 
 const COLORS = {
-  primary: '#00D09C',
-  secondary: '#1A1A1A',
-  accent: '#73C2A0',
-  background: {
-    main: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9))',
-    paper: 'rgba(115, 194, 160, 0.1)',
-    card: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-  },
-  text: {
-    primary: '#FFFFFF',
-    secondary: 'rgba(255, 255, 255, 0.8)',
-    muted: 'rgba(255, 255, 255, 0.7)',
-  },
-  chart: {
-    price: '#73C2A0',
-    volume: '#A8E6CF',
-    forecast: '#FF0000', // Red color for forecast
-    trend: '#FFA500', // Orange color for trend
-    seasonal: '#0000FF', // Blue color for seasonal
-  },
+  price: 'hsl(var(--primary-strong))',
+  volume: 'hsl(var(--accent))',
+  forecast: '#ef4444',
+  trend: '#f97316',
+  seasonal: '#3b82f6',
 };
 
 interface DashboardProps {}
@@ -64,10 +42,10 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [forecastData, setForecastData] = useState<any[]>([]);
-  const [isLogScaleShares, setIsLogScaleShares] = useState(false);
-  const [isLogScalePrice, setIsLogScalePrice] = useState(false);
-  const [isPredicting, setIsPredicting] = useState(false); // Loading state for prediction
-  const [showForecast, setShowForecast] = useState(false); // State to manage forecast chart visibility
+  const [isLogScaleShares] = useState(false);
+  const [isLogScalePrice] = useState(false);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [showForecast, setShowForecast] = useState(false);
   const navigate = useNavigate();
 
   const token = localStorage.getItem('authToken');
@@ -85,7 +63,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     setSelectedCompany(company);
     setSearchTerm('');
     setShowCompanyList(false);
-    setShowForecast(false); // Hide forecast chart when a new company is selected
+    setShowForecast(false);
   };
 
   const handleTimePeriodChange = (period: string) => {
@@ -114,7 +92,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       setStockData(formattedData);
-      console.log('Stock data:', formattedData);
     } catch (error: any) {
       console.error('Error fetching stock data:', error);
       if (error.message.includes('401')) {
@@ -130,32 +107,30 @@ const Dashboard: React.FC<DashboardProps> = () => {
       return;
     }
 
-    setIsPredicting(true); // Start loading
+    setIsPredicting(true);
     try {
-      const token = localStorage.getItem('authToken'); // Retrieve the token from local storage
+      const token = localStorage.getItem('authToken');
 
       const forecastResponse = await fetch(API_ENDPOINTS.fetchFutureData, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Include the token in the headers
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formattedData), // Send formatted data directly
+        body: JSON.stringify(formattedData),
       });
-      console.log("Forecast response:", forecastResponse);
+
       if (!forecastResponse.ok) {
         throw new Error(`Error from forecast API: ${forecastResponse.statusText}`);
       }
 
       const forecastData = await forecastResponse.json();
-      console.log("Forecast data:", forecastData);
-
-      setForecastData(forecastData); // Store forecast data
-      setShowForecast(true); // Show forecast chart
+      setForecastData(forecastData);
+      setShowForecast(true);
     } catch (error: any) {
       console.error('Error during forecasting:', error);
     } finally {
-      setIsPredicting(false); // Stop loading
+      setIsPredicting(false);
     }
   };
 
@@ -197,64 +172,25 @@ const Dashboard: React.FC<DashboardProps> = () => {
       fetchStockData();
       fetchTradeData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCompany, selectedTimePeriod, token]);
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: COLORS.background.main,
-        color: COLORS.text.primary,
-        position: 'relative',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 30% 30%, rgba(115, 194, 160, 0.1) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        },
-      }}
-    >
+    <div className="min-h-screen bg-background text-foreground">
       <Helmet>
         <title>Dashboard | SnoopTrade</title>
       </Helmet>
 
       <Navbar />
-      <Container maxWidth="lg" sx={{ pt: 8, pb: 8 }}>
-        <Typography
-          variant="h1"
-          align="center"
-          sx={{
-            fontSize: { xs: '2.5rem', md: '3.5rem' },
-            fontWeight: 800,
-            color: COLORS.text.primary,
-            mb: 3,
-            '& span': {
-              background: 'linear-gradient(45deg, #73C2A0 30%, #A8E6CF 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            },
-          }}
-        >
-          Insider Trading <span>Dashboard</span>
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            color: COLORS.text.secondary,
-            mb: 8,
-            maxWidth: '800px',
-            mx: 'auto',
-          }}
-        >
+      <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
+        <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-6 font-display text-foreground">
+          Insider Trading <span className="text-primary-strong">Dashboard</span>
+        </h1>
+        <p className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
           Analyze market trends and insider trading activities with real-time data and insights.
-        </Typography>
+        </p>
 
-        <Box display="flex" flexDirection="column" alignItems="center" mt={4}>
+        <div className="flex flex-col items-center mt-8 space-y-4">
           <SearchBar
             searchTerm={searchTerm}
             onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -266,196 +202,109 @@ const Dashboard: React.FC<DashboardProps> = () => {
             />
           )}
           {showCompanyList && filteredCompanies.length === 0 && (
-            <Typography variant="body1" sx={{ color: COLORS.text.muted, mt: 2 }}>
-              No companies found.
-            </Typography>
+            <p className="text-muted-foreground mt-4">No companies found.</p>
           )}
 
           {selectedCompany && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <ButtonGroup>
+            <div className="flex justify-center mt-8">
+              <div className="inline-flex rounded-lg border border-border bg-muted/20 p-1 space-x-1">
                 {Object.entries(TIME_PERIODS).map(([key, value]) => (
                   <Button
                     key={key}
                     onClick={() => handleTimePeriodChange(value)}
-                    sx={{
-                      backgroundColor: selectedTimePeriod === value ? COLORS.accent : 'transparent',
-                      color: selectedTimePeriod === value ? COLORS.secondary : COLORS.text.primary,
-                      border: `1px solid ${COLORS.accent}`,
-                      textTransform: 'none',
-                      px: 4,
-                      py: 1,
-                      '&:hover': {
-                        backgroundColor: COLORS.accent,
-                        color: COLORS.secondary,
-                        transform: 'translateY(-2px)',
-                        transition: 'all 0.2s ease-in-out',
-                      },
-                    }}
+                    variant={selectedTimePeriod === value ? "default" : "ghost"}
                   >
                     {key.replace('_', ' ')}
                   </Button>
                 ))}
-              </ButtonGroup>
-            </Box>
+              </div>
+            </div>
           )}
-        </Box>
+        </div>
 
         {selectedCompany && (
           <>
-            <Typography
-              variant="h5"
-              align="center"
-              sx={{
-                mt: 6,
-                mb: 4,
-                color: COLORS.text.primary,
-                fontWeight: 600,
-              }}
-            >
+            <h2 className="text-3xl font-semibold text-center mt-12 mb-8 font-display text-foreground">
               Data for {selectedCompany}
-            </Typography>
+            </h2>
 
-            <Box sx={{
-              mb: 6,
-              background: COLORS.background.card,
-              p: 4,
-              borderRadius: '16px',
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-              },
-            }}>
+            <div className="mb-10">
               <ChartContainer
                 title="Stock Price Trends"
                 data={stockData}
                 dataKey="open"
-                lineColor={COLORS.chart.price}
+                lineColor={COLORS.price}
                 isLogScale={isLogScalePrice}
               />
-            </Box>
+            </div>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <div className="flex justify-center mb-8">
               <Button
                 onClick={() => futureForecast(stockData)}
                 disabled={isPredicting}
-                sx={{
-                  backgroundColor: COLORS.accent,
-                  color: COLORS.secondary,
-                  textTransform: 'none',
-                  px: 4,
-                  py: 1,
-                  '&:hover': {
-                    backgroundColor: COLORS.accent,
-                    color: COLORS.secondary,
-                    transform: 'translateY(-2px)',
-                    transition: 'all 0.2s ease-in-out',
-                  },
-                }}
+                className="px-8 py-3 text-lg font-semibold"
               >
-
-                {isPredicting ? 'Predicting...' : 'Predict Future Trends'}
+                {isPredicting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    <span>Predicting...</span>
+                  </div>
+                ) : (
+                  'Predict Future Trends'
+                )}
               </Button>
-            </Box>
-
-            {isPredicting && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-                <CircularProgress />
-              </Box>
-            )}
+            </div>
 
             {showForecast && (
-              <Box sx={{
-                mb: 6,
-                background: COLORS.background.card,
-                p: 4,
-                borderRadius: '16px',
-                transition: 'transform 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                },
-              }}>
+              <div className="mb-10">
                 <ForecastChartContainer
                   title="Predicted Stock Price Trends"
                   data={forecastData}
                   dataKey="open"
-                  lineColor={COLORS.chart.forecast}
+                  lineColor={COLORS.forecast}
                   isLogScale={isLogScalePrice}
                   additionalLines={[
-                    { dataKey: 'trend', lineColor: COLORS.chart.trend, title: 'Trend' },
-                    { dataKey: 'seasonal', lineColor: COLORS.chart.seasonal, title: 'Seasonal' },
+                    { dataKey: 'trend', lineColor: COLORS.trend, title: 'Trend' },
+                    { dataKey: 'seasonal', lineColor: COLORS.seasonal, title: 'Seasonal' },
                   ]}
                   areaDataKeyLower="yhat_lower"
                   areaDataKeyUpper="yhat_upper"
                 />
-              </Box>
+              </div>
             )}
 
-            <Box sx={{
-              mb: 6,
-              background: COLORS.background.card,
-              p: 4,
-              borderRadius: '16px',
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-              },
-            }}>
+            <div className="mb-10">
               <ChartContainer
                 title="Volume of Shares Traded"
                 data={tradeData}
                 dataKey="shares"
-                lineColor={COLORS.chart.volume}
+                lineColor={COLORS.volume}
                 isLogScale={isLogScaleShares}
               />
-            </Box>
+            </div>
 
-            <Box sx={{
-              mb: 6,
-              background: COLORS.background.card,
-              p: 4,
-              borderRadius: '16px',
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-              },
-            }}>
+            <div className="mb-10">
               <InsiderTradingChats tradeData={tradeData} />
-            </Box>
+            </div>
 
-            <Box mt={6}>
-              <Typography
-                variant="h5"
-                align="center"
-                gutterBottom
-                sx={{ color: COLORS.text.primary }}
-              >
+            <div className="mt-12">
+              <h3 className="text-3xl font-semibold text-center mb-6 font-display text-foreground">
                 Transaction Details
-              </Typography>
-              <Box sx={{
-                background: COLORS.background.card,
-                p: 4,
-                borderRadius: '16px',
-                transition: 'transform 0.3s ease',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                },
-              }}>
-                <DataTable
-                  tradeData={tradeData}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  handleChangePage={(e, newPage) => setPage(newPage)}
-                  handleChangeRowsPerPage={(e) =>
-                    setRowsPerPage(parseInt(e.target.value, 10))
-                  }
-                />
-              </Box>
-            </Box>
+              </h3>
+              <DataTable
+                tradeData={tradeData}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                handleChangePage={(e, newPage) => setPage(newPage)}
+                handleChangeRowsPerPage={(e) =>
+                  setRowsPerPage(parseInt(e.target.value, 10))
+                }
+              />
+            </div>
           </>
         )}
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 };
 

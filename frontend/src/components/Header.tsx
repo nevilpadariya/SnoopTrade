@@ -1,49 +1,22 @@
-// Updated Header.tsx to make both logo and name clickable and redirect to the landing page
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import { BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 
 const Header: React.FC = () => {
   return (
-    <Box
-      sx={{
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        backdropFilter: 'blur(10px)',
-        position: 'fixed',
-        width: '100%',
-        zIndex: 1000,
-        transition: 'all 0.3s ease',
-        boxShadow: '0 2px 20px rgba(0, 0, 0, 0.1)',
-      }}
-    >
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        padding="16px"
-        sx={{
-          cursor: 'pointer',
-        }}
-      >
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <BarChart size={32} color="#73C2A0" strokeWidth={2} />
-          <Typography
-            variant="h4"
-            sx={{
-              marginLeft: 2,
-              fontWeight: 700,
-              background: 'linear-gradient(45deg, #F3F6F8 30%, #73C2A0 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
-            }}
-          >
+    <header className="fixed top-0 w-full z-[1000] bg-card/40 backdrop-blur-md shadow-lg transition-all duration-300 border-b border-border">
+      <div className="flex items-center justify-center p-4">
+        <Link
+          to="/"
+          className="flex items-center gap-3 no-underline cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <Logo className="h-8 w-8 text-primary-strong" />
+          <h1 className="text-3xl font-bold text-foreground font-display">
             SnoopTrade
-          </Typography>
+          </h1>
         </Link>
-      </Box>
-    </Box>
+      </div>
+    </header>
   );
 };
 

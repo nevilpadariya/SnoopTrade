@@ -1,182 +1,74 @@
 import React from 'react';
-import { Box, Grid, Typography, useTheme, useMediaQuery } from '@mui/material';
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-} from '@mui/lab';
-import {
-  Insights,
-  Build,
-  DataUsage,
-  TrendingUp,
-  Security,
-} from '@mui/icons-material';
+import { 
+  TrendingUp, 
+  Database, 
+  BarChart2, 
+  LineChart,
+  Activity,
+  Shield
+} from 'lucide-react';
+import { Card, CardContent } from '../ui/card';
 
-const sections = [
+const features = [
   {
-    title: 'Project Overview',
-    icon: <Insights sx={{ fontSize: 64, color: '#4CAF50' }} />,
-    description: [
-      { text: 'Comprehensive analysis of SEC EDGAR database', icon: <DataUsage /> },
-      { text: 'Advanced tracking of insider trading activities', icon: <Security /> },
-      { text: 'Generating actionable financial intelligence', icon: <TrendingUp /> },
-      { text: 'Empowering informed investment decisions', icon: <Build /> },
-    ],
+    icon: <TrendingUp size={32} />,
+    title: 'Real-Time Tracking',
+    description: 'Monitor insider trades as they are filed with the SEC.',
   },
   {
-    title: 'Analytical Approach',
-    icon: <Build sx={{ fontSize: 64, color: '#2196F3' }} />,
-    description: [
-      { text: 'Intelligent processing of SEC filing data', icon: <DataUsage /> },
-      { text: 'Advanced pattern and correlation detection', icon: <Insights /> },
-      { text: 'Real-time analytics and market insights', icon: <TrendingUp /> },
-      { text: 'Proactive investment strategy development', icon: <Security /> },
-    ],
+    icon: <Database size={32} />,
+    title: 'Comprehensive Data',
+    description: 'Access historical and current insider trading data across all public companies.',
   },
   {
-    title: 'Machine Learning Innovations',
-    icon: <Insights sx={{ fontSize: 64, color: '#FF9800' }} />,
-    description: [
-      { text: 'Leveraging Facebook Prophet for precise forecasting', icon: <Build /> },
-      { text: 'Sophisticated volatility and momentum analysis', icon: <TrendingUp /> },
-      { text: 'Advanced predictive modeling techniques', icon: <DataUsage /> },
-      { text: 'Integrating EMA and RSI for enhanced accuracy', icon: <Insights /> },
-      { text: 'Continuous model refinement through historical data', icon: <Security /> },
-      { text: 'Confidence-based prediction optimization', icon: <TrendingUp /> },
-    ],
+    icon: <BarChart2 size={32} />,
+    title: 'Advanced Analytics',
+    description: 'Leverage machine learning models for predictive insights and trend analysis.',
+  },
+  {
+    icon: <LineChart size={32} />,
+    title: 'Visual Dashboards',
+    description: 'Interactive charts and graphs for easy data interpretation.',
+  },
+  {
+    icon: <Activity size={32} />,
+    title: 'Custom Alerts',
+    description: 'Set personalized notifications for specific companies or trading patterns.',
+  },
+  {
+    icon: <Shield size={32} />,
+    title: 'Secure & Private',
+    description: 'Your data and trading strategies remain completely confidential.',
   },
 ];
 
 const FeatureList: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const FeatureItem: React.FC<{
-    title: string;
-    icon: React.ReactNode;
-    description: { text: string; icon: React.ReactNode }[];
-  }> = ({ title, icon, description }) => (
-    <Box
-      sx={{
-        p: 4,
-        background: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-        borderRadius: '16px',
-        mb: 4,
-        textAlign: 'center',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        transition: 'all 0.3s ease',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        '&:hover': {
-          transform: 'translateY(-10px)',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        },
-      }}
-    >
-      {icon}
-      <Typography
-        variant="h5"
-        sx={{
-          color: '#FFFFFF',
-          fontWeight: 700,
-          mb: 3,
-          letterSpacing: '0.5px',
-          textTransform: 'uppercase',
-        }}
-      >
-        {title}
-      </Typography>
-      <Timeline position={isMobile ? 'right' : 'right'}>
-        {description.map((item, index) => (
-          <TimelineItem key={index}>
-            <TimelineSeparator>
-              <TimelineDot
-                variant="outlined"
-                sx={{
-                  borderColor: 'primary.main',
-                  borderWidth: 2,
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                {item.icon}
-              </TimelineDot>
-              {index < description.length - 1 && (
-                <TimelineConnector
-                  sx={{
-                    backgroundColor: 'primary.main',
-                    opacity: 0.6,
-                  }}
-                />
-              )}
-            </TimelineSeparator>
-            <TimelineContent sx={{ py: '12px', px: 2 }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontWeight: 500,
-                  lineHeight: 1.6,
-                }}
-              >
-                {item.text}
-              </Typography>
-            </TimelineContent>
-          </TimelineItem>
-        ))}
-      </Timeline>
-    </Box>
-  );
-
   return (
-    <Box
-      sx={{
-        py: 10,
-        px: { xs: 2, md: 6 },
-        background: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-        color: 'white',
-      }}
-    >
-      <Typography
-        variant="h3"
-        component="h2"
-        sx={{
-          textAlign: 'center',
-          fontWeight: 800,
-          mb: 6,
-          color: '#FFFFFF',
-          letterSpacing: '1px',
-          textTransform: 'uppercase',
-        }}
-      >
-        Explore Our Advanced Features
-      </Typography>
-      <Grid container spacing={4} justifyContent="center">
-        <Grid item xs={12} md={6}>
-          <FeatureItem
-            title={sections[0].title}
-            icon={sections[0].icon}
-            description={sections[0].description}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <FeatureItem
-            title={sections[1].title}
-            icon={sections[1].icon}
-            description={sections[1].description}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FeatureItem
-            title={sections[2].title}
-            icon={sections[2].icon}
-            description={sections[2].description}
-          />
-        </Grid>
-      </Grid>
-    </Box>
+    <div className="mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {features.map((feature, index) => (
+          <Card
+            key={index}
+            className="relative overflow-hidden group p-6 bg-card border-border hover:-translate-y-2 transition-transform duration-300"
+          >
+            {/* Top overline reveal on hover */}
+            <div className="absolute top-0 left-0 right-0 h-[3px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+            
+            <CardContent className="p-0">
+              <div className="inline-flex p-3 rounded-xl bg-primary/20 text-primary-strong mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-card-foreground mb-3 font-display">
+                {feature.title}
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {feature.description}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 

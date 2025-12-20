@@ -1,52 +1,43 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import TeamMemberCard from './TeamMemberCard';
+import PratikImage from '../../utils/Pratik.jpg';
 
 const teamMembers = [
   {
-    name: 'Nevil Padariya',
-    role: 'Frontend Engineer',
-    photo: '/utils/nevil.jpg',
-    email: 'nevil@example.com',
-    contact: '+1234567890',
-    linkedIn: 'https://www.linkedin.com/in/nevil-padariya/',
-    description:
-      'Nevil is a skilled frontend engineer with a passion for creating intuitive and responsive user interfaces.',
-    skills: ['React', 'JavaScript', 'CSS', 'HTML', 'Responsive Design'],
+    name: 'Pratik Dhakal',
+    role: 'Full Stack Developer',
+    bio: 'Passionate about building scalable systems and creating great user experiences.',
+    avatarUrl: PratikImage,
+    linkedinUrl: 'https://www.linkedin.com/in/pratik-dhakal',
   },
   {
-    name: 'Pratik Korat',
-    role: 'Team Lead & Backend Engineer',
-    photo: '/utils/Pratik.jpg',
-    email: 'pratik@example.com',
-    contact: '+0987654321',
-    linkedIn: 'https://www.linkedin.com/in/pratik-korat',
-    description:
-      'Pratik is the team lead and backend engineer, specializing as a machine learning engineer. He ensures the seamless integration of backend services and machine learning models.',
-    skills: ['Python', 'FastAPI', 'Machine Learning', 'Data Analysis', 'Project Management'],
+    name: 'Team Member 2',
+    role: 'Data Scientist',
+    bio: 'Specializing in machine learning and predictive analytics for financial data.',
+    linkedinUrl: '#',
   },
   {
-    name: 'Nagaraj GK',
-    role: 'Data Analyst & Researcher',
-    photo: '/utils/nagaraj.jpg',
-    email: 'nagaraj@example.com',
-    contact: '+1122334455',
-    linkedIn: 'https://www.linkedin.com/in/nagsgk/',
-    description:
-      'Nagaraj is a dedicated data analyst and researcher, responsible for extracting valuable insights from complex datasets.',
-    skills: ['Data Analysis', 'Python', 'SQL', 'Research', 'Data Visualization'],
+    name: 'Team Member 3',
+    role: 'UI/UX Designer',
+    bio: 'Creating intuitive interfaces that make complex data accessible to everyone.',
+    linkedinUrl: '#',
   },
 ];
 
 const TeamMembers: React.FC = () => {
   return (
-    <Grid container spacing={4}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
       {teamMembers.map((member, index) => (
-        <Grid item xs={12} sm={4} key={index}>
-          <TeamMemberCard {...member} />
-        </Grid>
+        <TeamMemberCard
+          key={index}
+          name={member.name}
+          role={member.role}
+          bio={member.bio}
+          avatarUrl={member.avatarUrl}
+          linkedinUrl={member.linkedinUrl}
+        />
       ))}
-    </Grid>
+    </div>
   );
 };
 

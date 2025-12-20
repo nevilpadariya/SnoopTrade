@@ -1,45 +1,30 @@
-// Updated App.tsx to set Landing.tsx as the default route and fix navbar logo behavior
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, Box } from '@mui/material';
-import theme from './theme';
-import './styles/common.css';
-import SignUp from './pages/SignUp';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Account from './pages/Account';
-import FeaturesPage from './pages/Features';
-import AboutPage from './pages/About';
-import Landing from './pages/Landing';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contex/AuthContext';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import Dashboard from './pages/Dashboard';
+import About from './pages/About';
+import Features from './pages/Features';
+import Account from './pages/Account';
+import './App.css';
 
-
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const { token } = useAuth();
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-
-
-  return <>{children}</>;
+  return token ? children : <Navigate to="/login" replace />;
 };
 
 const App: React.FC = () => {
-  const { token } = useAuth();
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box component="main">
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <Landing />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/about" element={<AboutPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
           <Route
             path="/dashboard"
             element={
@@ -57,17 +42,9 @@ const App: React.FC = () => {
             }
           />
         </Routes>
-      </Box>
-    </ThemeProvider>
+      </Router>
+    </AuthProvider>
   );
 };
 
-const AppWithRouter: React.FC = () => (
-  <AuthProvider>
-    <Router>
-      <App />
-    </Router>
-  </AuthProvider>
-);
-
-export default AppWithRouter;
+export default App;

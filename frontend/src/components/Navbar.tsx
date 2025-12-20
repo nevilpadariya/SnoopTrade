@@ -1,22 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Container, Typography, useScrollTrigger } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BarChart } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useAuth } from '../contex/AuthContext';
+import { Button } from './ui/button';
+import { cn } from '../lib/utils';
+import Logo from './Logo';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 100,
-  });
+  const [isDark, setIsDark] = useState(false);
   const { token } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsScrolled(trigger);
-  }, [trigger]);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    setIsDark(shouldBeDark);
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -26,164 +53,93 @@ const Navbar = () => {
   const showAccountButton = ['/dashboard', '/about', '/features'].includes(location.pathname);
 
   return (
-    <Box
-      component="nav"
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1100,
-        backgroundColor: isScrolled ? 'rgba(0, 0, 0, 0.85)' : 'transparent',
-        backdropFilter: isScrolled ? 'blur(10px)' : 'none',
-        transition: 'all 0.3s ease-in-out',
-        boxShadow: isScrolled ? '0 2px 20px rgba(0, 0, 0, 0.1)' : 'none',
-      }}
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-b",
+        isScrolled
+          ? "bg-card/95 backdrop-blur-md shadow-lg border-border"
+          : "bg-transparent border-transparent"
+      )}
     >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            py: 2,
-          }}
-        >
-          <Box
-            component={Link}
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between py-4">
+          {/* Logo */}
+          <Link
             to={token ? "/dashboard" : "/"}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              color: 'white',
-            }}
+            className="flex items-center gap-3 text-foreground no-underline hover:opacity-80 transition-opacity"
           >
-            <BarChart size={32} color="#73C2A0" strokeWidth={2} />
-            <Typography
-              variant="h5"
-              sx={{
-                ml: 2,
-                fontWeight: 700,
-                background: 'linear-gradient(45deg, #F3F6F8 30%, #73C2A0 90%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
+            <Logo className="h-8 w-8 text-primary-strong" />
+            <span className="text-xl font-bold font-display">
               SnoopTrade
-            </Typography>
-          </Box>
+            </span>
+          </Link>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 3,
-            }}
-          >
+          {/* Navigation Links */}
+          <div className="flex items-center gap-4">
             <Button
-              component={Link}
-              to="/about"
-              sx={{
-                color: 'white',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': { color: '#73C2A0' },
-              }}
+              asChild
+              variant="ghost"
+              className="hover:bg-muted"
             >
-              About
+              <Link to="/about">About</Link>
             </Button>
             <Button
-              component={Link}
-              to="/features"
-              sx={{
-                color: 'white',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': { color: '#73C2A0' },
-              }}
+              asChild
+              variant="ghost"
+              className="hover:bg-muted"
             >
-              Features
+              <Link to="/features">Features</Link>
             </Button>
             {showAccountButton && (
               <Button
-                component={Link}
-                to="/account"
-                sx={{
-                  color: 'white',
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  '&:hover': { color: '#73C2A0' },
-                }}
+                asChild
+                variant="ghost"
+                className="hover:bg-muted"
               >
-                Account
+                <Link to="/account">Account</Link>
               </Button>
             )}
+            
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="hover:bg-muted"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </Button>
+
             {token ? (
               <Button
                 onClick={handleLogout}
-                variant="contained"
-                sx={{
-                  backgroundColor: '#73C2A0',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  px: 4,
-                  py: 1,
-                  borderRadius: '8px',
-                  '&:hover': {
-                    backgroundColor: '#5DA583',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(115, 194, 160, 0.4)',
-                  },
-                  transition: 'all 0.2s ease-in-out',
-                }}
+                variant="default"
+                className="px-6 bg-primary-strong hover:bg-primary-strong/90"
               >
                 Logout
               </Button>
             ) : (
               <>
                 <Button
-                  component={Link}
-                  to="/login"
-                  variant="text"
-                  sx={{
-                    color: 'white',
-                    textTransform: 'none',
-                    fontSize: '1rem',
-                    '&:hover': { color: '#73C2A0' },
-                  }}
+                  asChild
+                  variant="ghost"
+                  className="hover:bg-muted"
                 >
-                  Login
+                  <Link to="/login">Login</Link>
                 </Button>
                 <Button
-                  component={Link}
-                  to="/signup"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#73C2A0',
-                    color: 'white',
-                    textTransform: 'none',
-                    fontSize: '1rem',
-                    px: 4,
-                    py: 1,
-                    borderRadius: '8px',
-                    '&:hover': {
-                      backgroundColor: '#5DA583',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(115, 194, 160, 0.4)',
-                    },
-                    transition: 'all 0.2s ease-in-out',
-                  }}
+                  asChild
+                  variant="default"
+                  className="px-6 bg-primary-strong hover:bg-primary-strong/90"
                 >
-                  Sign Up
+                  <Link to="/signup">Sign Up</Link>
                 </Button>
               </>
             )}
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 };
 

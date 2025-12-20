@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box, Container, Grid, Typography } from '@mui/material';
 import { 
   LineChart, 
   Bell, 
@@ -8,6 +7,7 @@ import {
   BarChart2, 
   Search 
 } from 'lucide-react';
+import { Card, CardContent } from '../ui/card';
 
 const features = [
   {
@@ -23,110 +23,61 @@ const features = [
   {
     icon: <Shield size={32} />,
     title: 'Secure Platform',
-    description: 'Your data is protected with enterprise-grade security measures.',
+    description: 'Your data is protected with enterprise-grade security measures and encryption protocols.',
   },
   {
     icon: <TrendingUp size={32} />,
     title: 'Market Analysis',
-    description: 'Access comprehensive market analysis and trading patterns.',
+    description: 'Access comprehensive market analysis, trading patterns, and predictive insights for better decisions.',
   },
   {
     icon: <BarChart2 size={32} />,
     title: 'Advanced Analytics',
-    description: 'Leverage powerful analytics tools to make informed decisions.',
+    description: 'Leverage powerful analytics tools including ML-powered forecasting and trend analysis.',
   },
   {
     icon: <Search size={32} />,
     title: 'Deep Insights',
-    description: 'Gain valuable insights from our extensive database of trading activities.',
+    description: 'Gain valuable insights from our extensive database of trading activities spanning years of data.',
   },
 ];
 
 const Features = () => {
   return (
-    <Box
-      sx={{
-        py: { xs: 8, md: 12 },
-        background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%)',
-      }}
-    >
-      <Container maxWidth="lg">
-        <Typography
-          variant="h2"
-          align="center"
-          sx={{
-            fontSize: { xs: '2rem', md: '2.5rem' },
-            fontWeight: 700,
-            color: 'white',
-            mb: 2,
-          }}
-        >
-          Why Choose SnoopTrade?
-        </Typography>
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            color: 'rgba(255, 255, 255, 0.7)',
-            mb: 8,
-            maxWidth: '800px',
-            mx: 'auto',
-          }}
-        >
+    <section className="py-20 md:py-28 bg-muted/20">
+      <div className="container mx-auto px-4 lg:px-8">
+        <h2 className="text-4xl md:text-5xl font-bold text-center text-foreground mb-4 font-display">
+          Why Choose <span className="text-primary-strong">SnoopTrade</span>?
+        </h2>
+        <p className="text-lg text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
           Get ahead of the market with our comprehensive suite of trading tools and insights
-        </Typography>
+        </p>
 
-        <Grid container spacing={4}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Box
-                sx={{
-                  p: 4,
-                  height: '100%',
-                  background: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-                  borderRadius: '16px',
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'inline-flex',
-                    p: 2,
-                    borderRadius: '12px',
-                    backgroundColor: 'rgba(115, 194, 160, 0.1)',
-                    color: '#73C2A0',
-                    mb: 3,
-                  }}
-                >
+            <Card
+              key={index}
+              className="relative overflow-hidden group p-6 h-full bg-card hover:-translate-y-2 transition-transform duration-300 border-border"
+            >
+              {/* Top overline reveal on hover */}
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+              
+              <CardContent className="p-0">
+                <div className="inline-flex p-3 rounded-xl bg-primary/20 text-primary-strong mb-6">
                   {feature.icon}
-                </Box>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'white',
-                    fontWeight: 600,
-                    mb: 2,
-                  }}
-                >
+                </div>
+                <h3 className="text-xl font-semibold text-card-foreground mb-3 font-display">
                   {feature.title}
-                </Typography>
-                <Typography
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    lineHeight: 1.6,
-                  }}
-                >
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
                   {feature.description}
-                </Typography>
-              </Box>
-            </Grid>
+                </p>
+              </CardContent>
+            </Card>
           ))}
-        </Grid>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </section>
   );
 };
 

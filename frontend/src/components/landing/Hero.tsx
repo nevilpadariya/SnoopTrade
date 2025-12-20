@@ -1,175 +1,156 @@
-import React from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, ChartBar, LineChart } from 'lucide-react';
+import { Button } from '../ui/button';
+import useEmblaCarousel from 'embla-carousel-react';
+import RegistrationsImage from '../../assests/Images/Registrations.png';
+import TransactionsImage from '../../assests/Images/Transactions.png';
+
+const SLIDES = [
+  {
+    image: RegistrationsImage,
+    alt: 'Insider Trading Registrations Dashboard',
+  },
+  {
+    image: TransactionsImage,
+    alt: 'Insider Trading Transactions Analytics',
+  },
+];
 
 const Hero = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 20 });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollTo = useCallback(
+    (index: number) => {
+      if (emblaApi) emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  // Auto-advance every 4 seconds
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const autoplay = setInterval(() => {
+      if (emblaApi) {
+        emblaApi.scrollNext();
+      }
+    }, 4000);
+
+    return () => clearInterval(autoplay);
+  }, [emblaApi]);
+
   return (
-    <Box
-      sx={{
-        pt: { xs: 12, md: 16 },
-        pb: { xs: 8, md: 12 },
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 30% 30%, rgba(115, 194, 160, 0.1) 0%, transparent 70%)',
-        },
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: 'center',
-            gap: { xs: 6, md: 8 },
-          }}
-        >
-          <Box sx={{ flex: 1, maxWidth: { xs: '100%', md: '60%' } }}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: { xs: '2.5rem', md: '3.5rem' },
-                fontWeight: 800,
-                color: 'white',
-                mb: 3,
-                lineHeight: 1.2,
-              }}
-            >
+    <section className="relative pt-32 md:pt-40 pb-20 md:pb-28 overflow-hidden bg-background">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+          {/* Left Content */}
+          <div className="flex-1 max-w-full md:max-w-[60%]">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-foreground mb-6 leading-tight font-display">
               Unlock the Power of{' '}
-              <Box
-                component="span"
-                sx={{
-                  background: 'linear-gradient(45deg, #73C2A0 30%, #A8E6CF 90%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
+              <span className="text-primary-strong">
                 Insider Trading Insights
-              </Box>
-            </Typography>
+              </span>
+            </h1>
 
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: '1.25rem', md: '1.5rem' },
-                color: 'rgba(255, 255, 255, 0.8)',
-                mb: 4,
-                fontWeight: 400,
-                lineHeight: 1.6,
-              }}
-            >
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed font-normal">
               Make informed investment decisions with real-time tracking of insider trading activities. Get ahead of the market with professional-grade analytics and insights.
-            </Typography>
+            </p>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <div className="flex gap-4 flex-wrap">
               <Button
-                component={Link}
-                to="/signup"
-                variant="contained"
-                sx={{
-                  backgroundColor: '#73C2A0',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontSize: '1.125rem',
-                  px: 6,
-                  py: 1.5,
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  '&:hover': {
-                    backgroundColor: '#5DA583',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(115, 194, 160, 0.4)',
-                  },
-                  transition: 'all 0.2s ease-in-out',
-                }}
+                asChild
+                size="lg"
+                className="text-lg px-8 py-6 bg-primary-strong hover:bg-primary-strong/90"
               >
-                Get Started
+                <Link to="/signup">Get Started</Link>
               </Button>
               <Button
-                component={Link}
-                to="/features"
-                variant="outlined"
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  textTransform: 'none',
-                  fontSize: '1.125rem',
-                  px: 6,
-                  py: 1.5,
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  '&:hover': {
-                    borderColor: '#73C2A0',
-                    color: '#73C2A0',
-                    backgroundColor: 'rgba(115, 194, 160, 0.1)',
-                  },
-                }}
+                asChild
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6"
               >
-                Learn More
+                <Link to="/features">Learn More</Link>
               </Button>
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          <Box
-            sx={{
-              flex: 1,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'relative',
-            }}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                width: '100%',
-                height: '400px',
-                background: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'radial-gradient(circle at center, rgba(115, 194, 160, 0.2) 0%, transparent 70%)',
-                },
-              }}
-            >
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Box sx={{ display: 'flex', gap: 4, mb: 4 }}>
-                  <TrendingUp size={48} color="#73C2A0" />
-                  <ChartBar size={48} color="#73C2A0" />
-                  <LineChart size={48} color="#73C2A0" />
-                </Box>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'white',
-                    textAlign: 'center',
-                    fontWeight: 500,
-                  }}
-                >
+          {/* Right Content - Image Carousel Card */}
+          <div className="flex-1 flex justify-center items-center relative w-full">
+            <div className="relative w-full bg-card rounded-2xl overflow-hidden border border-border shadow-lg p-6">
+              {/* Premium Background Container with Subtle Depth */}
+              <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-gradient-to-br from-muted/40 to-background border border-border/40">
+                {/* Subtle inner glow for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-background/10 pointer-events-none" />
+                
+                {/* Embla Carousel */}
+                <div className="relative overflow-hidden h-full" ref={emblaRef}>
+                  <div className="flex h-full">
+                    {SLIDES.map((slide, index) => (
+                      <div
+                        key={index}
+                        className="flex-[0_0_100%] min-w-0 relative flex items-center justify-center p-6"
+                      >
+                        <img
+                          src={slide.image}
+                          alt={slide.alt}
+                          className="w-full h-full object-contain drop-shadow-lg transition-opacity duration-500"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Indicator Dots */}
+              <div className="mt-6 flex items-center justify-center gap-2">
+                {SLIDES.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => scrollTo(index)}
+                    className={`
+                      h-2 rounded-full transition-all duration-300 ease-out
+                      ${
+                        selectedIndex === index
+                          ? 'w-8 bg-primary-strong'
+                          : 'w-2 bg-muted hover:bg-muted-foreground/50'
+                      }
+                    `}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Caption */}
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground font-medium">
                   Real-time Market Analytics
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

@@ -1,121 +1,62 @@
 import React from 'react';
-import { Avatar, Card, CardContent, Link, Typography } from '@mui/material';
+import { Linkedin, User } from 'lucide-react';
+import { Card, CardContent } from '../ui/card';
 
-interface TeamMember {
-    name: string;
-    role: string;
-    photo: string;
-    email: string;
-    contact: string;
-    linkedIn: string;
-    description: string;
-    skills: string[];
+interface TeamMemberCardProps {
+  name: string;
+  role: string;
+  bio: string;
+  avatarUrl?: string;
+  linkedinUrl?: string;
 }
 
-const TeamMemberCard: React.FC<TeamMember> = ({ name, role, photo, email, contact, linkedIn, description, skills }) => {
-    return (
-        <Card
-            sx={{
-                textAlign: 'center',
-                p: 4,
-                background: 'linear-gradient(135deg, rgba(115, 194, 160, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
-                borderRadius: '16px',
-                boxShadow: '0px 6px 18px rgba(0, 0, 0, 0.3)',
-                transition: 'transform 0.3s',
-                '&:hover': {
-                    transform: 'scale(1.05)',
-                },
-            }}
-        >
-            <CardContent>
-                <Avatar
-                    alt={name}
-                    src={photo}
-                    sx={{ width: 100, height: 100, mb: 2, mx: 'auto' }}
-                />
-                <Typography
-                    variant="h6"
-                    sx={{
-                        color: 'white',
-                        fontWeight: 600,
-                        mb: 2,
-                    }}
-                >
-                    {name}
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                    }}
-                >
-                    {role}
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                        mt: 1,
-                        textAlign: 'left',
-                    }}
-                >
-                    {description}
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                        mt: 1,
-                        textAlign: 'left',
-                    }}
-                >
-                    <strong>Email:</strong> {email}
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                        mt: 1,
-                        textAlign: 'left',
-                    }}
-                >
-                    <strong>Contact:</strong> {contact}
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                        mt: 1,
-                        textAlign: 'left',
-                    }}
-                >
-                    <strong>LinkedIn:</strong>{' '}
-                    <Link
-                        href={linkedIn}
-                        target="_blank"
-                        sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                    >
-                        {linkedIn}
-                    </Link>
-                </Typography>
-                <Typography
-                    sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        lineHeight: 1.6,
-                        mt: 1,
-                        textAlign: 'left',
-                    }}
-                >
-                    <strong>Skills:</strong>
-                    <ul>
-                        {skills.map((skill, skillIndex) => (
-                            <li key={skillIndex}>{skill}</li>
-                        ))}
-                    </ul>
-                </Typography>
-            </CardContent>
-        </Card>
-    );
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
+  name,
+  role,
+  bio,
+  avatarUrl,
+  linkedinUrl,
+}) => {
+  return (
+    <Card className="relative overflow-hidden group p-6 bg-card border-border hover:-translate-y-2 transition-transform duration-300">
+      {/* Top overline reveal on hover */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+      
+      <CardContent className="p-0 flex flex-col items-center text-center">
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center mb-4">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <User size={40} className="text-muted-foreground" />
+          )}
+        </div>
+        
+        <h3 className="text-xl font-semibold text-card-foreground mb-1 font-display">
+          {name}
+        </h3>
+        
+        <p className="text-sm text-primary-strong font-medium mb-3">
+          {role}
+        </p>
+        
+        <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+          {bio}
+        </p>
+        
+        {linkedinUrl && linkedinUrl !== '#' && (
+          <a
+            href={linkedinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-primary-strong hover:text-accent transition-colors"
+          >
+            <Linkedin size={20} />
+            <span className="text-sm font-medium">LinkedIn</span>
+          </a>
+        )}
+      </CardContent>
+    </Card>
+  );
 };
 
 export default TeamMemberCard;

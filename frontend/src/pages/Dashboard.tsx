@@ -182,11 +182,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
       </Helmet>
 
       <Navbar />
-      <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
-        <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-6 font-display text-foreground">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 sm:mb-6 font-display text-foreground">
           Insider Trading <span className="text-primary-strong">Dashboard</span>
         </h1>
-        <p className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-center text-muted-foreground mb-10 sm:mb-12 md:mb-16 max-w-3xl mx-auto px-4">
           Analyze market trends and insider trading activities with real-time data and insights.
         </p>
 
@@ -206,13 +206,14 @@ const Dashboard: React.FC<DashboardProps> = () => {
           )}
 
           {selectedCompany && (
-            <div className="flex justify-center mt-8">
-              <div className="inline-flex rounded-lg border border-border bg-muted/20 p-1 space-x-1">
+            <div className="flex justify-center mt-6 sm:mt-8 w-full px-2">
+              <div className="flex flex-wrap sm:inline-flex justify-center rounded-lg border border-border bg-muted/20 p-1 gap-1 sm:gap-0 sm:space-x-1 w-full sm:w-auto max-w-md">
                 {Object.entries(TIME_PERIODS).map(([key, value]) => (
                   <Button
                     key={key}
                     onClick={() => handleTimePeriodChange(value)}
                     variant={selectedTimePeriod === value ? "default" : "ghost"}
+                    className="flex-1 sm:flex-initial min-w-[100px] h-11 text-sm sm:text-base"
                   >
                     {key.replace('_', ' ')}
                   </Button>
@@ -224,11 +225,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
         {selectedCompany && (
           <>
-            <h2 className="text-3xl font-semibold text-center mt-12 mb-8 font-display text-foreground">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-center mt-10 sm:mt-12 mb-6 sm:mb-8 font-display text-foreground px-4">
               Data for {selectedCompany}
             </h2>
 
-            <div className="mb-10">
+            <div className="mb-8 sm:mb-10">
               <ChartContainer
                 title="Stock Price Trends"
                 data={stockData}
@@ -238,11 +239,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
               />
             </div>
 
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-6 sm:mb-8 px-4">
               <Button
                 onClick={() => futureForecast(stockData)}
                 disabled={isPredicting}
-                className="px-8 py-3 text-lg font-semibold"
+                className="w-full sm:w-auto px-6 sm:px-8 h-12 sm:h-auto sm:py-3 text-base sm:text-lg font-semibold"
               >
                 {isPredicting ? (
                   <div className="flex items-center gap-2">
@@ -256,7 +257,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             </div>
 
             {showForecast && (
-              <div className="mb-10">
+              <div className="mb-8 sm:mb-10">
                 <ForecastChartContainer
                   title="Predicted Stock Price Trends"
                   data={forecastData}
@@ -273,7 +274,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
               </div>
             )}
 
-            <div className="mb-10">
+            <div className="mb-8 sm:mb-10">
               <ChartContainer
                 title="Volume of Shares Traded"
                 data={tradeData}
@@ -283,23 +284,25 @@ const Dashboard: React.FC<DashboardProps> = () => {
               />
             </div>
 
-            <div className="mb-10">
+            <div className="mb-8 sm:mb-10">
               <InsiderTradingChats tradeData={tradeData} />
             </div>
 
-            <div className="mt-12">
-              <h3 className="text-3xl font-semibold text-center mb-6 font-display text-foreground">
+            <div className="mt-10 sm:mt-12">
+              <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6 font-display text-foreground px-4">
                 Transaction Details
               </h3>
-              <DataTable
-                tradeData={tradeData}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                handleChangePage={(e, newPage) => setPage(newPage)}
-                handleChangeRowsPerPage={(e) =>
-                  setRowsPerPage(parseInt(e.target.value, 10))
-                }
-              />
+              <div className="overflow-x-auto">
+                <DataTable
+                  tradeData={tradeData}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  handleChangePage={(e, newPage) => setPage(newPage)}
+                  handleChangeRowsPerPage={(e) =>
+                    setRowsPerPage(parseInt(e.target.value, 10))
+                  }
+                />
+              </div>
             </div>
           </>
         )}

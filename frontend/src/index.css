@@ -88,3 +88,72 @@
     @apply transition-colors duration-200;
   }
 }
+
+/* Utility classes */
+@layer utilities {
+  /* Ensure content clears fixed navbar */
+  .navbar-offset {
+    padding-top: 4rem; /* 64px - h-16 */
+  }
+  
+  @media (min-width: 768px) {
+    .navbar-offset {
+      padding-top: 5rem; /* 80px - h-20 on md+ */
+    }
+  }
+
+  /* Focus visible styles */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2;
+  }
+
+  /* Image optimization utilities */
+  .img-optimized {
+    /* Prevent layout shift */
+    display: block;
+    max-width: 100%;
+    height: auto;
+    
+    /* Improve rendering performance */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    
+    /* Force GPU acceleration for transforms */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Carousel image optimization */
+  .carousel-img {
+    /* Prevent layout shift with aspect ratio */
+    aspect-ratio: 16 / 10;
+    object-fit: contain;
+    
+    /* Improve performance */
+    will-change: opacity;
+    contain: layout style paint;
+    
+    /* Smooth transitions */
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  /* Prevent cumulative layout shift (CLS) */
+  .aspect-fixed {
+    position: relative;
+    width: 100%;
+  }
+
+  .aspect-fixed::before {
+    content: '';
+    display: block;
+    padding-top: 62.5%; /* 16:10 aspect ratio */
+  }
+
+  .aspect-fixed > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

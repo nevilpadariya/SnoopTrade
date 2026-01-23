@@ -74,6 +74,12 @@ async def login(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found. Please sign up to access our services."
             )
+        # Check if user has a password set (Google-only users won't have one)
+        if not user.get("hashed_password"):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="This account uses Google login. Please sign in with Google or set a password in Account Settings."
+            )
         if not password or not verify_password(password, user["hashed_password"]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -193,7 +199,10 @@ async def update_user_info(update_info: UpdateUser, token: str = Depends(oauth2_
     if update_info.name:
         update_data["name"] = update_info.name
     if update_info.password:
-        update_data["hashed_password"] = hash_password(update_info.password)  # Hash the new password
+        update_data["hashed_password"] = hash_password(update_info.password)
+        # If user was Google-only, update login_type to "both" so they can use either method
+        if user.get("login_type") == "google":
+            update_data["login_type"] = "both"
 
     if update_data:
         db.users.update_one({"email": user_email}, {"$set": update_data})

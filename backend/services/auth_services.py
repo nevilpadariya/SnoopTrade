@@ -1,3 +1,4 @@
+import os
 import bcrypt
 from jose import JWTError, jwt
 from google.oauth2 import id_token
@@ -9,7 +10,7 @@ ALGORITHM = "HS256"
 
 def decode_access_google_token(token: str):
     try:
-        CLIENT_ID = "978139760528-bmaaljd4da3akanum226u4627h4iq98e.apps.googleusercontent.com"
+        CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
         idinfo = id_token.verify_oauth2_token(token, Request(), CLIENT_ID)
         return idinfo
     except ValueError:

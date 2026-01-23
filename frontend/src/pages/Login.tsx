@@ -10,7 +10,7 @@ import GoogleLoginButton from '../components/login/GoogleLoginButton';
 import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
-const CLIENT_ID = '978139760528-bmaaljd4da3akanum226u4627h4iq98e.apps.googleusercontent.com';
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 
 const Login: React.FC = () => {
   const [loginError, setLoginError] = useState('');

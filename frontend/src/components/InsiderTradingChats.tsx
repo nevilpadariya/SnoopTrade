@@ -10,7 +10,16 @@ interface InsiderTradingChatsProps {
   tradeData: TradeData[];
 }
 
-const COLORS = ['hsl(var(--primary-strong))', 'hsl(var(--accent))', '#ef4444', '#f97316', '#3b82f6'];
+// Cohesive green palette that matches the dark theme
+const COLORS = [
+  'hsl(142, 70%, 45%)',   // Bright green
+  'hsl(160, 55%, 40%)',   // Teal green
+  'hsl(142, 45%, 35%)',   // Medium green
+  'hsl(175, 50%, 38%)',   // Cyan-green
+  'hsl(130, 50%, 45%)',   // Lime green
+  'hsl(155, 60%, 32%)',   // Dark teal
+  'hsl(140, 40%, 55%)',   // Light green
+];
 
 const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) => {
   const transactionTypeData = tradeData.reduce((acc: any, trade) => {

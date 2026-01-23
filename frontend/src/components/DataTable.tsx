@@ -67,16 +67,18 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   const getTransactionColor = (code: string) => {
+    // Green-based color palette matching the theme
     const colorMap: { [key: string]: string } = {
-      P: 'text-green-400',
-      S: 'text-red-400',
-      A: 'text-blue-400',
-      D: 'text-orange-400',
-      F: 'text-purple-400',
-      I: 'text-yellow-400',
-      M: 'text-cyan-400',
+      P: 'text-emerald-400',      // Purchase - bright green
+      S: 'text-red-400',          // Sale - keep red for clarity
+      A: 'text-teal-400',         // Grant/Award - teal
+      D: 'text-amber-400',        // Sale to Issuer - amber
+      F: 'text-violet-400',       // Payment of Exercise - violet
+      I: 'text-lime-400',         // Discretionary - lime
+      M: 'text-cyan-400',         // Exercise/Conversion - cyan
+      G: 'text-green-400',        // Gift - green
     };
-    return colorMap[code] || 'text-gray-400';
+    return colorMap[code] || 'text-slate-400';
   };
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -124,12 +126,12 @@ const DataTable: React.FC<DataTableProps> = ({
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   return (
-    <Card className="w-full bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-accent/20 backdrop-blur-sm">
+    <Card className="w-full bg-card/80 backdrop-blur-sm border-border/50 shadow-lg">
       <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-2xl font-bold text-white font-display">
+        <CardTitle className="text-2xl font-bold text-card-foreground font-display">
           Transaction History
         </CardTitle>
-        <p className="text-sm text-white/60">
+        <p className="text-sm text-muted-foreground">
           Detailed breakdown of all insider trading transactions
         </p>
       </CardHeader>
@@ -138,47 +140,47 @@ const DataTable: React.FC<DataTableProps> = ({
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-accent/20 hover:bg-transparent">
-                <TableHead className="text-white font-semibold">
+              <TableRow className="border-b border-border/30 hover:bg-transparent">
+                <TableHead className="text-card-foreground font-semibold">
                   <button
                     onClick={() => handleSort('date')}
-                    className="flex items-center gap-2 hover:text-accent transition-colors"
+                    className="flex items-center gap-2 hover:text-primary transition-colors"
                   >
                     Date
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-card-foreground font-semibold">
                   <button
                     onClick={() => handleSort('transaction_code')}
-                    className="flex items-center gap-2 hover:text-accent transition-colors"
+                    className="flex items-center gap-2 hover:text-primary transition-colors"
                   >
                     Type
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
                 </TableHead>
-                <TableHead className="text-right text-white font-semibold">
+                <TableHead className="text-right text-card-foreground font-semibold">
                   <button
                     onClick={() => handleSort('shares')}
-                    className="flex items-center gap-2 ml-auto hover:text-accent transition-colors"
+                    className="flex items-center gap-2 ml-auto hover:text-primary transition-colors"
                   >
                     Shares
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
                 </TableHead>
-                <TableHead className="text-right text-white font-semibold hidden sm:table-cell">
+                <TableHead className="text-right text-card-foreground font-semibold hidden sm:table-cell">
                   <button
                     onClick={() => handleSort('price_per_share')}
-                    className="flex items-center gap-2 ml-auto hover:text-accent transition-colors"
+                    className="flex items-center gap-2 ml-auto hover:text-primary transition-colors"
                   >
                     Price/Share
                     <ArrowUpDown className="h-4 w-4" />
                   </button>
                 </TableHead>
-                <TableHead className="text-right text-white font-semibold">
+                <TableHead className="text-right text-card-foreground font-semibold">
                   <button
                     onClick={() => handleSort('total_value')}
-                    className="flex items-center gap-2 ml-auto hover:text-accent transition-colors"
+                    className="flex items-center gap-2 ml-auto hover:text-primary transition-colors"
                   >
                     Total Value
                     <ArrowUpDown className="h-4 w-4" />
@@ -191,9 +193,9 @@ const DataTable: React.FC<DataTableProps> = ({
                 paginatedData.map((row, index) => (
                   <TableRow
                     key={index}
-                    className="border-b border-accent/10 hover:bg-accent/5 transition-colors"
+                    className="border-b border-border/20 hover:bg-primary/5 transition-colors"
                   >
-                    <TableCell className="font-medium text-white/90">
+                    <TableCell className="font-medium text-card-foreground/90">
                       {formatDate(row.date)}
                     </TableCell>
                     <TableCell>
@@ -201,17 +203,17 @@ const DataTable: React.FC<DataTableProps> = ({
                         {getTransactionType(row.transaction_code)}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right text-white/80 font-mono">
+                    <TableCell className="text-right text-card-foreground/80 font-mono">
                       {row.shares?.toLocaleString() || 'N/A'}
                     </TableCell>
-                    <TableCell className="text-right text-white/80 font-mono hidden sm:table-cell">
+                    <TableCell className="text-right text-card-foreground/80 font-mono hidden sm:table-cell">
                       $
                       {row.price_per_share?.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }) || 'N/A'}
                     </TableCell>
-                    <TableCell className="text-right font-semibold text-accent font-mono">
+                    <TableCell className="text-right font-semibold text-primary font-mono">
                       $
                       {(
                         row.shares * (row.price_per_share || 0)
@@ -224,7 +226,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-white/60 py-12">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
                     No transaction data available.
                   </TableCell>
                 </TableRow>
@@ -234,8 +236,8 @@ const DataTable: React.FC<DataTableProps> = ({
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-accent/20">
-          <div className="flex items-center gap-2 text-sm text-white/70">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border/30">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Rows per page:</span>
             <select
               value={rowsPerPage}
@@ -245,7 +247,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 } as React.ChangeEvent<HTMLInputElement>;
                 handleChangeRowsPerPage(syntheticEvent);
               }}
-              className="bg-gray-800 text-white border border-accent/30 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-accent"
+              className="bg-card text-card-foreground border border-border/50 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {[5, 10, 25, 50].map((size) => (
                 <option key={size} value={size}>
@@ -256,7 +258,7 @@ const DataTable: React.FC<DataTableProps> = ({
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-white/70">
+            <span className="text-sm text-muted-foreground">
               Page {page + 1} of {totalPages || 1} ({filteredData.length} total)
             </span>
             <div className="flex items-center gap-1">
@@ -265,7 +267,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 size="icon"
                 onClick={(e) => handleChangePage(e, 0)}
                 disabled={page === 0}
-                className="h-8 w-8 text-white hover:text-accent hover:bg-accent/10 disabled:opacity-30"
+                className="h-8 w-8 text-card-foreground hover:text-primary hover:bg-primary/10 disabled:opacity-30"
               >
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
@@ -274,7 +276,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 size="icon"
                 onClick={(e) => handleChangePage(e, page - 1)}
                 disabled={page === 0}
-                className="h-8 w-8 text-white hover:text-accent hover:bg-accent/10 disabled:opacity-30"
+                className="h-8 w-8 text-card-foreground hover:text-primary hover:bg-primary/10 disabled:opacity-30"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -283,7 +285,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 size="icon"
                 onClick={(e) => handleChangePage(e, page + 1)}
                 disabled={page >= totalPages - 1}
-                className="h-8 w-8 text-white hover:text-accent hover:bg-accent/10 disabled:opacity-30"
+                className="h-8 w-8 text-card-foreground hover:text-primary hover:bg-primary/10 disabled:opacity-30"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -292,7 +294,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 size="icon"
                 onClick={(e) => handleChangePage(e, totalPages - 1)}
                 disabled={page >= totalPages - 1}
-                className="h-8 w-8 text-white hover:text-accent hover:bg-accent/10 disabled:opacity-30"
+                className="h-8 w-8 text-card-foreground hover:text-primary hover:bg-primary/10 disabled:opacity-30"
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>

@@ -11,14 +11,14 @@ const SignUp: React.FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleFormSubmit = async (email: string, password: string) => {
+  const handleFormSubmit = async (name: string, email: string, password: string) => {
     try {
       const response = await fetch(API_ENDPOINTS.signUp, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       if (response.ok) {
@@ -27,7 +27,18 @@ const SignUp: React.FC = () => {
         setTimeout(() => navigate('/login'), 2000);
       } else {
         const errorData = await response.json();
-        setSnackbarMessage(errorData.detail || 'Sign Up failed. Please try again.');
+        // Handle FastAPI validation errors (detail is an array) vs regular errors (detail is a string)
+        let errorMessage = 'Sign Up failed. Please try again.';
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            // Pydantic validation error - extract message from first error
+            errorMessage = errorData.detail[0]?.msg || errorMessage;
+          } else {
+            // Regular error message
+            errorMessage = errorData.detail;
+          }
+        }
+        setSnackbarMessage(errorMessage);
         setOpenSnackbar(true);
       }
     } catch (error) {

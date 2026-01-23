@@ -1,3 +1,14 @@
+# Environment variables (contains secrets)
+.env
+
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

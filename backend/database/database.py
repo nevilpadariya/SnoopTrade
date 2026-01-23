@@ -1,9 +1,13 @@
 from pymongo import MongoClient, errors
 import os
+from pathlib import Path
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
 
-
+# Load .env file from backend directory
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
 
 DATABASE_URL = os.getenv("MONGODB_URI") or os.getenv("MONGO_URI")
 if not DATABASE_URL:

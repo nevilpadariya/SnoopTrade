@@ -6,11 +6,18 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from lxml import etree
 from io import StringIO
+from pathlib import Path
+from dotenv import load_dotenv
 import re
+import os
+
+# Load .env file
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
 
 # MongoDB setup
-headers = {'User-Agent': 'k (k@example.com)'}  # Replace with your name and email
-client = MongoClient("mongodb+srv://koratpratik2001:3UTSYp6E2nlQixgW@cmpe272project.j7rxj.mongodb.net/?retryWrites=true&w=majority&appName=Cmpe272Project")  # Replace with your MongoDB URI if different
+MONGODB_URI = os.getenv("MONGODB_URI")
+client = MongoClient(MONGODB_URI)
 db = client["sec_data"]
 
 
@@ -28,7 +35,12 @@ logging.basicConfig(
 ticker_cik_mapping = {
     "AAPL": "0000320193",
     "NVDA": "0001045810",
-    "META": "0001326801"
+    "META": "0001326801",
+    "GOOGL": "0001652044",
+    "MSFT": "0000789019",
+    "AMZN": "0001018724",
+    "TSLA": "0001318605",
+    "NFLX": "0001065280"
 }
 
 # Headers for SEC requests

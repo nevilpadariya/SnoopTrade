@@ -5,19 +5,26 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
 interface SignUpFormProps {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (name: string, email: string, password: string) => void;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string }>({});
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
+    const newErrors: { name?: string; email?: string; password?: string; confirmPassword?: string } = {};
+
+    if (!name) {
+      newErrors.name = 'Name is required';
+    } else if (name.trim().split(' ').length < 2) {
+      newErrors.name = 'Please enter your full name (first and last)';
+    }
 
     if (!email) {
       newErrors.email = 'Email is required';
@@ -42,12 +49,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(email, password);
+      onSubmit(name, email, password);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="name" className="text-card-foreground">Full Name</Label>
+        <Input
+          id="name"
+          type="text"
+          placeholder="Enter your full name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="h-11"
+        />
+        {errors.name && (
+          <p className="text-destructive text-sm mt-1">{errors.name}</p>
+        )}
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="email" className="text-card-foreground">Email</Label>
         <Input

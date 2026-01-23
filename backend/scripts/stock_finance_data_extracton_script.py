@@ -3,8 +3,14 @@ from pymongo import UpdateOne, errors
 from dateutil import parser
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from pathlib import Path
+from dotenv import load_dotenv
 import logging
 import os
+
+# Load .env file
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
 
 # MongoDB setup
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb+srv://your-default-uri")
@@ -122,8 +128,8 @@ def save_stock_data(ticker: str, max_entries: int = 500):
 
 # Main entry point
 if __name__ == "__main__":
-    # Define your list of tickers
-    ticker_symbols = ["META"]
+    # Define your list of tickers - popular stocks
+    ticker_symbols = ["META", "AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NVDA", "NFLX"]
 
     # Loop through each ticker in the list and save data
     for ticker_symbol in ticker_symbols:

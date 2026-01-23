@@ -19,7 +19,7 @@ const teamMembers = [
     name: 'Nagaraj Gireppa Kanni',
     role: 'UI/UX Designer',
     bio: 'Creating intuitive interfaces that make complex data accessible to everyone.',
-    linkedinUrl: 'https://www.linkedin.com/in/nagaraj-gireppa-kanni/',
+    linkedinUrl: 'https://www.linkedin.com/in/nagsgk/',
   },
 ];
 

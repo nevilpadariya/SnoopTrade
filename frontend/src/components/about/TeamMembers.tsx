@@ -1,26 +1,26 @@
 import React from 'react';
 import TeamMemberCard from './TeamMemberCard';
-import PratikImage from '../../utils/Pratik.jpg';
+
 
 const teamMembers = [
   {
-    name: 'Pratik Dhakal',
+    name: 'Pratik Korat',
+    role: 'Backend Developer and Machine Learning Engineer',
+    bio: 'Specializing in machine learning and predictive analytics for financial data.',
+    avatarUrl: '',
+    linkedinUrl: 'https://www.linkedin.com/in/pratik-korat/',
+  },
+  {
+    name: 'Nevil Padariya',
     role: 'Full Stack Developer',
     bio: 'Passionate about building scalable systems and creating great user experiences.',
-    avatarUrl: PratikImage,
-    linkedinUrl: 'https://www.linkedin.com/in/pratik-dhakal',
+    linkedinUrl: 'https://www.linkedin.com/in/nevil-padariya/',
   },
   {
-    name: 'Team Member 2',
-    role: 'Data Scientist',
-    bio: 'Specializing in machine learning and predictive analytics for financial data.',
-    linkedinUrl: '#',
-  },
-  {
-    name: 'Team Member 3',
+    name: 'Nagaraj Gireppa Kanni',
     role: 'UI/UX Designer',
     bio: 'Creating intuitive interfaces that make complex data accessible to everyone.',
-    linkedinUrl: '#',
+    linkedinUrl: 'https://www.linkedin.com/in/nagaraj-gireppa-kanni/',
   },
 ];
 

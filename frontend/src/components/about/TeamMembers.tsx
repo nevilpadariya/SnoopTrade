@@ -7,7 +7,6 @@ const teamMembers = [
     name: 'Pratik Korat',
     role: 'Backend Developer and Machine Learning Engineer',
     bio: 'Specializing in machine learning and predictive analytics for financial data.',
-    avatarUrl: '',
     linkedinUrl: 'https://www.linkedin.com/in/pratik-korat/',
   },
   {
@@ -33,7 +32,6 @@ const TeamMembers: React.FC = () => {
           name={member.name}
           role={member.role}
           bio={member.bio}
-          avatarUrl={member.avatarUrl}
           linkedinUrl={member.linkedinUrl}
         />
       ))}

@@ -140,7 +140,7 @@ const Account: React.FC = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="flex items-center justify-center pt-40">
+        <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </div>
@@ -151,10 +151,10 @@ const Account: React.FC = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="flex items-center justify-center pt-40">
+        <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40 px-4">
           <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <p className="text-destructive">{error}</p>
+            <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-4" />
+            <p className="text-destructive text-sm sm:text-base">{error}</p>
           </div>
         </div>
       </div>
@@ -169,19 +169,19 @@ const Account: React.FC = () => {
 
       <Navbar />
 
-      <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
-        <div className="max-w-3xl mx-auto pt-12">
-          <h1 className="text-5xl font-extrabold text-foreground mb-2 font-display">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
+        <div className="max-w-3xl mx-auto pt-6 sm:pt-8 md:pt-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground mb-2 font-display">
             Account <span className="text-primary-strong">Settings</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-12">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 md:mb-12">
             Manage your account information and security settings.
           </p>
 
           {/* User Info Card */}
-          <Card className="mb-8 bg-card border-border">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-semibold text-card-foreground mb-6 font-display">
+          <Card className="mb-6 sm:mb-8 bg-card border-border">
+            <CardContent className="p-4 sm:p-6 md:p-8">
+              <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-4 sm:mb-6 font-display">
                 Account Information
               </h2>
               <div className="space-y-4">
@@ -237,8 +237,8 @@ const Account: React.FC = () => {
 
           {/* Password Settings */}
           <Card className="bg-card border-border">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-semibold text-card-foreground mb-2 font-display">
+            <CardContent className="p-4 sm:p-6 md:p-8">
+              <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-2 font-display">
                 {isGoogleOnlyUser ? 'Create Password' : 'Change Password'}
               </h2>
               {isGoogleOnlyUser && (

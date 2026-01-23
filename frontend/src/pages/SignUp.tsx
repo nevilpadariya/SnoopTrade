@@ -56,13 +56,13 @@ const SignUp: React.FC = () => {
 
       <LoginHeader />
 
-      <div className="animate-in fade-in duration-1000 mt-[120px] w-[90%] sm:w-[80%] lg:w-[50%] max-w-[600px] mb-12">
-        <Card className="p-8 md:p-12 bg-card border-border shadow-2xl rounded-2xl">
-          <h2 className="text-3xl font-bold text-center text-card-foreground mb-8 font-display">
+      <div className="animate-in fade-in duration-1000 mt-24 sm:mt-28 md:mt-32 w-[92%] sm:w-[85%] lg:w-[50%] max-w-[600px] mb-8 sm:mb-12">
+        <Card className="p-5 sm:p-8 md:p-12 bg-card border-border shadow-2xl rounded-xl sm:rounded-2xl">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-card-foreground mb-6 sm:mb-8 font-display">
             Create Your Account
           </h2>
           <SignUpForm onSubmit={handleFormSubmit} />
-          <p className="text-sm text-center text-muted-foreground mt-8">
+          <p className="text-sm text-center text-muted-foreground mt-6 sm:mt-8">
             Already have an account?{' '}
             <Link
               to="/login"
@@ -75,8 +75,8 @@ const SignUp: React.FC = () => {
       </div>
 
       {snackbarMessage && (
-        <div className="fixed bottom-8 right-8 bg-card border border-border rounded-lg p-4 shadow-xl animate-in slide-in-from-bottom-4">
-          <p className="text-card-foreground">{snackbarMessage}</p>
+        <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 left-4 sm:left-auto bg-card border border-border rounded-lg p-3 sm:p-4 shadow-xl animate-in slide-in-from-bottom-4 max-w-[calc(100%-2rem)] sm:max-w-md">
+          <p className="text-card-foreground text-sm sm:text-base">{snackbarMessage}</p>
         </div>
       )}
     </div>

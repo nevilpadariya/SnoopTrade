@@ -66,6 +66,12 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = ({
                 borderRadius: '8px',
                 color: 'hsl(var(--card-foreground))',
               }}
+              itemStyle={{
+                color: 'hsl(var(--card-foreground))',
+              }}
+              labelStyle={{
+                color: 'hsl(var(--card-foreground))',
+              }}
             />
             <Legend 
               wrapperStyle={{ 

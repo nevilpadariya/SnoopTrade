@@ -104,19 +104,19 @@ const Login: React.FC = () => {
       <LoginHeader />
 
       <GoogleOAuthProvider clientId={CLIENT_ID}>
-        <div className="animate-in fade-in duration-1000 mt-[120px] w-[90%] sm:w-[80%] lg:w-[80%] max-w-[1200px] mb-12">
-          <Card className="flex flex-col md:flex-row overflow-hidden rounded-2xl shadow-2xl bg-card border-border">
+        <div className="animate-in fade-in duration-1000 mt-24 sm:mt-28 md:mt-32 w-[92%] sm:w-[85%] lg:w-[75%] max-w-[1200px] mb-8 sm:mb-12">
+          <Card className="flex flex-col md:flex-row overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-card border-border">
             <WelcomePanel />
 
-            <div className="flex-1 flex items-center justify-center p-8 md:p-12 bg-card">
-              <div className="w-full max-w-md space-y-6">
-                <h2 className="text-2xl md:text-3xl font-semibold text-center text-card-foreground font-display">
+            <div className="flex-1 flex items-center justify-center p-5 sm:p-8 md:p-12 bg-card">
+              <div className="w-full max-w-md space-y-4 sm:space-y-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-center text-card-foreground font-display">
                   Login to Your Account
                 </h2>
 
                 <LoginForm onSubmit={handleFormSubmit} error={loginError} />
 
-                <div className="flex items-center my-6">
+                <div className="flex items-center my-4 sm:my-6">
                   <div className="flex-1 border-b border-border" />
                   <span className="px-4 text-sm text-muted-foreground">OR</span>
                   <div className="flex-1 border-b border-border" />
@@ -127,7 +127,7 @@ const Login: React.FC = () => {
                   onError={handleGoogleFailure}
                 />
 
-                <p className="text-sm text-center text-muted-foreground mt-6">
+                <p className="text-sm text-center text-muted-foreground mt-4 sm:mt-6">
                   Don't have an account?{' '}
                   <Link
                     to="/signup"

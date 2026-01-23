@@ -123,6 +123,9 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                 padding: '12px 16px',
               }}
+              itemStyle={{
+                color: 'hsl(var(--card-foreground))',
+              }}
               formatter={(value: number, name: string) => [
                 value.toLocaleString(),
                 TRANSACTION_NAMES[name] || name,

@@ -15,12 +15,12 @@ const About: React.FC = () => {
 
       <Navbar />
 
-      <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
-        <div className="text-center pt-12 mb-16">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-foreground mb-6 font-display">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
+        <div className="text-center pt-6 sm:pt-8 md:pt-12 mb-10 sm:mb-12 md:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4 sm:mb-6 font-display">
             About <span className="text-primary-strong">SnoopTrade</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Empowering investors with real-time insider trading intelligence and advanced analytics.
           </p>
         </div>

@@ -44,6 +44,12 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
                 borderRadius: '8px',
                 color: 'hsl(var(--card-foreground))',
               }}
+              itemStyle={{
+                color: 'hsl(var(--card-foreground))',
+              }}
+              labelStyle={{
+                color: 'hsl(var(--card-foreground))',
+              }}
             />
             <Legend 
               wrapperStyle={{ 

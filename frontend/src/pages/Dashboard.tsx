@@ -190,7 +190,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
           Analyze market trends and insider trading activities with real-time data and insights.
         </p>
 
-        <div className="flex flex-col items-center mt-8 space-y-4">
+        <div className="flex flex-col items-center mt-6 sm:mt-8 space-y-4">
           <SearchBar
             searchTerm={searchTerm}
             onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -202,7 +202,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
             />
           )}
           {showCompanyList && filteredCompanies.length === 0 && (
-            <p className="text-muted-foreground mt-4">No companies found.</p>
+            <p className="text-muted-foreground mt-4 text-sm sm:text-base">No companies found.</p>
           )}
 
           {selectedCompany && (

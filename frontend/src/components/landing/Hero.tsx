@@ -160,7 +160,7 @@ const Hero = () => {
               </div>
               
               {/* Indicator Dots */}
-              <div className="mt-4 sm:mt-6 flex items-center justify-center gap-2" role="tablist" aria-label="Carousel slides">
+              <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1.5" role="tablist" aria-label="Carousel slides">
                 {SLIDES.map((_, index) => (
                   <button
                     key={index}
@@ -169,15 +169,14 @@ const Hero = () => {
                     aria-selected={selectedIndex === index}
                     aria-controls={`slide-${index}`}
                     className={`
-                      h-2.5 sm:h-2 rounded-full transition-all duration-300 ease-out touch-manipulation
-                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2
+                      rounded-full transition-all duration-300 ease-out touch-manipulation
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-1
                       ${
                         selectedIndex === index
-                          ? 'w-8 sm:w-8 bg-primary-strong'
-                          : 'w-2.5 sm:w-2 bg-muted hover:bg-muted-foreground/50'
+                          ? 'w-5 h-1.5 bg-primary-strong'
+                          : 'w-1.5 h-1.5 bg-muted-foreground/40 hover:bg-muted-foreground/60'
                       }
                     `}
-                    style={{ minHeight: '44px', minWidth: '44px', padding: '20px 10px' }}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}

@@ -78,33 +78,33 @@ const Features: React.FC = () => {
         <Navbar />
 
         <main id="main-content">
-          <div className="container mx-auto px-4 lg:px-8 pt-20 pb-16">
-            <div className="text-center mb-16 pt-12">
-              <h1 className="text-5xl md:text-6xl font-extrabold text-foreground mb-6 font-display">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
+            <div className="text-center mb-10 sm:mb-12 md:mb-16 pt-6 sm:pt-8 md:pt-12">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4 sm:mb-6 font-display">
                 Powerful Features for <span className="text-primary-strong">Smart Trading</span>
               </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
                 Everything you need to track insider trading activities and make informed investment decisions.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12">
               {featuresData.map((feature, index) => (
                 <Card
                   key={index}
-                  className="relative overflow-hidden group p-8 h-full bg-card hover:-translate-y-2 transition-all duration-300 border-border hover:shadow-xl"
+                  className="relative overflow-hidden group p-4 sm:p-6 md:p-8 h-full bg-card hover:-translate-y-2 transition-all duration-300 border-border hover:shadow-xl"
                 >
                   {/* Top overline reveal on hover */}
                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" aria-hidden="true" />
                   
                   <CardContent className="p-0 flex flex-col h-full">
-                    <div className="inline-flex p-4 rounded-xl bg-primary/20 text-primary-strong mb-6 w-fit">
+                    <div className="inline-flex p-3 sm:p-4 rounded-lg sm:rounded-xl bg-primary/20 text-primary-strong mb-4 sm:mb-6 w-fit">
                       {feature.icon}
                     </div>
-                    <h2 className="text-2xl font-semibold text-card-foreground mb-4 font-display">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-3 sm:mb-4 font-display">
                       {feature.title}
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed flex-1">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
                       {feature.description}
                     </p>
                   </CardContent>

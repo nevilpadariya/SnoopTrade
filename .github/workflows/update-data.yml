@@ -1,0 +1,155 @@
+# GitHub Actions workflow for automated stock and SEC data updates
+# This workflow runs on a schedule to update data without hitting Render's memory limits
+
+name: Update Stock & SEC Data
+
+on:
+  schedule:
+    # Run every 15 minutes during market hours (9 AM - 5 PM EST, Mon-Fri)
+    # Adjust cron as needed. Note: GitHub Actions uses UTC time.
+    # 9 AM EST = 14:00 UTC, 5 PM EST = 22:00 UTC
+    - cron: '*/15 14-22 * * 1-5'
+    
+    # Also run once daily at 6 AM EST (11:00 UTC) for overnight updates
+    - cron: '0 11 * * *'
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'Specific ticker to update (leave empty for all)'
+        required: false
+        default: ''
+      update_type:
+        description: 'Type of update'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - stock
+          - sec
+          - both
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Job 1: Update Stock Data
+  update-stock-data:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.update_type != 'sec' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 2  # Limit parallel jobs to avoid rate limits
+      matrix:
+        ticker: [AAPL, NVDA, META, GOOGL, MSFT, AMZN, TSLA, NFLX]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yfinance pymongo python-dotenv pandas
+      
+      - name: Update stock data for ${{ matrix.ticker }}
+        if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          cd backend
+          python -c "
+          import os
+          os.environ['MONGODB_URI'] = '${{ secrets.MONGODB_URI }}'
+          from scripts.stock_finance_data_extracton_script import save_stock_data
+          print('Updating stock data for ${{ matrix.ticker }}...')
+          save_stock_data('${{ matrix.ticker }}')
+          print('Stock data update complete for ${{ matrix.ticker }}')
+          "
+
+  # Job 2: Update SEC Form 4 Data
+  update-sec-data:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.update_type != 'stock' }}
+    # Run SEC updates after stock updates to spread the load
+    needs: [update-stock-data]
+    # Allow this job to run even if stock updates are skipped
+    if: ${{ always() && github.event.inputs.update_type != 'stock' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # SEC has stricter rate limits
+      matrix:
+        include:
+          - ticker: AAPL
+            cik: '0000320193'
+          - ticker: NVDA
+            cik: '0001045810'
+          - ticker: META
+            cik: '0001326801'
+          - ticker: GOOGL
+            cik: '0001652044'
+          - ticker: MSFT
+            cik: '0000789019'
+          - ticker: AMZN
+            cik: '0001018724'
+          - ticker: TSLA
+            cik: '0001318605'
+          - ticker: NFLX
+            cik: '0001065280'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install requests pandas beautifulsoup4 lxml pymongo python-dotenv
+      
+      - name: Update SEC data for ${{ matrix.ticker }}
+        if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          cd backend
+          python -c "
+          import os
+          import time
+          os.environ['MONGODB_URI'] = '${{ secrets.MONGODB_URI }}'
+          from scripts.sec_filing_data_extraction_script import insert_form4_data
+          print('Updating SEC Form 4 data for ${{ matrix.ticker }} (CIK: ${{ matrix.cik }})...')
+          # Add delay to respect SEC rate limits
+          time.sleep(2)
+          insert_form4_data('${{ matrix.ticker }}', '${{ matrix.cik }}')
+          print('SEC data update complete for ${{ matrix.ticker }}')
+          "
+
+  # Job 3: Notify on completion (optional)
+  notify-completion:
+    runs-on: ubuntu-latest
+    needs: [update-stock-data, update-sec-data]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## Data Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Stock Data Job**: ${{ needs.update-stock-data.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **SEC Data Job**: ${{ needs.update-sec-data.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Completed at: $(date -u)" >> $GITHUB_STEP_SUMMARY

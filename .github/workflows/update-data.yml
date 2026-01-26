@@ -78,10 +78,8 @@ jobs:
   # Job 2: Update SEC Form 4 Data
   update-sec-data:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.update_type != 'stock' }}
-    # Run SEC updates after stock updates to spread the load
+    # Run SEC updates after stock updates, allow even if stock updates are skipped
     needs: [update-stock-data]
-    # Allow this job to run even if stock updates are skipped
     if: ${{ always() && github.event.inputs.update_type != 'stock' }}
     strategy:
       fail-fast: false

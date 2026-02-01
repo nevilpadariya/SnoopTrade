@@ -150,7 +150,6 @@ const Hero = () => {
                           }}
                           loading={index === 0 ? "eager" : "lazy"}
                           decoding={index === 0 ? "sync" : "async"}
-                          fetchpriority={index === 0 ? "high" : "low"}
                           sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 600px"
                         />
                       </div>

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from database.database import stock_db
 from typing import List
 from models.stock_data import StockDataModel
+import pytz
 
 TIME_PERIOD_DAYS = {
     "1w": 7,
@@ -11,22 +12,18 @@ TIME_PERIOD_DAYS = {
     "1y": 365
 }
 
+EASTERN = pytz.timezone("America/New_York")
+
+
 def fetch_stock_data(ticker: str, time_period: str = "1y", limit: int = None) -> List[StockDataModel]:
     """
     Fetches and processes documents from the collection for the specified ticker and time period,
-    optionally limiting the number of results.
-
-    Args:
-        ticker (str): The stock ticker symbol.
-        time_period (str): The time period for filtering stock data ("1w", "1m", "3m", "6m", "1y").
-        limit (int, optional): The maximum number of documents to retrieve. Defaults to None (no limit).
-
-    Returns:
-        List[StockDataModel]: A list of processed documents retrieved within the specified time period.
+    optionally limiting the number of results. Uses Eastern time for the date window (market hours).
     """
     collection = stock_db[f"stock_data_{ticker}"]
     days_ago = TIME_PERIOD_DAYS.get(time_period, 365)
-    start_date = datetime.now() - timedelta(days=days_ago)
+    now_eastern = datetime.now(EASTERN)
+    start_date = (now_eastern - timedelta(days=days_ago)).replace(tzinfo=None)
     query = {"Date": {"$gte": start_date}}
     cursor = collection.find(query).sort("Date", -1)
     if limit:

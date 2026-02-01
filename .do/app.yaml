@@ -13,6 +13,10 @@ services:
     http_port: 8080
     instance_count: 1
     instance_size_slug: basic-xxs
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 10
     envs:
       - key: MONGODB_URI
         scope: RUN_AND_BUILD_TIME

@@ -55,3 +55,9 @@ app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 @app.get("/")
 async def welcome():
     return {"message": "Welcome to the API!"}
+
+
+@app.get("/health")
+async def health():
+    """Health check for load balancers and App Platform."""
+    return {"status": "ok"}

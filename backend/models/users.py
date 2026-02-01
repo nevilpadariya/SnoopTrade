@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -8,14 +9,15 @@ class User(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    name: str
-    password: str = None
+    name: Optional[str] = None
+    password: Optional[str] = None
 
 
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
     email: str
+    requires_password: bool = False
 
 
 class MessageResponse(BaseModel):

@@ -257,7 +257,7 @@ const Account = () => {
               
               {/* Error Message */}
               {formError && (
-                <div className="flex items-center gap-2 p-4 mb-6 rounded-lg bg-destructive/20 text-destructive">
+                <div className="flex items-center gap-2 p-4 mb-6 rounded-lg bg-destructive/20 text-destructive-foreground">
                   <AlertCircle className="h-5 w-5" />
                   <span>{formError}</span>
                 </div>

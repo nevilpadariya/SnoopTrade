@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import CreatePassword from './pages/CreatePassword';
 import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import Features from './pages/Features';
@@ -10,8 +11,17 @@ import Account from './pages/Account';
 import './App.css';
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { token } = useAuth();
-  return token ? children : <Navigate to="/login" replace />;
+  const { token, requiresPassword } = useAuth();
+  if (!token) return <Navigate to="/login" replace />;
+  if (requiresPassword) return <Navigate to="/create-password" replace />;
+  return children;
+};
+
+const CreatePasswordRoute = () => {
+  const { token, requiresPassword } = useAuth();
+  if (!token) return <Navigate to="/login" replace />;
+  if (!requiresPassword) return <Navigate to="/dashboard" replace />;
+  return <CreatePassword />;
 };
 
 const App = () => {
@@ -22,6 +32,7 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/create-password" element={<CreatePasswordRoute />} />
           <Route path="/about" element={<About />} />
           <Route path="/features" element={<Features />} />
           <Route

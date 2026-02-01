@@ -8,7 +8,7 @@ interface GoogleLoginButtonProps {
 
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess, onError }) => {
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full [&>div]:!w-full [&>div]:!min-w-0">
       <GoogleLogin
         onSuccess={onSuccess}
         onError={onError}

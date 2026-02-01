@@ -21,7 +21,7 @@
     --accent: 95 35% 70%;
     --accent-foreground: 120 20% 15%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 10%;
     --border: 110 18% 82%;
     --input: 110 18% 82%;
     --ring: 95 45% 82%;
@@ -37,16 +37,16 @@
     --popover: 120 10% 14%;
     --popover-foreground: 120 10% 95%;
     --primary: 95 35% 70%;
-    --primary-strong: 95 35% 70%;
+    --primary-strong: 95 38% 78%;
     --primary-foreground: 120 20% 10%;
     --secondary: 120 8% 20%;
     --secondary-foreground: 120 10% 95%;
     --muted: 120 8% 20%;
-    --muted-foreground: 120 5% 65%;
+    --muted-foreground: 120 5% 72%;
     --accent: 95 30% 60%;
     --accent-foreground: 120 20% 10%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 120 10% 95%;
+    --destructive: 0 55% 48%;
+    --destructive-foreground: 0 0% 98%;
     --border: 120 8% 25%;
     --input: 120 8% 25%;
     --ring: 95 35% 70%;
@@ -91,6 +91,12 @@
 
 /* Utility classes */
 @layer utilities {
+  /* Destructive text: black in light mode, white in dark mode (override Tailwind) */
+  .text-destructive,
+  .text-destructive-foreground {
+    color: hsl(var(--destructive-foreground)) !important;
+  }
+
   /* Ensure content clears fixed navbar */
   .navbar-offset {
     padding-top: 4rem; /* 64px - h-16 */
@@ -173,4 +179,27 @@ main {
 ::-webkit-scrollbar-thumb {
   @apply bg-primary/50 hover:bg-primary;
   border-radius: 5px;
+}
+
+/* Login/signup error box: force white text (unlayered so it overrides Tailwind) */
+.login-error-message,
+.login-error-message * {
+  color: #ffffff !important;
+}
+
+/* Stock data range: 4 buttons in one row */
+.time-range-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.time-range-row > * {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.time-range-row button {
+  flex: 1 1 0;
+  min-width: 3.5rem;
 }

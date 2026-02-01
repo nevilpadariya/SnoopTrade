@@ -21,17 +21,32 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 100);
     };
 
+    const applyTheme = (dark: boolean) => {
+      setIsDark(dark);
+      if (dark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    
-    setIsDark(shouldBeDark);
-    if (shouldBeDark) {
-      document.documentElement.classList.add('dark');
-    }
+    const shouldBeDark = savedTheme === 'dark' || (savedTheme !== 'light' && prefersDark);
+    applyTheme(shouldBeDark);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handlePreferenceChange = () => {
+      if (localStorage.getItem('theme') != null) return;
+      applyTheme(mediaQuery.matches);
+    };
+    mediaQuery.addEventListener('change', handlePreferenceChange);
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      mediaQuery.removeEventListener('change', handlePreferenceChange);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const toggleTheme = () => {

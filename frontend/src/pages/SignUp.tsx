@@ -49,20 +49,20 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-background">
+    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
       <Helmet>
         <title>Sign Up - SnoopTrade</title>
       </Helmet>
 
       <LoginHeader />
 
-      <div className="animate-in fade-in duration-1000 mt-24 sm:mt-28 md:mt-32 w-[92%] sm:w-[85%] lg:w-[50%] max-w-[600px] mb-8 sm:mb-12">
-        <Card className="p-5 sm:p-8 md:p-12 bg-card border-border shadow-2xl rounded-xl sm:rounded-2xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-card-foreground mb-6 sm:mb-8 font-display">
+      <div className="animate-in fade-in duration-1000 flex-1 flex flex-col min-h-0 overflow-hidden items-center justify-center px-4 py-6 lg:py-2 w-[92%] sm:w-[85%] lg:w-[50%] max-w-[600px] mb-8 sm:mb-12 lg:mb-0">
+        <Card className="p-5 sm:p-8 md:p-12 lg:p-5 bg-card border-border shadow-2xl rounded-xl sm:rounded-2xl max-h-full overflow-hidden flex flex-col min-h-0">
+          <h2 className="text-2xl sm:text-3xl lg:text-xl font-bold text-center text-card-foreground mb-6 sm:mb-8 lg:mb-3 font-display shrink-0">
             Create Your Account
           </h2>
           <SignUpForm onSubmit={handleFormSubmit} />
-          <p className="text-sm text-center text-muted-foreground mt-6 sm:mt-8">
+          <p className="text-sm text-center text-muted-foreground mt-6 sm:mt-8 lg:mt-3 shrink-0">
             Already have an account?{' '}
             <Link
               to="/login"

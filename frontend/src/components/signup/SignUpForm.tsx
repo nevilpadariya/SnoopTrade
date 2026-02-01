@@ -54,7 +54,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-3">
       <div className="space-y-2">
         <Label htmlFor="name" className="text-card-foreground">Full Name</Label>
         <Input
@@ -63,7 +63,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           placeholder="Enter your full name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-11"
+          className="h-11 lg:h-9"
         />
         {errors.name && (
           <p className="text-destructive text-sm mt-1">{errors.name}</p>
@@ -78,7 +78,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="h-11"
+          className="h-11 lg:h-9"
         />
         {errors.email && (
           <p className="text-destructive text-sm mt-1">{errors.email}</p>
@@ -94,7 +94,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-11 pr-10"
+            className="h-11 lg:h-9 pr-10"
           />
           <button
             type="button"
@@ -118,7 +118,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="h-11 pr-10"
+            className="h-11 lg:h-9 pr-10"
           />
           <button
             type="button"
@@ -135,7 +135,7 @@ const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
 
       <Button
         type="submit"
-        className="w-full h-12 text-base font-semibold"
+        className="w-full h-12 lg:h-10 text-base lg:text-sm font-semibold"
       >
         Create Account
       </Button>

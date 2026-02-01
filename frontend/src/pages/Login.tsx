@@ -16,7 +16,7 @@ const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 const Login = () => {
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
-  const { token, setToken } = useAuth();
+  const { token, setToken, requiresPassword, setRequiresPassword } = useAuth();
 
   const handleFormSubmit = async (email: string, password: string) => {
     try {
@@ -77,7 +77,12 @@ const Login = () => {
       if (tokenResponse.ok) {
         const data = await tokenResponse.json();
         setToken(data.access_token);
-        navigate('/dashboard');
+        if (data.requires_password) {
+          setRequiresPassword(true);
+          navigate('/create-password');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         const errorData = await tokenResponse.json();
         setLoginError(errorData.detail || 'Google login failed.');
@@ -92,12 +97,15 @@ const Login = () => {
     setLoginError('Google Login failed.');
   };
 
-  if (token) {
+  if (token && !requiresPassword) {
     return <Navigate to="/dashboard" replace />;
+  }
+  if (token && requiresPassword) {
+    return <Navigate to="/create-password" replace />;
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-background">
+    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
       <Helmet>
         <title>Login - SnoopTrade</title>
       </Helmet>
@@ -105,11 +113,11 @@ const Login = () => {
       <LoginHeader />
 
       <GoogleOAuthProvider clientId={CLIENT_ID}>
-        <div className="animate-in fade-in duration-1000 mt-24 sm:mt-28 md:mt-32 w-[92%] sm:w-[85%] lg:w-[75%] max-w-[1200px] mb-8 sm:mb-12">
-          <Card className="flex flex-col md:flex-row overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-card border-border">
+        <div className="animate-in fade-in duration-1000 flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-6 lg:py-4 w-[92%] sm:w-[85%] lg:w-[75%] max-w-[1200px] mb-8 sm:mb-12 lg:mb-0">
+          <Card className="flex flex-col md:flex-row overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-card border-border max-h-[calc(100vh-8rem)] lg:max-h-[calc(100vh-6rem)]">
             <WelcomePanel />
 
-            <div className="flex-1 flex items-center justify-center p-5 sm:p-8 md:p-12 bg-card">
+            <div className="flex-1 flex items-center justify-center p-5 sm:p-8 md:p-12 bg-card min-h-0 overflow-y-auto">
               <div className="w-full max-w-md space-y-4 sm:space-y-6">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-center text-card-foreground font-display">
                   Login to Your Account
@@ -123,10 +131,12 @@ const Login = () => {
                   <div className="flex-1 border-b border-border" />
                 </div>
 
-                <GoogleLoginButton
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleFailure}
-                />
+                <div className="w-full">
+                  <GoogleLoginButton
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleFailure}
+                  />
+                </div>
 
                 <p className="text-sm text-center text-muted-foreground mt-4 sm:mt-6">
                   Don't have an account?{' '}

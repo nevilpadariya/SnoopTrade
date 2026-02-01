@@ -13,6 +13,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import logging
 import os
+import pytz
+
+EASTERN = pytz.timezone("America/New_York")
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
@@ -56,7 +59,7 @@ if not logger.handlers:
     )
 
 
-def fetch_stock_data(ticker: str, period: str = "3mo") -> tuple:
+def fetch_stock_data(ticker: str, period: str = "3mo", end_date=None) -> tuple:
     """
     Fetches stock data for the specified ticker and period.
 
@@ -66,15 +69,24 @@ def fetch_stock_data(ticker: str, period: str = "3mo") -> tuple:
                      Options: '1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', 'max'
                      Default is '3mo' for frequent updates (memory-efficient).
                      Use '1y' for initial data population.
+        end_date: Optional date (Eastern) through which to fetch (inclusive).
+                  Use to ensure data through "today" (pass tomorrow's date; yfinance end is exclusive).
 
     Returns:
         tuple: A list of stock data and an error message (if any).
     """
-    logger.info(f"Fetching stock data for ticker: {ticker} (period: {period})")
+    logger.info(f"Fetching stock data for ticker: {ticker} (period: {period}, end_date: {end_date})")
     
     try:
         stock = yf.Ticker(ticker)
-        hist = stock.history(period=period)
+        if end_date is not None:
+            # Explicit end date so we get data through the last trading day (e.g. through today).
+            # end_date is exclusive in yfinance, so pass day after desired last date.
+            start = (end_date - timedelta(days=365)).strftime("%Y-%m-%d")
+            end = (end_date + timedelta(days=1)).strftime("%Y-%m-%d")
+            hist = stock.history(start=start, end=end)
+        else:
+            hist = stock.history(period=period)
 
         if hist.empty:
             logger.warning(f"No data found for ticker: {ticker}")
@@ -83,7 +95,6 @@ def fetch_stock_data(ticker: str, period: str = "3mo") -> tuple:
         data = hist.reset_index().to_dict(orient='records')
         logger.info(f"Fetched {len(data)} records for ticker: {ticker}")
         
-        # Clear the stock object to free memory
         del stock
         del hist
         gc.collect()
@@ -169,7 +180,7 @@ def insert_stock_data(ticker: str, stock_data: list, max_entries: int = 500):
     except Exception as e:
         logger.error(f"Error trimming old entries for {ticker}: {e}")
 
-def save_stock_data(ticker: str, max_entries: int = 500, period: str = "3mo"):
+def save_stock_data(ticker: str, max_entries: int = 500, period: str = "3mo", through_today: bool = True):
     """
     Fetches and saves stock data for a given ticker.
     Memory-optimized with garbage collection after each operation.
@@ -177,10 +188,12 @@ def save_stock_data(ticker: str, max_entries: int = 500, period: str = "3mo"):
     Args:
         ticker (str): Stock ticker symbol.
         max_entries (int): Maximum number of entries to retain in the database.
-        period (str): Data period to fetch. Use '3mo' for frequent updates, '1y' for initial load.
+        period (str): Data period to fetch when through_today is False. Use '3mo' for frequent updates, '1y' for initial load.
+        through_today (bool): If True, request data through today (Eastern) so the latest trading day is included.
     """
     try:
-        stock_data, error = fetch_stock_data(ticker, period=period)
+        end_date = datetime.now(EASTERN).date() if through_today else None
+        stock_data, error = fetch_stock_data(ticker, period=period, end_date=end_date)
 
         if error:
             logger.error(f"Error for {ticker}: {error}")

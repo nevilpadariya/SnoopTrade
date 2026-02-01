@@ -13,11 +13,11 @@ import { Button } from '../components/ui/button';
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
-const TIME_PERIODS = {
-  ONE_MONTH: '1m',
-  THREE_MONTHS: '3m',
-  SIX_MONTHS: '6m',
-  ALL: '1y',
+const TIME_PERIODS: Record<string, string> = {
+  '1M': '1m',
+  '3M': '3m',
+  '6M': '6m',
+  '1Y': '1y',
 };
 
 const COMPANIES = [
@@ -40,7 +40,7 @@ const Dashboard = (_props: DashboardProps) => {
   const [filteredCompanies, setFilteredCompanies] = useState<string[]>(COMPANIES);
   const [showCompanyList, setShowCompanyList] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState(TIME_PERIODS.ALL);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState(TIME_PERIODS['1Y']);
   const [stockData, setStockData] = useState<any[]>([]);
   const [tradeData, setTradeData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
@@ -238,17 +238,34 @@ const Dashboard = (_props: DashboardProps) => {
 
           {selectedCompany && (
             <div className="flex justify-center mt-6 sm:mt-8 w-full px-2">
-              <div className="flex flex-wrap sm:inline-flex justify-center rounded-lg border border-border bg-muted/20 p-1 gap-1 sm:gap-0 sm:space-x-1 w-full sm:w-auto max-w-md">
-                {Object.entries(TIME_PERIODS).map(([key, value]) => (
-                  <Button
-                    key={key}
-                    onClick={() => handleTimePeriodChange(value)}
-                    variant={selectedTimePeriod === value ? "default" : "ghost"}
-                    className="flex-1 sm:flex-initial min-w-[100px] h-11 text-sm sm:text-base"
-                  >
-                    {key.replace('_', ' ')}
-                  </Button>
-                ))}
+              <div
+                className="time-range-row inline-flex rounded-xl border border-border bg-muted/30 p-1 shadow-inner"
+                role="group"
+                aria-label="Stock data range"
+              >
+                {Object.entries(TIME_PERIODS).map(([label, value]) => {
+                  const isActive = selectedTimePeriod === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => handleTimePeriodChange(value)}
+                      className={`
+                        relative px-4 py-2.5 text-sm font-medium rounded-lg
+                        transition-all duration-200 ease-out
+                        min-w-[4rem] whitespace-nowrap
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background
+                        ${isActive
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }
+                      `}
+                      aria-pressed={isActive}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -288,7 +305,7 @@ const Dashboard = (_props: DashboardProps) => {
             </div>
 
             {forecastError && (
-              <div className="mb-6 px-4 py-3 rounded-md bg-destructive/10 text-destructive text-sm text-center" role="alert">
+              <div className="mb-6 px-4 py-3 rounded-md bg-destructive/10 text-destructive-foreground text-sm text-center" role="alert">
                 {forecastError}
               </div>
             )}

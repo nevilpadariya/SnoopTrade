@@ -112,7 +112,8 @@ async def login(
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
-        email=user["email"]
+        email=user["email"],
+        requires_password=not bool(user.get("hashed_password")),
     )
 
 

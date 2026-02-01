@@ -52,7 +52,7 @@ const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary-strong transition-colors"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -60,7 +60,10 @@ const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
       </div>
 
       {error && (
-        <div className="bg-destructive/20 border border-destructive/50 text-destructive text-sm p-3 rounded-md text-center font-medium">
+        <div
+          role="alert"
+          className="login-error-message bg-destructive/30 border border-destructive text-sm p-3 rounded-md text-center font-medium"
+        >
           {error}
         </div>
       )}

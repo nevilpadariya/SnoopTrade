@@ -134,7 +134,7 @@ async def update_single_stock(
     Memory-efficient endpoint for external cron services.
     
     Usage with cron-job.org:
-    - URL: https://your-api.onrender.com/admin/update/stock/AAPL?key=YOUR_API_KEY
+    - URL: https://your-api.ondigitalocean.app/admin/update/stock/AAPL?key=YOUR_API_KEY
     - Method: GET
     - Schedule: Every 15 minutes (stagger different tickers)
     """
@@ -173,7 +173,7 @@ async def update_single_sec(
     Memory-efficient endpoint for external cron services.
     
     Usage with cron-job.org:
-    - URL: https://your-api.onrender.com/admin/update/sec/AAPL?key=YOUR_API_KEY
+    - URL: https://your-api.ondigitalocean.app/admin/update/sec/AAPL?key=YOUR_API_KEY
     - Method: GET
     - Schedule: Daily (stagger different tickers by 5 minutes)
     """

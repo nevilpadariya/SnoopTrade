@@ -13,7 +13,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("scheduler")
 
-TICKERS = ["META", "AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NVDA", "NFLX"]
+TICKERS = [
+    "META", "AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NVDA", "NFLX",
+    "JPM", "JNJ", "V", "UNH", "HD", "DIS", "BAC", "XOM", "PG", "MA", "PEP", "WMT",
+]
 
 TICKER_CIK_MAPPING = {
     "AAPL": "0000320193",
@@ -23,7 +26,19 @@ TICKER_CIK_MAPPING = {
     "MSFT": "0000789019",
     "AMZN": "0001018724",
     "TSLA": "0001318605",
-    "NFLX": "0001065280"
+    "NFLX": "0001065280",
+    "JPM": "0000019617",
+    "JNJ": "0000200406",
+    "V": "0001403161",
+    "UNH": "0000731766",
+    "HD": "0000354950",
+    "DIS": "0001744489",
+    "BAC": "0000070858",
+    "XOM": "0000034088",
+    "PG": "0000080424",
+    "MA": "0001141391",
+    "PEP": "0000077476",
+    "WMT": "0000104169",
 }
 
 TIMEZONE = pytz.timezone('America/New_York')

@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -12,6 +14,18 @@ from scheduler import start_scheduler, shutdown_scheduler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class NoCacheDataMiddleware(BaseHTTPMiddleware):
+    """Set Cache-Control so stock and SEC data are not cached by browsers or proxies."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        path = request.scope.get("path", "")
+        if path.startswith("/stocks/") or path.startswith("/transactions/"):
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+        return response
 
 
 @asynccontextmanager
@@ -28,6 +42,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(NoCacheDataMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "*"],

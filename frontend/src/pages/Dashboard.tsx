@@ -20,7 +20,10 @@ const TIME_PERIODS = {
   ALL: '1y',
 };
 
-const COMPANIES = ['AAPL', 'META', 'NVDA'];
+const COMPANIES = [
+  'AAPL', 'META', 'NVDA', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NFLX',
+  'JPM', 'JNJ', 'V', 'UNH', 'HD', 'DIS', 'BAC', 'XOM', 'PG', 'MA', 'PEP', 'WMT',
+];
 
 const COLORS = {
   price: 'hsl(var(--primary-strong))',
@@ -190,6 +193,18 @@ const Dashboard = (_props: DashboardProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCompany, selectedTimePeriod, token]);
+
+  useEffect(() => {
+    const onFocus = () => {
+      if (token && selectedCompany) {
+        fetchStockData();
+        fetchTradeData();
+      }
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, selectedCompany]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

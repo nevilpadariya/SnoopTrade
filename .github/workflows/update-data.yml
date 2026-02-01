@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       max-parallel: 2  # Limit parallel jobs to avoid rate limits
       matrix:
-        ticker: [AAPL, NVDA, META, GOOGL, MSFT, AMZN, TSLA, NFLX]
+        ticker: [AAPL, NVDA, META, GOOGL, MSFT, AMZN, TSLA, NFLX, JPM, JNJ, V, UNH, HD, DIS, BAC, XOM, PG, MA, PEP, WMT]
     
     steps:
       - name: Checkout repository
@@ -102,6 +102,30 @@ jobs:
             cik: '0001318605'
           - ticker: NFLX
             cik: '0001065280'
+          - ticker: JPM
+            cik: '0000019617'
+          - ticker: JNJ
+            cik: '0000200406'
+          - ticker: V
+            cik: '0001403161'
+          - ticker: UNH
+            cik: '0000731766'
+          - ticker: HD
+            cik: '0000354950'
+          - ticker: DIS
+            cik: '0001744489'
+          - ticker: BAC
+            cik: '0000070858'
+          - ticker: XOM
+            cik: '0000034088'
+          - ticker: PG
+            cik: '0000080424'
+          - ticker: MA
+            cik: '0001141391'
+          - ticker: PEP
+            cik: '0000077476'
+          - ticker: WMT
+            cik: '0000104169'
     
     steps:
       - name: Checkout repository

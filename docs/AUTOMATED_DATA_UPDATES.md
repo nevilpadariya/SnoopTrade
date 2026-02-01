@@ -8,7 +8,9 @@ SnoopTrade needs to periodically update:
 - **Stock price data** from Yahoo Finance
 - **SEC Form 4 insider trading data** from SEC EDGAR
 
-Due to memory constraints on free hosting tiers (like Render's 512MB limit), we provide multiple options for running these updates.
+**In-app scheduler (every 24 hours):** When the backend is running (e.g. on DigitalOcean App Platform), it runs a built-in scheduler that updates **stock data daily at 6:00 AM EST** and **SEC Form 4 data daily at 7:00 AM EST**. So stock and SEC data are refreshed automatically every 24 hours without any external cron.
+
+Due to memory constraints on free hosting tiers (like Render's 512MB limit), we also provide multiple options for running these updates externally.
 
 ## Option 1: GitHub Actions (Recommended)
 
@@ -76,28 +78,13 @@ Use a free external cron service to call your API endpoints.
 
 3. **Create Cron Jobs for Each Ticker**
    
-   Create 8 jobs for stock updates (staggered by 2 minutes):
+   Create 20 jobs for stock updates (staggered by 2 minutes). Use the same URL pattern for each of: AAPL, NVDA, META, GOOGL, MSFT, AMZN, TSLA, NFLX, JPM, JNJ, V, UNH, HD, DIS, BAC, XOM, PG, MA, PEP, WMT.
    
-   | Ticker | URL | Schedule |
-   |--------|-----|----------|
-   | AAPL | `https://your-api.onrender.com/admin/update/stock/AAPL?key=YOUR_KEY` | `*/15 * * * *` (at :00) |
-   | NVDA | `https://your-api.onrender.com/admin/update/stock/NVDA?key=YOUR_KEY` | `2-59/15 * * * *` (at :02) |
-   | META | `https://your-api.onrender.com/admin/update/stock/META?key=YOUR_KEY` | `4-59/15 * * * *` (at :04) |
-   | GOOGL | `https://your-api.onrender.com/admin/update/stock/GOOGL?key=YOUR_KEY` | `6-59/15 * * * *` (at :06) |
-   | MSFT | `https://your-api.onrender.com/admin/update/stock/MSFT?key=YOUR_KEY` | `8-59/15 * * * *` (at :08) |
-   | AMZN | `https://your-api.onrender.com/admin/update/stock/AMZN?key=YOUR_KEY` | `10-59/15 * * * *` (at :10) |
-   | TSLA | `https://your-api.onrender.com/admin/update/stock/TSLA?key=YOUR_KEY` | `12-59/15 * * * *` (at :12) |
-   | NFLX | `https://your-api.onrender.com/admin/update/stock/NFLX?key=YOUR_KEY` | `14-59/15 * * * *` (at :14) |
+   Example: `https://your-api.onrender.com/admin/update/stock/AAPL?key=YOUR_KEY` with schedule `*/15 * * * *` (or stagger minutes for each ticker).
 
 4. **For SEC Data (run daily, not every 15 min):**
    
-   Create 8 jobs for SEC updates (run at 7 AM EST, staggered by 5 minutes):
-   
-   | Ticker | URL | Schedule (UTC) |
-   |--------|-----|----------------|
-   | AAPL | `https://your-api.onrender.com/admin/update/sec/AAPL?key=YOUR_KEY` | `0 12 * * *` |
-   | NVDA | `https://your-api.onrender.com/admin/update/sec/NVDA?key=YOUR_KEY` | `5 12 * * *` |
-   | ... | ... | ... |
+   Create 20 jobs for SEC updates (run at 7 AM EST, staggered by 5 minutes). Same tickers as above; use `/admin/update/sec/{ticker}?key=YOUR_KEY`.
 
 ### API Endpoints Reference
 

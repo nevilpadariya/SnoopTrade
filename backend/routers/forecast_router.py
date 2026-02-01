@@ -64,15 +64,46 @@ def prepare_training_data(data: List[ForecastInput]) -> pd.DataFrame:
     return df
 
 
-def calculate_dynamic_capacity(df: pd.DataFrame) -> float:
-    """Calculate dynamic capacity based on historical volatility and trend."""
-    latest_price = df['y'].iloc[-1]
-    volatility = df['y'].std()
-    trend = (df['y'].iloc[-1] - df['y'].iloc[0]) / len(df)
-    volatility_factor = 1 + (volatility / latest_price)
-    trend_factor = 1 + max(0, trend / latest_price)
-
-    return latest_price * volatility_factor * trend_factor * 2.5
+def fallback_forecast(df: pd.DataFrame, periods: int = 30) -> List[ForecastOutput]:
+    """Simple trend-based forecast when Prophet/Stan optimization fails (e.g. in containers)."""
+    if len(df) < 2:
+        last = float(df["y"].iloc[-1]) if len(df) else 0.0
+        base_date = df["ds"].iloc[-1] if len(df) else pd.Timestamp.now()
+        return [
+            ForecastOutput(
+                date=(base_date + timedelta(days=i)).strftime("%Y-%m-%d"),
+                open=last, high=last, low=last, close=None,
+                trend=last, trend_lower=last, trend_upper=last,
+                yhat_lower=last, yhat_upper=last, momentum=0.0, acceleration=0.0,
+            )
+            for i in range(1, periods + 1)
+        ]
+    y = df["y"].values
+    x = np.arange(len(y))
+    slope = np.polyfit(x, y, 1)[0]
+    last_val = float(y[-1])
+    last_date = df["ds"].iloc[-1]
+    std = float(np.nanstd(y)) if len(y) > 1 else 0.0
+    output = []
+    for i in range(1, periods + 1):
+        d = last_date + timedelta(days=i)
+        trend_val = last_val + slope * i
+        band = max(std * 0.5, abs(slope) * 2)
+        output.append(ForecastOutput(
+            date=d.strftime("%Y-%m-%d"),
+            open=trend_val,
+            high=trend_val + band,
+            low=max(0.0, trend_val - band),
+            close=None,
+            trend=trend_val,
+            trend_lower=max(0.0, trend_val - band),
+            trend_upper=trend_val + band,
+            yhat_lower=max(0.0, trend_val - band),
+            yhat_upper=trend_val + band,
+            momentum=float(slope),
+            acceleration=0.0,
+        ))
+    return output
 
 
 @forecast_router.post("/future", response_model=List[ForecastOutput])
@@ -80,61 +111,44 @@ async def generate_forecast(
         data: List[ForecastInput],
         user: dict = Depends(get_current_user),
 ):
-    """Generate a 30-day forecast using enhanced Prophet model without seasonality."""
+    """Generate a 30-day forecast. Uses Prophet when possible; falls back to trend-based forecast if Prophet/Stan fails (e.g. in containers)."""
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No data provided for forecasting.",
+        )
+    df = prepare_training_data(data)
+    if len(df) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Need at least 2 data points for forecasting.",
+        )
+    y = df["y"]
+    if np.any(np.isnan(y)) or np.any(np.isinf(y)):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid values (NaN or Inf) in price data.",
+        )
+
     try:
         from prophet import Prophet
-        df = prepare_training_data(data)
-
-        # Calculate dynamic capacity
-        capacity = calculate_dynamic_capacity(df)
-        df['cap'] = capacity
-        df['floor'] = 0  # Set floor to prevent negative predictions
-
-        # Initialize Prophet with adjusted parameters
         model = Prophet(
-            growth='logistic',
+            growth="linear",
             yearly_seasonality=False,
             weekly_seasonality=False,
             daily_seasonality=False,
-            seasonality_mode='multiplicative',
-            changepoint_prior_scale=0.8,  # Increased to allow more flexibility in trend changes
-            interval_width=0.95  # Adjusted for more confident prediction intervals
+            changepoint_prior_scale=0.05,
+            interval_width=0.95,
         )
+        model.fit(df[["ds", "y"]])
 
-        # Add regressors to the model
-        regressors = ['volatility', 'returns', 'rolling_mean', 'ema', 'rsi', 'high', 'low', 'close']
-        for regressor in regressors:
-            model.add_regressor(regressor)
-
-        # Fit the model
-        model.fit(df[["ds", "y", "cap", "floor"] + regressors])
-
-        # Generate future dates
-        future = model.make_future_dataframe(periods=30, freq='D', include_history=False)
-
-        # Add capacity, floor, and regressors to future dataframe
-        future['cap'] = capacity
-        future['floor'] = 0
-        for regressor in regressors:
-            future[regressor] = df[regressor].iloc[-1]  # Use the last known value for simplicity
-
-        # Make predictions
+        future = model.make_future_dataframe(periods=30, freq="D", include_history=False)
         forecast = model.predict(future)
 
-        # Extract relevant components
-        result = forecast[["ds", "yhat", "yhat_lower", "yhat_upper", "trend", "trend_lower", "trend_upper"]]
+        result = forecast[["ds", "yhat", "yhat_lower", "yhat_upper", "trend", "trend_lower", "trend_upper"]].copy()
+        result.loc[:, "momentum"] = np.gradient(result["trend"])
+        result.loc[:, "acceleration"] = np.gradient(result["momentum"])
 
-        # Calculate additional metrics
-        result.loc[:, 'momentum'] = np.gradient(result['trend'])
-        result.loc[:, 'acceleration'] = np.gradient(result['momentum'])
-
-        # Add random noise to the predictions
-        noise_factor = 0.05  # Adjust the noise factor as needed
-        result.loc[:, 'yhat'] += result['yhat'] * noise_factor * (np.random.rand(len(result)) - 0.5)
-        result.loc[:, 'yhat_lower'] += result['yhat_lower'] * noise_factor * (np.random.rand(len(result)) - 0.5)
-        result.loc[:, 'yhat_upper'] += result['yhat_upper'] * noise_factor * (np.random.rand(len(result)) - 0.5)
-
-        # Format output
         output = [
             ForecastOutput(
                 date=row["ds"].strftime("%Y-%m-%d"),
@@ -152,18 +166,8 @@ async def generate_forecast(
             )
             for _, row in result.iterrows()
         ]
-
         return output
 
-    except ValueError as ve:
-        logging.error(f"ValueError: {str(ve)}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"ValueError: {str(ve)}"
-        )
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred: {str(e)}"
-        )
+        logging.warning("Prophet forecast failed, using fallback: %s", str(e))
+        return fallback_forecast(df, periods=30)

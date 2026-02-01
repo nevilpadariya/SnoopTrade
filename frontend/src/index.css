@@ -68,7 +68,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+  #container-div.haAclf{width:100% !important;padding:0 !important;}
   h1, h2, h3, h4, h5, h6 {
     @apply text-foreground;
     font-family: "Google Sans", sans-serif;
@@ -112,7 +112,7 @@
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2;
   }
-  .haAclf{width:100% !important;padding:0 !important;}
+  
   /* Image optimization utilities */
   .img-optimized {
     /* Prevent layout shift */

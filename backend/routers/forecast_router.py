@@ -69,7 +69,7 @@ def prepare_training_data(data: List[ForecastInput]) -> pd.DataFrame:
         df[f'lag_{lag}'] = df['y'].shift(lag)
 
     # Handle missing values
-    df = df.fillna(method='ffill').fillna(method='bfill')
+    df = df.ffill().bfill()
 
     return df
 

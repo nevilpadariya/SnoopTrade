@@ -34,7 +34,7 @@ async def read_transaction(ticker: str, transaction_id: str, user: dict = Depend
 @sec_router.get("/transactions/{ticker}", response_model=List[TransactionModel])
 async def read_all_transactions(
     ticker: str,
-    time_period: Optional[str] = Query(None, regex="^(1w|1m|3m|6m|1y)$"),
+    time_period: Optional[str] = Query(None, pattern="^(1w|1m|3m|6m|1y)$"),
     user: dict = Depends(get_current_user)
 ):
     """

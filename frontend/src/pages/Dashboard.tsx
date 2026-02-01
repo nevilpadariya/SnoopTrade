@@ -46,6 +46,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const [isLogScalePrice] = useState(false);
   const [isPredicting, setIsPredicting] = useState(false);
   const [showForecast, setShowForecast] = useState(false);
+  const [forecastError, setForecastError] = useState('');
   const navigate = useNavigate();
 
   const token = localStorage.getItem('authToken');
@@ -64,6 +65,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     setSearchTerm('');
     setShowCompanyList(false);
     setShowForecast(false);
+    setForecastError('');
   };
 
   const handleTimePeriodChange = (period: string) => {
@@ -78,18 +80,22 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
       const formattedData = data
         .filter((item: any) => item.date)
-        .map((item: any) => ({
-          date: new Date(item.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          }),
-          open: item.open ?? 0,
-          close: item.close ?? 0,
-          high: item.high ?? 0,
-          low: item.low ?? 0,
-        }))
-        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        .map((item: any) => {
+          const d = new Date(item.date);
+          return {
+            date: d.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }),
+            dateISO: d.toISOString().split('T')[0],
+            open: item.open ?? 0,
+            close: item.close ?? 0,
+            high: item.high ?? 0,
+            low: item.low ?? 0,
+          };
+        })
+        .sort((a: any, b: any) => new Date(a.dateISO).getTime() - new Date(b.dateISO).getTime());
 
       setStockData(formattedData);
     } catch (error: any) {
@@ -108,8 +114,16 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
 
     setIsPredicting(true);
+    setForecastError('');
     try {
       const token = localStorage.getItem('authToken');
+      const payload = formattedData.map((d: any) => ({
+        date: d.dateISO ?? new Date(d.date).toISOString().split('T')[0],
+        open: d.open,
+        high: d.high,
+        low: d.low,
+        close: d.close,
+      }));
 
       const forecastResponse = await fetch(API_ENDPOINTS.fetchFutureData, {
         method: "POST",
@@ -117,11 +131,13 @@ const Dashboard: React.FC<DashboardProps> = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formattedData),
+        body: JSON.stringify(payload),
       });
 
       if (!forecastResponse.ok) {
-        throw new Error(`Error from forecast API: ${forecastResponse.statusText}`);
+        const errBody = await forecastResponse.json().catch(() => ({}));
+        const message = errBody.detail ?? `Error from forecast API: ${forecastResponse.statusText}`;
+        throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
       }
 
       const forecastData = await forecastResponse.json();
@@ -129,6 +145,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
       setShowForecast(true);
     } catch (error: any) {
       console.error('Error during forecasting:', error);
+      setForecastError(error?.message ?? 'Failed to load forecast. Please try again.');
     } finally {
       setIsPredicting(false);
     }
@@ -255,6 +272,12 @@ const Dashboard: React.FC<DashboardProps> = () => {
                 )}
               </Button>
             </div>
+
+            {forecastError && (
+              <div className="mb-6 px-4 py-3 rounded-md bg-destructive/10 text-destructive text-sm text-center" role="alert">
+                {forecastError}
+              </div>
+            )}
 
             {showForecast && (
               <div className="mb-8 sm:mb-10">

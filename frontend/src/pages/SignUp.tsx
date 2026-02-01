@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import SignUpForm from '../components/signup/SignUpForm';
@@ -6,7 +6,7 @@ import LoginHeader from '../components/Header';
 import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
-const SignUp: React.FC = () => {
+const SignUp = () => {
   const [, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();

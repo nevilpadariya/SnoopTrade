@@ -1,5 +1,3 @@
-# sec_router.py
-
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from fastapi.security import OAuth2PasswordBearer
 from typing import List, Optional
@@ -12,7 +10,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 sec_router = APIRouter()
 
 
-# Dependency function to verify token
 def get_current_user(token: str = Depends(oauth2_scheme)):
     user = decode_access_token(token)
     if not user:
@@ -22,9 +19,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @sec_router.get("/transactions/{ticker}/{transaction_id}", response_model=TransactionModel)
 async def read_transaction(ticker: str, transaction_id: str, user: dict = Depends(get_current_user)):
-    """
-    Retrieves a specific transaction by ticker and transaction ID. Requires authentication.
-    """
+    """Get a specific transaction by ticker and ID. Requires authentication."""
     transaction = get_transaction_by_id(ticker, transaction_id)
     if not transaction:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
@@ -37,12 +32,7 @@ async def read_all_transactions(
     time_period: Optional[str] = Query(None, pattern="^(1w|1m|3m|6m|1y)$"),
     user: dict = Depends(get_current_user)
 ):
-    """
-    Retrieves all transactions for a given ticker and optional time period. Requires authentication.
-
-    - **ticker**: The ticker symbol of the collection.
-    - **time_period**: Optional time period filter. Accepts "1w" (1 week), "1m" (1 month), "3m" (3 months), "6m" (6 months).
-    """
+    """Get all transactions for a ticker with optional time period. Requires authentication."""
     transactions = get_all_transactions(ticker, time_period)
 
     if transactions is None:

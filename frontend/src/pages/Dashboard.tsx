@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import DataTable from '../components/DataTable';
 import ChartContainer from '../components/ChartContainer';
@@ -31,7 +32,7 @@ const COLORS = {
 
 interface DashboardProps {}
 
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard = (_props: DashboardProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCompanies, setFilteredCompanies] = useState<string[]>(COMPANIES);
   const [showCompanyList, setShowCompanyList] = useState(false);
@@ -48,8 +49,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
   const [showForecast, setShowForecast] = useState(false);
   const [forecastError, setForecastError] = useState('');
   const navigate = useNavigate();
-
-  const token = localStorage.getItem('authToken');
+  const { token, setToken } = useAuth();
 
   useEffect(() => {
     setFilteredCompanies(
@@ -101,7 +101,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     } catch (error: any) {
       console.error('Error fetching stock data:', error);
       if (error.message.includes('401')) {
-        localStorage.removeItem('authToken');
+        setToken(null);
         navigate('/login');
       }
     }
@@ -116,7 +116,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
     setIsPredicting(true);
     setForecastError('');
     try {
-      const token = localStorage.getItem('authToken');
       const payload = formattedData.map((d: any) => ({
         date: d.dateISO ?? new Date(d.date).toISOString().split('T')[0],
         open: d.open,

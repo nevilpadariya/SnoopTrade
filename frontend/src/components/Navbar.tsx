@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Moon, Sun, Menu, X } from 'lucide-react';
-import { useAuth } from '../contex/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
 import Logo from './Logo';
@@ -10,7 +10,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -21,7 +21,6 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 100);
     };
 
-    // Check for saved theme preference or default to light
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
@@ -49,7 +48,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    setToken(null);
     navigate('/login');
     setIsMobileMenuOpen(false);
   };
@@ -60,21 +59,16 @@ const Navbar = () => {
 
   const showAccountButton = ['/dashboard', '/about', '/features'].includes(location.pathname);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Handle body scroll lock when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
-      // Prevent body scroll
       document.body.style.overflow = 'hidden';
-      // Add padding to prevent layout shift from scrollbar disappearing
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
-      // Restore body scroll
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
     }
@@ -85,12 +79,10 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Handle ESC key to close mobile menu
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
-        // Return focus to toggle button
         menuToggleRef.current?.focus();
       }
     };
@@ -104,7 +96,6 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Focus trap in mobile menu
   useEffect(() => {
     if (!isMobileMenuOpen || !mobileMenuRef.current) return;
 
@@ -119,13 +110,11 @@ const Navbar = () => {
       if (e.key !== 'Tab') return;
 
       if (e.shiftKey) {
-        // Shift + Tab
         if (document.activeElement === firstElement) {
           e.preventDefault();
           lastElement?.focus();
         }
       } else {
-        // Tab
         if (document.activeElement === lastElement) {
           e.preventDefault();
           firstElement?.focus();
@@ -133,7 +122,6 @@ const Navbar = () => {
       }
     };
 
-    // Focus first element when menu opens
     firstElement?.focus();
 
     document.addEventListener('keydown', handleTabKey);
@@ -145,14 +133,12 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Skip to main content link for keyboard users */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-strong focus:text-primary-foreground focus:rounded-md"
       >
         Skip to main content
       </a>
-
       <nav
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out border-b",
@@ -165,7 +151,6 @@ const Navbar = () => {
       >
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
             <Link
               to={token ? "/dashboard" : "/"}
               className="flex items-center gap-2 md:gap-3 text-foreground no-underline hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md"
@@ -176,8 +161,6 @@ const Navbar = () => {
                 SnoopTrade
               </span>
             </Link>
-
-            {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center gap-2 xl:gap-4">
               <Button
                 asChild
@@ -202,8 +185,6 @@ const Navbar = () => {
                   <Link to="/account">Account</Link>
                 </Button>
               )}
-              
-              {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -241,10 +222,7 @@ const Navbar = () => {
                 </>
               )}
             </div>
-
-            {/* Mobile Menu Toggle */}
             <div className="flex items-center gap-2 lg:hidden">
-              {/* Theme Toggle - Mobile */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -274,8 +252,6 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu Panel */}
         <div
           id="mobile-menu"
           ref={mobileMenuRef}

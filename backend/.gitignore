@@ -10,6 +10,9 @@ __pycache__/
 # Logs
 *.log
 
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

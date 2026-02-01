@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -23,16 +23,16 @@ interface DataTableProps {
   rowsPerPage: number;
   page: number;
   handleChangePage: (event: unknown, newPage: number) => void;
-  handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeRowsPerPage: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const DataTable: React.FC<DataTableProps> = ({
+const DataTable = ({
   tradeData,
   rowsPerPage,
   page,
   handleChangePage,
   handleChangeRowsPerPage,
-}) => {
+}: DataTableProps) => {
   const [sortColumn, setSortColumn] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
@@ -67,7 +67,6 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   const getTransactionColor = (code: string) => {
-    // Green-based color palette matching the theme
     const colorMap: { [key: string]: string } = {
       P: 'text-emerald-400',      // Purchase - bright green
       S: 'text-red-400',          // Sale - keep red for clarity
@@ -136,7 +135,6 @@ const DataTable: React.FC<DataTableProps> = ({
         </p>
       </CardHeader>
       <CardContent className="p-0">
-        {/* Table Container with Responsive Scroll */}
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -213,7 +211,7 @@ const DataTable: React.FC<DataTableProps> = ({
                         maximumFractionDigits: 2,
                       }) || 'N/A'}
                     </TableCell>
-                    <TableCell className="text-right font-semibold text-primary font-mono">
+                    <TableCell className="text-right font-semibold text-primary-strong font-mono">
                       $
                       {(
                         row.shares * (row.price_per_share || 0)
@@ -235,7 +233,6 @@ const DataTable: React.FC<DataTableProps> = ({
           </Table>
         </div>
 
-        {/* Pagination Controls */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border/30">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Rows per page:</span>

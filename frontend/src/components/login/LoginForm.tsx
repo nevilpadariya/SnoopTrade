@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -9,7 +9,7 @@ interface LoginFormProps {
   error: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, error }) => {
+const LoginForm = ({ onSubmit, error }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

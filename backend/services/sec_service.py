@@ -1,5 +1,3 @@
-# services/sec_service.py
-
 import logging
 from datetime import datetime, timedelta
 from typing import Union, List, Optional
@@ -9,7 +7,6 @@ from pymongo.errors import PyMongoError
 from database.database import sec_db as db
 from models.sec_form4 import TransactionModel
 
-# Set up logging configuration
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -17,7 +14,6 @@ logging.basicConfig(
 )
 
 
-# Function to retrieve a specific transaction by ID
 def get_transaction_by_id(ticker: str, transaction_id: str) -> Optional[TransactionModel]:
     """
     Retrieves a specific transaction by ticker and transaction ID.

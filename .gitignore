@@ -13,6 +13,7 @@
 
 # misc
 .DS_Store
+**/.ipynb_checkpoints/
 
 # Environment variables (contains secrets)
 .env

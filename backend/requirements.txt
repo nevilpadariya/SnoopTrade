@@ -4,7 +4,6 @@ fastapi
 apscheduler
 python-jose
 lxml
-motor
 pandas
 passlib
 pydantic

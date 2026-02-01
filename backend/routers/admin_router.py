@@ -1,6 +1,5 @@
 """
-Admin router for scheduler management and monitoring.
-Includes per-ticker endpoints for memory-efficient updates via external cron services.
+Admin router for scheduler management and per-ticker updates via external cron.
 """
 
 import os
@@ -11,19 +10,14 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Query, Depends
 from fastapi.security import APIKeyHeader
 from scheduler import get_scheduled_jobs, trigger_stock_update_now, trigger_sec_update_now
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 admin_router = APIRouter()
-
-# API Key for securing admin endpoints (set in environment variable)
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
 
-# Valid tickers
 VALID_TICKERS = ["AAPL", "NVDA", "META", "GOOGL", "MSFT", "AMZN", "TSLA", "NFLX"]
 
-# Ticker to CIK mapping for SEC filings
 TICKER_CIK_MAPPING = {
     "AAPL": "0000320193",
     "NVDA": "0001045810",
@@ -42,10 +36,9 @@ async def verify_api_key(
 ):
     """
     Verify API key from header or query parameter.
-    If ADMIN_API_KEY is not set, allow all requests (for development).
+    If ADMIN_API_KEY is not set, allow all requests (development).
     """
     if not ADMIN_API_KEY:
-        # No API key configured, allow request (development mode)
         return True
     
     provided_key = api_key_header or key
@@ -120,10 +113,6 @@ async def trigger_all_updates(background_tasks: BackgroundTasks):
     }
 
 
-# ============================================================
-# Per-Ticker Endpoints (Memory-Efficient for External Cron)
-# ============================================================
-
 @admin_router.get("/update/stock/{ticker}")
 async def update_single_stock(
     ticker: str,
@@ -145,8 +134,6 @@ async def update_single_stock(
     try:
         logger.info(f"[CRON] Updating stock data for {ticker}")
         save_stock_data(ticker)
-        
-        # Force garbage collection to free memory
         gc.collect()
         
         logger.info(f"[CRON] Stock data updated successfully for {ticker}")
@@ -191,8 +178,6 @@ async def update_single_sec(
     try:
         logger.info(f"[CRON] Updating SEC data for {ticker} (CIK: {cik})")
         insert_form4_data(ticker, cik)
-        
-        # Force garbage collection to free memory
         gc.collect()
         
         logger.info(f"[CRON] SEC data updated successfully for {ticker}")
@@ -229,8 +214,6 @@ async def update_all_sequential(
         "stock": {},
         "sec": {}
     }
-    
-    # Update stock data
     if type in ["stock", "both"]:
         for ticker in VALID_TICKERS:
             try:
@@ -238,13 +221,11 @@ async def update_all_sequential(
                 save_stock_data(ticker)
                 results["stock"][ticker] = "success"
                 gc.collect()
-                time.sleep(1)  # Rate limit protection
+                time.sleep(1)
             except Exception as e:
                 logger.error(f"[SEQUENTIAL] Stock update failed for {ticker}: {e}")
                 results["stock"][ticker] = f"error: {str(e)}"
                 gc.collect()
-    
-    # Update SEC data
     if type in ["sec", "both"]:
         for ticker, cik in TICKER_CIK_MAPPING.items():
             try:
@@ -252,7 +233,7 @@ async def update_all_sequential(
                 insert_form4_data(ticker, cik)
                 results["sec"][ticker] = "success"
                 gc.collect()
-                time.sleep(2)  # SEC rate limit protection
+                time.sleep(2)
             except Exception as e:
                 logger.error(f"[SEQUENTIAL] SEC update failed for {ticker}: {e}")
                 results["sec"][ticker] = f"error: {str(e)}"

@@ -9,9 +9,8 @@ from datetime import timedelta
 from services.auth_services import decode_access_token
 import logging
 from models.forecast import ForecastInput, ForecastOutput
-from dateutil.parser import parse  # Use flexible date parser
+from dateutil.parser import parse
 
-# FastAPI Router Setup
 forecast_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
@@ -40,10 +39,9 @@ def compute_rsi(series: pd.Series, window: int) -> pd.Series:
 
 def prepare_training_data(data: List[ForecastInput]) -> pd.DataFrame:
     """Prepare and clean training data for Prophet."""
-    # Convert input data to DataFrame
     df = pd.DataFrame([
         {
-            "ds": parse(item.date),  # Use flexible date parser
+            "ds": parse(item.date),
             "y": item.open,
             "high": item.high,
             "low": item.low,
@@ -51,24 +49,16 @@ def prepare_training_data(data: List[ForecastInput]) -> pd.DataFrame:
         }
         for item in data
     ])
-
-    # Sort by date and filter for the last 90 days
     df = df.sort_values('ds')
     three_months_ago = df['ds'].max() - timedelta(days=90)
     df = df[df['ds'] >= three_months_ago]
-
-    # Feature Engineering
     df['volatility'] = df['y'].rolling(window=5).std()
     df['returns'] = df['y'].pct_change()
     df['rolling_mean'] = df['y'].rolling(window=5).mean()
     df['ema'] = df['y'].ewm(span=3, adjust=False).mean()
     df['rsi'] = compute_rsi(df['y'], window=3)
-
-    # Lagged Features
     for lag in range(1, 4):
         df[f'lag_{lag}'] = df['y'].shift(lag)
-
-    # Handle missing values
     df = df.ffill().bfill()
 
     return df
@@ -79,8 +69,6 @@ def calculate_dynamic_capacity(df: pd.DataFrame) -> float:
     latest_price = df['y'].iloc[-1]
     volatility = df['y'].std()
     trend = (df['y'].iloc[-1] - df['y'].iloc[0]) / len(df)
-
-    # Calculate capacity as a multiple of current price, adjusted for volatility and trend
     volatility_factor = 1 + (volatility / latest_price)
     trend_factor = 1 + max(0, trend / latest_price)
 
@@ -95,7 +83,6 @@ async def generate_forecast(
     """Generate a 30-day forecast using enhanced Prophet model without seasonality."""
     try:
         from prophet import Prophet
-        # Prepare training data
         df = prepare_training_data(data)
 
         # Calculate dynamic capacity

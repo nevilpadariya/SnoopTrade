@@ -5,16 +5,12 @@ from models.stock_data import StockDataModel
 from services.stock_service import fetch_stock_data
 from services.auth_services import decode_access_token
 
-# Define the OAuth2 token dependency
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 stock_router = APIRouter()
 
 
-# Dependency for token verification
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    """
-    Dependency that extracts and verifies the current user from the token.
-    """
+    """Extract and verify current user from the token."""
     user = decode_access_token(token)
     if not user:
         raise HTTPException(
@@ -32,18 +28,7 @@ def get_stock_data(
         limit: int = Query(None, description="Limit the number of returned results"),
         user: dict = Depends(get_current_user)
 ):
-    """
-    Fetch stock data for a given ticker symbol over a specified period. Requires authentication.
-
-    Args:
-        ticker (str): The stock ticker symbol.
-        period (str): The time period for the stock data (default is "1y").
-        limit (int): The maximum number of records to retrieve.
-        user (dict): The authenticated user, provided by Depends(get_current_user).
-
-    Returns:
-        List[StockDataModel]: A JSON response containing the stock data.
-    """
+    """Fetch stock data for a ticker over a period. Requires authentication."""
     stock_data = fetch_stock_data(ticker, period, limit)
 
     if not stock_data:

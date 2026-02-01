@@ -17,11 +17,9 @@ from dotenv import load_dotenv
 import re
 import os
 
-# Load .env file
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
 
-# MongoDB setup - use lazy connection
 MONGODB_URI = os.getenv("MONGODB_URI")
 _client = None
 _db = None

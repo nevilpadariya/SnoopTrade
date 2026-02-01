@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -9,13 +9,14 @@ import LoginForm from '../components/login/LoginForm';
 import GoogleLoginButton from '../components/login/GoogleLoginButton';
 import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
+import { useAuth } from '../context/AuthContext';
 
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
-  const token = localStorage.getItem('authToken');
+  const { token, setToken } = useAuth();
 
   const handleFormSubmit = async (email: string, password: string) => {
     try {
@@ -33,7 +34,7 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('authToken', data.access_token);
+        setToken(data.access_token);
         navigate('/dashboard');
       } else {
         const errorData = await response.json();
@@ -75,7 +76,7 @@ const Login: React.FC = () => {
 
       if (tokenResponse.ok) {
         const data = await tokenResponse.json();
-        localStorage.setItem('authToken', data.access_token);
+        setToken(data.access_token);
         navigate('/dashboard');
       } else {
         const errorData = await tokenResponse.json();

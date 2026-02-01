@@ -14,11 +14,9 @@ from dotenv import load_dotenv
 import logging
 import os
 
-# Load .env file
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
 
-# MongoDB setup - use lazy connection
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb+srv://your-default-uri")
 _client = None
 _db = None
@@ -47,7 +45,6 @@ def close_db_connection():
         _db = None
 
 
-# Set up logging (only if running as main script)
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig(
@@ -149,7 +146,6 @@ def insert_stock_data(ticker: str, stock_data: list, max_entries: int = 500):
             except errors.BulkWriteError as bwe:
                 logger.error(f"Bulk write error for {ticker}: {bwe.details}")
         
-        # Clear batch from memory
         del batch
         del operations
         gc.collect()

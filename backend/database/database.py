@@ -1,11 +1,9 @@
-from pymongo import MongoClient, errors
+from pymongo import MongoClient
 import os
 from pathlib import Path
 
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
-# Load .env file from backend directory
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
 
@@ -19,10 +17,6 @@ DATABASE_SEC = "sec_data"
 DATABASE_STOCK = "stock_data"
 DATABASE_USER = "users"
 
-# client = AsyncIOMotorClient(DATABASE_URL)
 sec_db = client[DATABASE_SEC]
 stock_db = client[DATABASE_STOCK]
 user_db = client[DATABASE_USER]
-
-
-

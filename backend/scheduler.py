@@ -1,7 +1,4 @@
-"""
-Scheduler module for automated data updates.
-Runs daily jobs to fetch stock prices and SEC Form 4 filings.
-"""
+"""Scheduler for daily stock and SEC Form 4 data updates."""
 
 import logging
 import time
@@ -10,17 +7,14 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 
-# Configure logging for scheduler
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("scheduler")
 
-# Tickers to track
 TICKERS = ["META", "AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NVDA", "NFLX"]
 
-# Ticker to CIK mapping for SEC filings
 TICKER_CIK_MAPPING = {
     "AAPL": "0000320193",
     "NVDA": "0001045810",
@@ -32,14 +26,9 @@ TICKER_CIK_MAPPING = {
     "NFLX": "0001065280"
 }
 
-# Use Eastern Time for market-aligned schedules
 TIMEZONE = pytz.timezone('America/New_York')
-
-# Retry configuration
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 60
-
-# Create scheduler instance
 scheduler = AsyncIOScheduler(timezone=TIMEZONE)
 
 
@@ -52,7 +41,7 @@ def retry_on_failure(func, *args, max_retries=MAX_RETRIES, delay=RETRY_DELAY_SEC
             return func(*args)
         except Exception as e:
             if attempt < max_retries - 1:
-                wait_time = delay * (2 ** attempt)  # Exponential backoff
+                wait_time = delay * (2 ** attempt)
                 logger.warning(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time}s...")
                 time.sleep(wait_time)
             else:
@@ -114,7 +103,6 @@ def update_sec_data():
     for ticker, cik in TICKER_CIK_MAPPING.items():
         try:
             logger.info(f"Updating SEC data for {ticker} (CIK: {cik})...")
-            # Add delay between requests to respect SEC rate limits
             time.sleep(1)
             retry_on_failure(insert_form4_data, ticker, cik)
             logger.info(f"[SUCCESS] SEC data updated for {ticker}")
@@ -144,29 +132,23 @@ def job_error_listener(event):
 
 
 def setup_scheduled_jobs():
-    """
-    Configure and add all scheduled jobs to the scheduler.
-    """
-    # Stock data update - Daily at 6:00 AM EST
+    """Configure and add all scheduled jobs to the scheduler."""
     scheduler.add_job(
         update_stock_data,
         CronTrigger(hour=6, minute=0, timezone=TIMEZONE),
         id='stock_data_update',
         name='Daily Stock Data Update',
         replace_existing=True,
-        misfire_grace_time=3600  # Allow 1 hour grace period if missed
+        misfire_grace_time=3600
     )
-    
-    # SEC Form 4 data update - Daily at 7:00 AM EST
     scheduler.add_job(
         update_sec_data,
         CronTrigger(hour=7, minute=0, timezone=TIMEZONE),
         id='sec_data_update',
         name='Daily SEC Form 4 Update',
         replace_existing=True,
-        misfire_grace_time=3600  # Allow 1 hour grace period if missed
+        misfire_grace_time=3600
     )
-    
     logger.info("Scheduled jobs configured:")
     logger.info("  - Stock data update: Daily at 6:00 AM EST")
     logger.info("  - SEC Form 4 update: Daily at 7:00 AM EST")
@@ -175,8 +157,6 @@ def setup_scheduled_jobs():
 def start_scheduler():
     """Start the scheduler and set up jobs."""
     from apscheduler.events import EVENT_JOB_ERROR
-    
-    # Add error listener
     scheduler.add_listener(job_error_listener, EVENT_JOB_ERROR)
     
     setup_scheduled_jobs()

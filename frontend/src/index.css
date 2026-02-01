@@ -157,3 +157,20 @@
     height: 100%;
   }
 }
+
+main {
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/50 hover:bg-primary;
+  border-radius: 5px;
+}

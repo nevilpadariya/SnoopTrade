@@ -3,13 +3,12 @@ from database.database import stock_db
 from typing import List
 from models.stock_data import StockDataModel
 
-# Time period mappings for filtering
 TIME_PERIOD_DAYS = {
     "1w": 7,
     "1m": 30,
     "3m": 90,
     "6m": 180,
-    "1y": 365  # Default to 1 year if no period is specified
+    "1y": 365
 }
 
 def fetch_stock_data(ticker: str, time_period: str = "1y", limit: int = None) -> List[StockDataModel]:
@@ -25,18 +24,11 @@ def fetch_stock_data(ticker: str, time_period: str = "1y", limit: int = None) ->
     Returns:
         List[StockDataModel]: A list of processed documents retrieved within the specified time period.
     """
-    # Access the specific collection for the ticker
     collection = stock_db[f"stock_data_{ticker}"]
-
-    # Determine the start date based on the time period
     days_ago = TIME_PERIOD_DAYS.get(time_period, 365)
     start_date = datetime.now() - timedelta(days=days_ago)
-
-    # Query to get data from the specified period
     query = {"Date": {"$gte": start_date}}
-    cursor = collection.find(query).sort("Date", -1)  # Sort by Date in descending order to get the most recent data
-
-    # Apply limit if specified
+    cursor = collection.find(query).sort("Date", -1)
     if limit:
         cursor = cursor.limit(limit)
 

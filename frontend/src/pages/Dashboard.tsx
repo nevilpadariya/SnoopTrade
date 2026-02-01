@@ -8,6 +8,7 @@ import ChartContainer from '../components/ChartContainer';
 import ForecastChartContainer from '../components/ForecastChartContainer';
 import SearchBar from '../components/SearchBar';
 import CompanyList from '../components/CompanyList';
+import CompanyLogo from '../components/CompanyLogo';
 import InsiderTradingChats from '../components/InsiderTradingChats';
 import { Button } from '../components/ui/button';
 import { fetchData } from '../utils/fetchData';
@@ -24,6 +25,29 @@ const COMPANIES = [
   'AAPL', 'META', 'NVDA', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NFLX',
   'JPM', 'JNJ', 'V', 'UNH', 'HD', 'DIS', 'BAC', 'XOM', 'PG', 'MA', 'PEP', 'WMT',
 ];
+
+const COMPANY_NAMES: Record<string, string> = {
+  AAPL: 'Apple Inc.',
+  META: 'Meta Platforms',
+  NVDA: 'NVIDIA',
+  GOOGL: 'Alphabet (Google)',
+  MSFT: 'Microsoft',
+  AMZN: 'Amazon',
+  TSLA: 'Tesla',
+  NFLX: 'Netflix',
+  JPM: 'JPMorgan Chase',
+  JNJ: 'Johnson & Johnson',
+  V: 'Visa',
+  UNH: 'UnitedHealth',
+  HD: 'Home Depot',
+  DIS: 'Walt Disney',
+  BAC: 'Bank of America',
+  XOM: 'Exxon Mobil',
+  PG: 'Procter & Gamble',
+  MA: 'Mastercard',
+  PEP: 'PepsiCo',
+  WMT: 'Walmart',
+};
 
 const COLORS = {
   price: 'hsl(var(--primary-strong))',
@@ -55,10 +79,13 @@ const Dashboard = (_props: DashboardProps) => {
   const { token, setToken } = useAuth();
 
   useEffect(() => {
+    const term = searchTerm.toLowerCase().trim();
     setFilteredCompanies(
-      COMPANIES.filter((company) =>
-        company.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      COMPANIES.filter((ticker) => {
+        if (!term) return true;
+        const name = (COMPANY_NAMES[ticker] ?? '').toLowerCase();
+        return ticker.toLowerCase().includes(term) || name.includes(term);
+      })
     );
     setShowCompanyList(searchTerm.length > 0);
   }, [searchTerm]);
@@ -229,6 +256,7 @@ const Dashboard = (_props: DashboardProps) => {
           {showCompanyList && filteredCompanies.length > 0 && (
             <CompanyList
               companies={filteredCompanies}
+              companyNames={COMPANY_NAMES}
               onSelectCompany={handleCompanySelect}
             />
           )}
@@ -273,8 +301,9 @@ const Dashboard = (_props: DashboardProps) => {
 
         {selectedCompany && (
           <>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-center mt-10 sm:mt-12 mb-6 sm:mb-8 font-display text-foreground px-4">
-              Data for {selectedCompany}
+            <h2 className="text-2xl sm:text-3xl font-semibold text-center mt-10 sm:mt-12 mb-6 sm:mb-8 font-display text-foreground px-4 flex items-center justify-center gap-3 flex-wrap">
+              <CompanyLogo ticker={selectedCompany} size={40} />
+              <span>Data for {selectedCompany} ({COMPANY_NAMES[selectedCompany] ?? selectedCompany})</span>
             </h2>
 
             <div className="mb-8 sm:mb-10">

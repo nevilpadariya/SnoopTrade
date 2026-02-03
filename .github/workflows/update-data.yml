@@ -60,8 +60,36 @@ jobs:
           pip install --upgrade pip
           pip install yfinance pymongo python-dotenv pandas
       
+      - name: Test MongoDB Connection
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          python -c "
+          import os
+          from pymongo import MongoClient
+          import sys
+          
+          uri = os.getenv('MONGODB_URI')
+          if not uri:
+              print('ERROR: MONGODB_URI is not set')
+              sys.exit(1)
+          
+          print(f'Testing MongoDB connection...')
+          print(f'URI starts with: {uri[:30]}...')
+          
+          try:
+              client = MongoClient(uri, serverSelectionTimeoutMS=10000)
+              client.admin.command('ping')
+              print('✓ Successfully connected to MongoDB')
+              client.close()
+          except Exception as e:
+              print(f'✗ MongoDB connection failed: {e}')
+              sys.exit(1)
+          "
+      
       - name: Update stock data for ${{ matrix.ticker }}
         if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
+        continue-on-error: true
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
@@ -71,8 +99,12 @@ jobs:
           os.environ['MONGODB_URI'] = '${{ secrets.MONGODB_URI }}'
           from scripts.stock_finance_data_extracton_script import save_stock_data
           print('Updating stock data for ${{ matrix.ticker }}...')
-          save_stock_data('${{ matrix.ticker }}')
-          print('Stock data update complete for ${{ matrix.ticker }}')
+          try:
+              save_stock_data('${{ matrix.ticker }}')
+              print('✓ Stock data update complete for ${{ matrix.ticker }}')
+          except Exception as e:
+              print(f'✗ Error updating ${{ matrix.ticker }}: {e}')
+              raise
           "
 
   # Job 2: Update SEC Form 4 Data
@@ -143,8 +175,36 @@ jobs:
           pip install --upgrade pip
           pip install requests pandas beautifulsoup4 lxml pymongo python-dotenv
       
+      - name: Test MongoDB Connection
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          python -c "
+          import os
+          from pymongo import MongoClient
+          import sys
+          
+          uri = os.getenv('MONGODB_URI')
+          if not uri:
+              print('ERROR: MONGODB_URI is not set')
+              sys.exit(1)
+          
+          print(f'Testing MongoDB connection...')
+          print(f'URI starts with: {uri[:30]}...')
+          
+          try:
+              client = MongoClient(uri, serverSelectionTimeoutMS=10000)
+              client.admin.command('ping')
+              print('✓ Successfully connected to MongoDB')
+              client.close()
+          except Exception as e:
+              print(f'✗ MongoDB connection failed: {e}')
+              sys.exit(1)
+          "
+      
       - name: Update SEC data for ${{ matrix.ticker }}
         if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
+        continue-on-error: true
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
@@ -157,8 +217,12 @@ jobs:
           print('Updating SEC Form 4 data for ${{ matrix.ticker }} (CIK: ${{ matrix.cik }})...')
           # Add delay to respect SEC rate limits
           time.sleep(2)
-          insert_form4_data('${{ matrix.ticker }}', '${{ matrix.cik }}')
-          print('SEC data update complete for ${{ matrix.ticker }}')
+          try:
+              insert_form4_data('${{ matrix.ticker }}', '${{ matrix.cik }}')
+              print('✓ SEC data update complete for ${{ matrix.ticker }}')
+          except Exception as e:
+              print(f'✗ Error updating ${{ matrix.ticker }}: {e}')
+              raise
           "
 
   # Job 3: Notify on completion (optional)

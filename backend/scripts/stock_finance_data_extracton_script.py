@@ -25,6 +25,40 @@ _client = None
 _db = None
 
 
+def validate_mongodb_uri(uri: str) -> tuple[bool, str]:
+    """
+    Validate MongoDB URI format and provide helpful error messages.
+    
+    Returns:
+        tuple: (is_valid, error_message)
+    """
+    if not uri or uri == "mongodb+srv://your-default-uri":
+        return False, "MONGODB_URI environment variable is not set or using default value"
+    
+    if not uri.startswith(("mongodb://", "mongodb+srv://")):
+        return False, f"Invalid MongoDB URI format. Must start with 'mongodb://' or 'mongodb+srv://'. Got: {uri[:30]}..."
+    
+    # Check for common typos
+    if "mongodb+srv://" in uri:
+        # Extract hostname
+        try:
+            # Format: mongodb+srv://user:pass@hostname/database?options
+            parts = uri.split("@")
+            if len(parts) < 2:
+                return False, "MongoDB URI missing '@' delimiter (check username:password@hostname format)"
+            
+            hostname_part = parts[1].split("/")[0].split("?")[0]
+            
+            # Check for suspicious patterns
+            if "srvio.net" in hostname_part and "mongodb.net" not in hostname_part:
+                return False, f"Hostname looks suspicious: '{hostname_part}'. MongoDB Atlas URLs typically end with '.mongodb.net'"
+            
+        except Exception as e:
+            return False, f"Error parsing MongoDB URI: {e}"
+    
+    return True, ""
+
+
 def get_db():
     """
     Get MongoDB database connection with lazy initialization.
@@ -32,8 +66,27 @@ def get_db():
     """
     global _client, _db
     if _client is None:
-        _client = MongoClient(MONGODB_URI)
-        _db = _client["stock_data"]
+        # Validate URI before attempting connection
+        is_valid, error_msg = validate_mongodb_uri(MONGODB_URI)
+        if not is_valid:
+            logger.error(f"MongoDB URI validation failed: {error_msg}")
+            raise ValueError(f"Invalid MongoDB URI: {error_msg}")
+        
+        try:
+            logger.info("Connecting to MongoDB...")
+            _client = MongoClient(
+                MONGODB_URI,
+                serverSelectionTimeoutMS=10000,  # 10 second timeout
+                connectTimeoutMS=10000
+            )
+            # Test the connection
+            _client.admin.command('ping')
+            logger.info("Successfully connected to MongoDB")
+            _db = _client["stock_data"]
+        except Exception as e:
+            logger.error(f"Failed to connect to MongoDB: {e}")
+            logger.error(f"MongoDB URI (first 30 chars): {MONGODB_URI[:30] if MONGODB_URI else 'None'}...")
+            raise
     return _db
 
 

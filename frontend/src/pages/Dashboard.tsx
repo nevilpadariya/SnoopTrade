@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
@@ -57,11 +57,22 @@ const COLORS = {
   seasonal: '#3b82f6',
 };
 
+// ─── Client-side data cache (avoids refetching same ticker+period) ───
+const DATA_CACHE_TTL = 120_000; // 2 minutes
+const stockCache = new Map<string, { data: any[]; ts: number }>();
+const tradeCache = new Map<string, { data: any[]; ts: number }>();
+
+function getCached(cache: Map<string, { data: any[]; ts: number }>, key: string) {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.ts < DATA_CACHE_TTL) return entry.data;
+  cache.delete(key);
+  return null;
+}
+
 interface DashboardProps {}
 
 const Dashboard = (_props: DashboardProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredCompanies, setFilteredCompanies] = useState<string[]>(COMPANIES);
   const [showCompanyList, setShowCompanyList] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(TIME_PERIODS['1Y']);
@@ -78,32 +89,47 @@ const Dashboard = (_props: DashboardProps) => {
   const navigate = useNavigate();
   const { token, setToken } = useAuth();
 
-  useEffect(() => {
+  // AbortController ref for cancelling stale requests
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Compute filtered companies with useMemo instead of useEffect + state
+  const filteredCompanies = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
-    setFilteredCompanies(
-      COMPANIES.filter((ticker) => {
-        if (!term) return true;
-        const name = (COMPANY_NAMES[ticker] ?? '').toLowerCase();
-        return ticker.toLowerCase().includes(term) || name.includes(term);
-      })
-    );
+    if (!term) return COMPANIES;
+    return COMPANIES.filter((ticker) => {
+      const name = (COMPANY_NAMES[ticker] ?? '').toLowerCase();
+      return ticker.toLowerCase().includes(term) || name.includes(term);
+    });
+  }, [searchTerm]);
+
+  useEffect(() => {
     setShowCompanyList(searchTerm.length > 0);
   }, [searchTerm]);
 
-  const handleCompanySelect = (company: string) => {
+  const handleCompanySelect = useCallback((company: string) => {
     setSelectedCompany(company);
     setSearchTerm('');
     setShowCompanyList(false);
     setShowForecast(false);
     setForecastError('');
-  };
+  }, []);
 
-  const handleTimePeriodChange = (period: string) => {
+  const handleTimePeriodChange = useCallback((period: string) => {
     setSelectedTimePeriod(period);
-  };
+  }, []);
 
-  const fetchStockData = async () => {
+  const fetchStockData = useCallback(async () => {
     if (!selectedCompany || !token) return;
+
+    const cacheKey = `${selectedCompany}:${selectedTimePeriod}`;
+
+    // Return cached data instantly
+    const cached = getCached(stockCache, cacheKey);
+    if (cached) {
+      setStockData(cached);
+      return;
+    }
+
     try {
       const url = API_ENDPOINTS.getStocks(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -127,6 +153,7 @@ const Dashboard = (_props: DashboardProps) => {
         })
         .sort((a: any, b: any) => new Date(a.dateISO).getTime() - new Date(b.dateISO).getTime());
 
+      stockCache.set(cacheKey, { data: formattedData, ts: Date.now() });
       setStockData(formattedData);
     } catch (error: any) {
       console.error('Error fetching stock data:', error);
@@ -135,9 +162,9 @@ const Dashboard = (_props: DashboardProps) => {
         navigate('/login');
       }
     }
-  };
+  }, [selectedCompany, selectedTimePeriod, token, setToken, navigate]);
 
-  const futureForecast = async (formattedData: any[]) => {
+  const futureForecast = useCallback(async (formattedData: any[]) => {
     if (!formattedData || formattedData.length === 0) {
       console.error('No formatted data available for forecasting');
       return;
@@ -169,8 +196,8 @@ const Dashboard = (_props: DashboardProps) => {
         throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
       }
 
-      const forecastData = await forecastResponse.json();
-      setForecastData(forecastData);
+      const forecastResult = await forecastResponse.json();
+      setForecastData(forecastResult);
       setShowForecast(true);
     } catch (error: any) {
       console.error('Error during forecasting:', error);
@@ -178,10 +205,20 @@ const Dashboard = (_props: DashboardProps) => {
     } finally {
       setIsPredicting(false);
     }
-  };
+  }, [token]);
 
-  const fetchTradeData = async () => {
+  const fetchTradeData = useCallback(async () => {
     if (!selectedCompany || !token) return;
+
+    const cacheKey = `${selectedCompany}:${selectedTimePeriod}`;
+
+    // Return cached data instantly
+    const cached = getCached(tradeCache, cacheKey);
+    if (cached) {
+      setTradeData(cached);
+      return;
+    }
+
     try {
       const url = API_ENDPOINTS.getTransactions(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -207,31 +244,19 @@ const Dashboard = (_props: DashboardProps) => {
           return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
 
+      tradeCache.set(cacheKey, { data: formattedTrades, ts: Date.now() });
       setTradeData(formattedTrades);
     } catch (error) {
       console.error('Error fetching insider trade data:', error);
     }
-  };
+  }, [selectedCompany, selectedTimePeriod, token]);
 
   useEffect(() => {
     if (token && selectedCompany) {
       fetchStockData();
       fetchTradeData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCompany, selectedTimePeriod, token]);
-
-  useEffect(() => {
-    const onFocus = () => {
-      if (token && selectedCompany) {
-        fetchStockData();
-        fetchTradeData();
-      }
-    };
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, selectedCompany]);
+  }, [fetchStockData, fetchTradeData, token, selectedCompany]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

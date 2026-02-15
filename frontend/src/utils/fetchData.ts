@@ -5,7 +5,6 @@ export const fetchData = async (url: string, token: string) => {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    cache: 'no-store',
   });
 
   if (!response.ok) {

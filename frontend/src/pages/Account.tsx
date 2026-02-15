@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { Button } from '../components/ui/button';
@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
+import { useAuth } from '../context/AuthContext';
 
 interface UserData {
   email: string;
@@ -17,6 +18,7 @@ interface UserData {
 }
 
 const Account = () => {
+  const { token } = useAuth();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -38,8 +40,8 @@ const Account = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
+        const authToken = token;
+        if (!authToken) {
           setError('Not authenticated. Please log in.');
           setLoading(false);
           return;
@@ -47,7 +49,7 @@ const Account = () => {
 
         const response = await fetch(API_ENDPOINTS.getUserDetails, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${authToken}`,
           },
         });
 
@@ -99,15 +101,16 @@ const Account = () => {
     setSubmitting(true);
 
     try {
-      const token = localStorage.getItem('authToken');
+      const authToken = token;
       const response = await fetch(API_ENDPOINTS.updateUserProfile, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           password: newPassword,
+          current_password: currentPassword,
         }),
       });
 

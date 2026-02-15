@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, status, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -23,14 +23,15 @@ async def signup(user: User) -> MessageResponse:
         )
 
     hashed_password = hash_password(user.password)
+    name_parts = user.name.strip().split(" ", 1)
     new_user = {
         "name": user.name,
         "email": user.email,
         "hashed_password": hashed_password,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "login_type": "normal",
-        "first_name": user.name.split(" ")[0],
-        "family_name": user.name.split(" ")[1]
+        "first_name": name_parts[0],
+        "family_name": name_parts[1] if len(name_parts) > 1 else ""
     }
     db.users.insert_one(new_user)
     return MessageResponse(message="User created successfully")
@@ -91,7 +92,7 @@ async def login(
                 "name": decoded_token.get("given_name", "") + " " + decoded_token.get("family_name", ""),
                 "email": email,
                 "hashed_password": None,
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(timezone.utc),
                 "login_type": "google"
             }
             try:
@@ -148,6 +149,18 @@ async def update_user_info(update_info: UpdateUser, token: str = Depends(oauth2_
     if update_info.name:
         update_data["name"] = update_info.name
     if update_info.password:
+        # Require current password verification for users who already have one
+        if user.get("hashed_password") and not user.get("login_type") == "google":
+            if not update_info.current_password:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Current password is required to change password."
+                )
+            if not verify_password(update_info.current_password, user["hashed_password"]):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Current password is incorrect."
+                )
         update_data["hashed_password"] = hash_password(update_info.password)
         if user.get("login_type") == "google":
             update_data["login_type"] = "both"

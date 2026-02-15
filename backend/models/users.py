@@ -11,6 +11,7 @@ class User(BaseModel):
 class UpdateUser(BaseModel):
     name: Optional[str] = None
     password: Optional[str] = None
+    current_password: Optional[str] = None
 
 
 class TokenResponse(BaseModel):

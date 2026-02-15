@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
@@ -11,7 +11,7 @@ import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 
-const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 const Login = () => {
   const [loginError, setLoginError] = useState('');

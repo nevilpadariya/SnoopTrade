@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "SnoopTrade",
+    "slug": "snooptrade-mobile",
+    "scheme": "snooptrade",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0E1410"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.snooptrade.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0E1410"
+      },
+      "package": "com.snooptrade.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b22838dc-402d-40a7-8656-329989e17a7f"
+      }
+    }
+  }
+}

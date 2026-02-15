@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Query
+from fastapi import APIRouter, HTTPException, Depends, status, Query, Response
+from fastapi.concurrency import run_in_threadpool
 from fastapi.security import OAuth2PasswordBearer
 from typing import List, Optional
 
@@ -29,13 +30,18 @@ async def read_transaction(ticker: str, transaction_id: str, user: dict = Depend
 @sec_router.get("/transactions/{ticker}", response_model=List[TransactionModel])
 async def read_all_transactions(
     ticker: str,
+    response: Response,
     time_period: Optional[str] = Query(None, pattern="^(1w|1m|3m|6m|1y)$"),
     user: dict = Depends(get_current_user)
 ):
     """Get all transactions for a ticker with optional time period. Requires authentication."""
-    transactions = get_all_transactions(ticker, time_period)
+    # Run synchronous DB call in threadpool to avoid blocking event loop
+    transactions = await run_in_threadpool(get_all_transactions, ticker, time_period)
 
     if transactions is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"No transactions found for ticker '{ticker}' in period '{time_period}'")
+    
+    # Allow client-side caching for 60 seconds
+    response.headers["Cache-Control"] = "public, max-age=60"
     return transactions

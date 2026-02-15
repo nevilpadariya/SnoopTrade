@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://cmpe272teamsnooptrade.us-west-2.elasticbeanstalk.com";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const API_ENDPOINTS = {
   getStocks: (company: string, period: string) =>

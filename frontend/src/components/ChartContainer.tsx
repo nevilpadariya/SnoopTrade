@@ -10,7 +10,7 @@ interface ChartContainerProps {
   isLogScale: boolean;
 }
 
-const ChartContainer: React.FC<ChartContainerProps> = ({
+const ChartContainer: React.FC<ChartContainerProps> = React.memo(({
   title,
   data,
   dataKey,
@@ -62,6 +62,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+ChartContainer.displayName = 'ChartContainer';
 
 export default ChartContainer;

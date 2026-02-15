@@ -29,7 +29,7 @@ interface ForecastChartContainerProps {
   areaDataKeyUpper?: string;
 }
 
-const ForecastChartContainer: React.FC<ForecastChartContainerProps> = ({
+const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo(({
   title,
   data,
   dataKey,
@@ -108,6 +108,8 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+ForecastChartContainer.displayName = 'ForecastChartContainer';
 
 export default ForecastChartContainer;

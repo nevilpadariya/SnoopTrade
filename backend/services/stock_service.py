@@ -94,7 +94,6 @@ def ensure_indexes() -> None:
             if name.startswith("stock_data_"):
                 stock_db[name].create_index(
                     [("Date", pymongo.DESCENDING)],
-                    name="idx_date_desc",
                     background=True,
                 )
                 created += 1

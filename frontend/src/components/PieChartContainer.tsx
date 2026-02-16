@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from './ui/card';
 
@@ -29,6 +29,13 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
   nameKey,
   colors,
 }) => {
+  const [isMobile, setIsMobile] = useState(window.matchMedia('(max-width: 767px)').matches);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
   // Custom label renderer for better positioning
   const renderCustomLabel = ({
     cx,
@@ -64,12 +71,12 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
   };
 
   return (
-    <Card className="p-6 bg-card/80 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="p-3 md:p-6 bg-card/80 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardContent className="p-0">
-        <h3 className="text-xl font-semibold mb-4 text-card-foreground font-display">
+        <h3 className="text-sm md:text-xl font-semibold mb-2 md:mb-4 text-card-foreground font-display">
           {title}
         </h3>
-        <ResponsiveContainer width="100%" height={350}>
+        <ResponsiveContainer width="100%" height={isMobile ? 260 : 350}>
           <PieChart>
             <defs>
               {colors.map((color, index) => (
@@ -92,14 +99,14 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
               nameKey={nameKey}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              innerRadius={isMobile ? 40 : 60}
+              outerRadius={isMobile ? 70 : 100}
               paddingAngle={3}
-              label={renderCustomLabel}
-              labelLine={{
+              label={isMobile ? false : renderCustomLabel}
+              labelLine={isMobile ? false : {
                 stroke: 'hsl(var(--muted-foreground))',
                 strokeWidth: 1,
-              }}
+              } as any}
               animationBegin={0}
               animationDuration={800}
               animationEasing="ease-out"

@@ -43,7 +43,7 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
       <PieChartContainer
         title="Transaction Types Distribution"
         data={transactionTypeData}

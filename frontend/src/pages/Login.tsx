@@ -104,8 +104,113 @@ const Login = () => {
     return <Navigate to="/create-password" replace />;
   }
 
-  return (
-    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
+  /* ─── Mobile Login (< 768px) — matches native app ─── */
+  const mobileLogin = (
+    <div className="min-h-screen flex flex-col px-5 pt-12 pb-8 md:hidden" style={{ backgroundColor: '#0E1410' }}>
+      <Helmet>
+        <title>Login - SnoopTrade</title>
+      </Helmet>
+
+      {/* Header block */}
+      <div className="mb-8" style={{ gap: 8 }}>
+        <p style={{ color: '#A7B7AC', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>SnoopTrade</p>
+        <h1 style={{ color: '#EAF5EC', fontSize: 28, fontWeight: 700, marginBottom: 8 }}>Welcome back</h1>
+        <p style={{ color: '#A7B7AC', fontSize: 15 }}>Sign in to track insider activity.</p>
+      </div>
+
+      {/* Form block */}
+      <GoogleOAuthProvider clientId={CLIENT_ID}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* Email input */}
+          <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#C9D5CC', opacity: 0.85, flexShrink: 0 }} />
+            <input
+              type="email"
+              placeholder="Email"
+              style={{
+                flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                color: '#EAF5EC', fontSize: 15,
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const pwInput = document.getElementById('mobile-password');
+                  if (pwInput) pwInput.focus();
+                }
+              }}
+              id="mobile-email"
+            />
+          </div>
+
+          {/* Password input */}
+          <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#C9D5CC', opacity: 0.85, flexShrink: 0 }} />
+            <input
+              type="password"
+              placeholder="Password"
+              style={{
+                flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                color: '#EAF5EC', fontSize: 15,
+              }}
+              id="mobile-password"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const emailEl = document.getElementById('mobile-email') as HTMLInputElement;
+                  const pwEl = document.getElementById('mobile-password') as HTMLInputElement;
+                  if (emailEl?.value && pwEl?.value) {
+                    handleFormSubmit(emailEl.value, pwEl.value);
+                  }
+                }
+              }}
+            />
+          </div>
+
+          {loginError && (
+            <p style={{ color: '#E56A6A', fontSize: 12, marginTop: 4 }}>{loginError}</p>
+          )}
+
+          {/* Login button */}
+          <button
+            className="mobile-btn-primary"
+            style={{ marginTop: 12 }}
+            onClick={() => {
+              const emailEl = document.getElementById('mobile-email') as HTMLInputElement;
+              const pwEl = document.getElementById('mobile-password') as HTMLInputElement;
+              handleFormSubmit(emailEl?.value || '', pwEl?.value || '');
+            }}
+          >
+            Login
+          </button>
+
+          {/* OR divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+            <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
+            <span style={{ color: '#A7B7AC', fontSize: 12 }}>OR</span>
+            <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
+          </div>
+
+          {/* Google button */}
+          <div style={{ marginTop: 12 }}>
+            <GoogleLoginButton
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleFailure}
+            />
+          </div>
+
+          {/* Sign up link */}
+          <p style={{ textAlign: 'center', marginTop: 24, color: '#A7B7AC', fontSize: 15 }}>
+            No account yet?{' '}
+            <Link to="/signup" style={{ color: '#B7E389', fontWeight: 700, textDecoration: 'none' }}>
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </GoogleOAuthProvider>
+    </div>
+  );
+
+  /* ─── Desktop Login (≥ 768px) — unchanged ─── */
+  const desktopLogin = (
+    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden hidden md:flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
       <Helmet>
         <title>Login - SnoopTrade</title>
       </Helmet>
@@ -153,6 +258,13 @@ const Login = () => {
         </div>
       </GoogleOAuthProvider>
     </div>
+  );
+
+  return (
+    <>
+      {mobileLogin}
+      {desktopLogin}
+    </>
   );
 };
 

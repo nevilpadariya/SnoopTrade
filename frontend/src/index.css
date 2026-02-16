@@ -202,3 +202,257 @@ main {
   flex: 1 1 0;
   min-width: 3.5rem;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE APP THEME (< 768px)
+   Forces the native mobile app's dark color palette on small
+   viewports. All existing Tailwind classes (bg-background,
+   text-foreground, etc.) automatically pick up these values.
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  :root,
+  :root.dark,
+  .dark {
+    --background: 140 16% 6%;        /* #0E1410 */
+    --foreground: 130 30% 94%;       /* #EAF5EC */
+    --card: 140 15% 11%;             /* #1A231C */
+    --card-foreground: 130 30% 94%;  /* #EAF5EC */
+    --popover: 140 15% 11%;
+    --popover-foreground: 130 30% 94%;
+    --primary: 92 60% 71%;           /* #B7E389 */
+    --primary-strong: 92 60% 62%;    /* #9DD665 */
+    --primary-foreground: 120 20% 10%;
+    --secondary: 145 14% 16%;        /* #253129 */
+    --secondary-foreground: 130 30% 94%;
+    --muted: 145 14% 16%;            /* #253129 */
+    --muted-foreground: 140 8% 69%;  /* #A7B7AC */
+    --accent: 160 40% 59%;           /* #64C9A8 */
+    --accent-foreground: 120 20% 10%;
+    --destructive: 0 72% 65%;        /* #E56A6A */
+    --destructive-foreground: 0 0% 100%;
+    --border: 148 14% 22%;           /* #314036 */
+    --input: 148 14% 22%;
+    --ring: 92 60% 71%;
+  }
+
+  /* Force dark background on html/body */
+  html, body {
+    background-color: #0E1410 !important;
+    color: #EAF5EC !important;
+  }
+
+  /* Hide desktop scrollbar styling on mobile */
+  ::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+}
+
+/* ── Mobile utility classes (only apply < 768px) ── */
+@media (max-width: 767px) {
+  .mobile-card {
+    border: 1px solid #314036;
+    border-radius: 16px;
+    background-color: #1A231C;
+    padding: 16px;
+  }
+
+  .mobile-card-shadow {
+    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+  }
+
+  .mobile-input {
+    height: 52px;
+    border-radius: 16px;
+    border: 1px solid #2F4A3A;
+    background-color: #1B2B22;
+    padding: 0 12px;
+    color: #EAF5EC;
+    font-size: 15px;
+    width: 100%;
+    outline: none;
+  }
+
+  .mobile-input::placeholder {
+    color: #A7B7AC;
+  }
+
+  .mobile-input:focus {
+    border-color: #B7E389;
+    box-shadow: 0 0 0 2px rgba(183, 227, 137, 0.15);
+  }
+
+  .mobile-btn-primary {
+    height: 52px;
+    border-radius: 16px;
+    background-color: #A5D47A;
+    color: #152214;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .mobile-btn-primary:hover,
+  .mobile-btn-primary:active {
+    opacity: 0.9;
+  }
+
+  .mobile-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .mobile-btn-outline {
+    height: 52px;
+    border-radius: 16px;
+    border: 1px solid #324B3B;
+    background-color: #25352D;
+    color: #C9D4CC;
+    font-size: 15px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.15s;
+  }
+
+  .mobile-btn-outline:hover,
+  .mobile-btn-outline:active {
+    opacity: 0.9;
+  }
+
+  .mobile-btn-danger {
+    height: 52px;
+    border-radius: 16px;
+    background-color: #E56A6A;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .mobile-btn-danger:hover,
+  .mobile-btn-danger:active {
+    opacity: 0.9;
+  }
+
+  .mobile-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #253129;
+    border: 1.5px solid #B7E389;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #B7E389;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .mobile-avatar-lg {
+    width: 56px;
+    height: 56px;
+    border-width: 2px;
+    font-size: 22px;
+  }
+
+  .mobile-summary-card {
+    flex: 1;
+    border: 1px solid #314036;
+    border-radius: 16px;
+    background-color: #1A231C;
+    padding: 12px 16px;
+    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+  }
+
+  .mobile-summary-card .label {
+    color: #A7B7AC;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .mobile-summary-card .value {
+    color: #EAF5EC;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .mobile-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #314036;
+    border-radius: 999px;
+    background-color: #253129;
+    padding: 8px 16px;
+  }
+
+  .mobile-chip .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #9DD665;
+  }
+
+  .mobile-chip .ticker {
+    color: #EAF5EC;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .mobile-chip .name {
+    color: #A7B7AC;
+    font-size: 12px;
+  }
+
+  .mobile-snapshot {
+    border: 1px solid #314036;
+    border-radius: 16px;
+    background-color: #1A231C;
+    padding: 16px;
+    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+  }
+
+  .mobile-snapshot .title {
+    color: #EAF5EC;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .mobile-filter-chip {
+    height: 32px;
+    min-width: 56px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid #314036;
+    background-color: #1A231C;
+    color: #A7B7AC;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mobile-filter-chip.active {
+    background-color: #B7E389;
+    border-color: #B7E389;
+    color: #1A2A19;
+  }
+
+  /* Bottom nav spacing - add padding to prevent content from hiding behind fixed bottom nav */
+  .has-bottom-nav {
+    padding-bottom: 80px;
+  }
+}

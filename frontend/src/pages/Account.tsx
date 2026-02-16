@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle, LogOut } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import MobileBottomNav from '../components/MobileBottomNav';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -17,8 +19,18 @@ interface UserData {
   last_name?: string;
 }
 
+function getInitials(name?: string): string {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() || '')
+    .join('');
+}
+
 const Account = () => {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -139,10 +151,15 @@ const Account = () => {
     }
   };
 
+  const handleLogout = () => {
+    setToken(null);
+    navigate('/login');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
+        <div className="hidden md:block"><Navbar /></div>
         <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -153,7 +170,7 @@ const Account = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
+        <div className="hidden md:block"><Navbar /></div>
         <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40 px-4">
           <div className="text-center">
             <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-4" />
@@ -164,8 +181,173 @@ const Account = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
+  const initials = getInitials(userData?.name);
+  const loginBadge = userData?.login_type === 'google' ? 'Google' :
+                     userData?.login_type === 'both' ? 'Google + Email' : 'Email';
+
+  /* ═══ MOBILE ACCOUNT (< 768px) ═══ */
+  const mobileAccount = (
+    <div className="md:hidden has-bottom-nav" style={{ backgroundColor: '#0E1410', minHeight: '100vh' }}>
+      <Helmet>
+        <title>Account Settings | SnoopTrade</title>
+      </Helmet>
+
+      <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <h1 style={{ color: '#EAF5EC', fontSize: 28, fontWeight: 700 }}>Account</h1>
+
+        {/* Avatar profile card */}
+        <div className="mobile-card mobile-card-shadow" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="mobile-avatar mobile-avatar-lg">{initials}</div>
+          <div>
+            <p style={{ color: '#EAF5EC', fontSize: 20, fontWeight: 700 }}>{userData?.name || ''}</p>
+            <p style={{ color: '#A7B7AC', fontSize: 13, marginTop: 2 }}>{userData?.email || ''}</p>
+            <span style={{
+              display: 'inline-block', marginTop: 8, padding: '4px 12px',
+              borderRadius: 999, fontSize: 11, fontWeight: 700,
+              backgroundColor: userData?.login_type === 'google' ? 'rgba(59,130,246,0.2)' : 'rgba(183,227,137,0.2)',
+              color: userData?.login_type === 'google' ? '#60A5FA' : '#B7E389',
+            }}>
+              {loginBadge}
+            </span>
+          </div>
+        </div>
+
+        {/* Account info card */}
+        <div className="mobile-card mobile-card-shadow">
+          <h2 style={{ color: '#EAF5EC', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
+            Account Information
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Email</label>
+              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', opacity: 0.7 }}>
+                {userData?.email || ''}
+              </div>
+            </div>
+            <div>
+              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Name</label>
+              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', opacity: 0.7 }}>
+                {userData?.name || ''}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Password card */}
+        <div className="mobile-card mobile-card-shadow">
+          <h2 style={{ color: '#EAF5EC', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
+            {isGoogleOnlyUser ? 'Create Password' : 'Change Password'}
+          </h2>
+          {isGoogleOnlyUser && (
+            <p style={{ color: '#A7B7AC', fontSize: 13, marginBottom: 16 }}>
+              Create a password to also log in with email.
+            </p>
+          )}
+
+          {successMessage && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: 12,
+              borderRadius: 12, backgroundColor: 'rgba(104,208,142,0.2)',
+              color: '#68D08E', marginBottom: 12, fontSize: 13,
+            }}>
+              <CheckCircle size={16} />
+              <span>{successMessage}</span>
+            </div>
+          )}
+
+          {formError && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: 12,
+              borderRadius: 12, backgroundColor: 'rgba(229,106,106,0.2)',
+              color: '#E56A6A', marginBottom: 12, fontSize: 13,
+            }}>
+              <AlertCircle size={16} />
+              <span>{formError}</span>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {!isGoogleOnlyUser && (
+              <div>
+                <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Current Password</label>
+                <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    placeholder="Current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
+                  />
+                  <button onClick={() => setShowCurrentPassword(!showCurrentPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
+                    {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>
+                {isGoogleOnlyUser ? 'Password' : 'New Password'}
+              </label>
+              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  placeholder={isGoogleOnlyUser ? 'Enter password' : 'New password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
+                />
+                <button onClick={() => setShowNewPassword(!showNewPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Confirm Password</label>
+              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
+                />
+                <button onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              className="mobile-btn-primary"
+              onClick={handlePasswordSubmit}
+              disabled={submitting}
+              style={{ marginTop: 8 }}
+            >
+              {submitting
+                ? (isGoogleOnlyUser ? 'Creating...' : 'Updating...')
+                : (isGoogleOnlyUser ? 'Create Password' : 'Change Password')
+              }
+            </button>
+          </div>
+        </div>
+
+        {/* Logout button */}
+        <button className="mobile-btn-danger" onClick={handleLogout} style={{ marginTop: 8 }}>
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <LogOut size={18} /> Logout
+          </span>
+        </button>
+      </div>
+
+      <MobileBottomNav />
+    </div>
+  );
+
+  /* ═══ DESKTOP ACCOUNT (≥ 768px) — unchanged ═══ */
+  const desktopAccount = (
+    <div className="min-h-screen bg-background hidden md:block">
       <Helmet>
         <title>Account Settings | SnoopTrade</title>
       </Helmet>
@@ -359,6 +541,13 @@ const Account = () => {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {mobileAccount}
+      {desktopAccount}
+    </>
   );
 };
 

@@ -122,13 +122,12 @@ const Login = () => {
       <GoogleOAuthProvider clientId={CLIENT_ID}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Email input */}
-          <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#C9D5CC', opacity: 0.85, flexShrink: 0 }} />
+          <div className="mobile-input">
             <input
               type="email"
               placeholder="Email"
               style={{
-                flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                width: '100%', background: 'transparent', border: 'none', outline: 'none',
                 color: '#EAF5EC', fontSize: 15,
               }}
               onKeyDown={(e) => {
@@ -142,13 +141,12 @@ const Login = () => {
           </div>
 
           {/* Password input */}
-          <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#C9D5CC', opacity: 0.85, flexShrink: 0 }} />
+          <div className="mobile-input">
             <input
               type="password"
               placeholder="Password"
               style={{
-                flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                width: '100%', background: 'transparent', border: 'none', outline: 'none',
                 color: '#EAF5EC', fontSize: 15,
               }}
               id="mobile-password"
@@ -189,7 +187,7 @@ const Login = () => {
           </div>
 
           {/* Google button */}
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 12, width: '100%' }}>
             <GoogleLoginButton
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleFailure}

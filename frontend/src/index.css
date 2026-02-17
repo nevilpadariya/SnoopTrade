@@ -203,71 +203,28 @@ main {
   min-width: 3.5rem;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE APP THEME (< 768px)
-   Forces the native mobile app's dark color palette on small
-   viewports. All existing Tailwind classes (bg-background,
-   text-foreground, etc.) automatically pick up these values.
-   ═══════════════════════════════════════════════════════════════ */
-@media (max-width: 767px) {
-  :root,
-  :root.dark,
-  .dark {
-    --background: 140 16% 6%;        /* #0E1410 */
-    --foreground: 130 30% 94%;       /* #EAF5EC */
-    --card: 140 15% 11%;             /* #1A231C */
-    --card-foreground: 130 30% 94%;  /* #EAF5EC */
-    --popover: 140 15% 11%;
-    --popover-foreground: 130 30% 94%;
-    --primary: 92 60% 71%;           /* #B7E389 */
-    --primary-strong: 92 60% 62%;    /* #9DD665 */
-    --primary-foreground: 120 20% 10%;
-    --secondary: 145 14% 16%;        /* #253129 */
-    --secondary-foreground: 130 30% 94%;
-    --muted: 145 14% 16%;            /* #253129 */
-    --muted-foreground: 140 8% 69%;  /* #A7B7AC */
-    --accent: 160 40% 59%;           /* #64C9A8 */
-    --accent-foreground: 120 20% 10%;
-    --destructive: 0 72% 65%;        /* #E56A6A */
-    --destructive-foreground: 0 0% 100%;
-    --border: 148 14% 22%;           /* #314036 */
-    --input: 148 14% 22%;
-    --ring: 92 60% 71%;
-  }
 
-  /* Force dark background on html/body */
-  html, body {
-    background-color: #0E1410 !important;
-    color: #EAF5EC !important;
-  }
-
-  /* Hide desktop scrollbar styling on mobile */
-  ::-webkit-scrollbar {
-    width: 0;
-    display: none;
-  }
-}
 
 /* ── Mobile utility classes (only apply < 768px) ── */
 @media (max-width: 767px) {
   .mobile-card {
-    border: 1px solid #314036;
-    border-radius: 16px;
-    background-color: #1A231C;
-    padding: 16px;
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    background-color: hsl(var(--card));
+    padding: 1rem;
   }
 
   .mobile-card-shadow {
-    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .mobile-input {
     height: 52px;
     border-radius: 16px;
-    border: 1px solid #2F4A3A;
-    background-color: #1B2B22;
+    border: 1px solid hsl(var(--input));
+    background-color: hsl(var(--muted));
     padding: 0 12px;
-    color: #EAF5EC;
+    color: hsl(var(--foreground));
     font-size: 15px;
     width: 100%;
     outline: none;
@@ -276,19 +233,19 @@ main {
   }
 
   .mobile-input::placeholder {
-    color: #A7B7AC;
+    color: hsl(var(--muted-foreground));
   }
 
   .mobile-input:focus {
-    border-color: #B7E389;
-    box-shadow: 0 0 0 2px rgba(183, 227, 137, 0.15);
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
   }
 
   .mobile-btn-primary {
     height: 52px;
     border-radius: 16px;
-    background-color: #A5D47A;
-    color: #152214;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
     font-size: 18px;
     font-weight: 700;
     width: 100%;
@@ -296,11 +253,8 @@ main {
     cursor: pointer;
     transition: opacity 0.15s;
   }
-
-  .mobile-btn-primary:hover,
-  .mobile-btn-primary:active {
-    opacity: 0.9;
-  }
+  
+  .mobile-btn-primary:hover, .mobile-btn-primary:active { opacity: 0.9; }
 
   .mobile-btn-primary:disabled {
     opacity: 0.6;
@@ -310,9 +264,9 @@ main {
   .mobile-btn-outline {
     height: 52px;
     border-radius: 16px;
-    border: 1px solid #324B3B;
-    background-color: #25352D;
-    color: #C9D4CC;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
     font-size: 15px;
     font-weight: 600;
     width: 100%;
@@ -323,17 +277,14 @@ main {
     gap: 8px;
     transition: opacity 0.15s;
   }
-
-  .mobile-btn-outline:hover,
-  .mobile-btn-outline:active {
-    opacity: 0.9;
-  }
+  
+  .mobile-btn-outline:hover, .mobile-btn-outline:active { opacity: 0.9; }
 
   .mobile-btn-danger {
     height: 52px;
     border-radius: 16px;
-    background-color: #E56A6A;
-    color: #ffffff;
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
     font-size: 18px;
     font-weight: 700;
     width: 100%;
@@ -342,21 +293,18 @@ main {
     transition: opacity 0.15s;
   }
 
-  .mobile-btn-danger:hover,
-  .mobile-btn-danger:active {
-    opacity: 0.9;
-  }
+  .mobile-btn-danger:hover, .mobile-btn-danger:active { opacity: 0.9; }
 
   .mobile-avatar {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background-color: #253129;
-    border: 1.5px solid #B7E389;
+    background-color: hsl(var(--muted));
+    border: 1.5px solid hsl(var(--primary));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #B7E389;
+    color: hsl(var(--primary));
     font-size: 15px;
     font-weight: 700;
     flex-shrink: 0;
@@ -371,21 +319,21 @@ main {
 
   .mobile-summary-card {
     flex: 1;
-    border: 1px solid #314036;
+    border: 1px solid hsl(var(--border));
     border-radius: 16px;
-    background-color: #1A231C;
+    background-color: hsl(var(--card));
     padding: 12px 16px;
-    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .mobile-summary-card .label {
-    color: #A7B7AC;
+    color: hsl(var(--muted-foreground));
     font-size: 12px;
     margin-bottom: 4px;
   }
 
   .mobile-summary-card .value {
-    color: #EAF5EC;
+    color: hsl(var(--foreground));
     font-size: 18px;
     font-weight: 700;
   }
@@ -394,9 +342,9 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid #314036;
+    border: 1px solid hsl(var(--border));
     border-radius: 999px;
-    background-color: #253129;
+    background-color: hsl(var(--muted));
     padding: 8px 16px;
   }
 
@@ -404,30 +352,30 @@ main {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: #9DD665;
+    background-color: hsl(var(--primary-strong));
   }
 
   .mobile-chip .ticker {
-    color: #EAF5EC;
+    color: hsl(var(--foreground));
     font-size: 12px;
     font-weight: 700;
   }
 
   .mobile-chip .name {
-    color: #A7B7AC;
+    color: hsl(var(--muted-foreground));
     font-size: 12px;
   }
 
   .mobile-snapshot {
-    border: 1px solid #314036;
+    border: 1px solid hsl(var(--border));
     border-radius: 16px;
-    background-color: #1A231C;
+    background-color: hsl(var(--card));
     padding: 16px;
-    box-shadow: 0 8px 16px rgba(6, 9, 7, 0.25);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .mobile-snapshot .title {
-    color: #EAF5EC;
+    color: hsl(var(--foreground));
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 12px;
@@ -438,9 +386,9 @@ main {
     min-width: 56px;
     padding: 0 16px;
     border-radius: 999px;
-    border: 1px solid #314036;
-    background-color: #1A231C;
-    color: #A7B7AC;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+    color: hsl(var(--muted-foreground));
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -448,9 +396,9 @@ main {
   }
 
   .mobile-filter-chip.active {
-    background-color: #B7E389;
-    border-color: #B7E389;
-    color: #1A2A19;
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
 
   /* Bottom nav spacing - add padding to prevent content from hiding behind fixed bottom nav */

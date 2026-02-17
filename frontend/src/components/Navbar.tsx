@@ -1,17 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Menu, X, LogOut, User, Settings } from 'lucide-react';
+import { Moon, Sun, Menu, X, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { cn } from '../lib/utils';
 import Logo from './Logo';
@@ -217,14 +210,23 @@ const Navbar = () => {
         aria-label="Main navigation"
       >
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className={cn(
+            "flex items-center justify-between transition-all duration-300 ease-in-out",
+            isScrolled ? "h-14 md:h-16" : "h-16 md:h-20"
+          )}>
             <Link
               to={token ? "/dashboard" : "/"}
               className="flex items-center gap-2 md:gap-3 text-foreground no-underline hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md"
               aria-label="SnoopTrade home"
             >
-              <Logo className="h-7 w-7 md:h-8 md:w-8 text-primary-strong flex-shrink-0" />
-              <span className="text-lg md:text-xl font-bold font-display truncate">
+              <Logo className={cn(
+                "text-primary-strong flex-shrink-0 transition-all duration-300",
+                isScrolled ? "h-6 w-6 md:h-7 md:w-7" : "h-7 w-7 md:h-8 md:w-8"
+              )} />
+              <span className={cn(
+                "font-bold font-display truncate transition-all duration-300",
+                isScrolled ? "text-lg md:text-xl" : "text-xl md:text-2xl"
+              )}>
                 SnoopTrade
               </span>
             </Link>
@@ -272,33 +274,28 @@ const Navbar = () => {
               </TooltipProvider>
 
               {token ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-11 w-11 rounded-full p-0">
+                <div className="flex items-center gap-2">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="relative h-11 w-11 rounded-full p-0 hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2"
+                  >
+                    <Link to="/account" aria-label="Account settings">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback>{getInitials(user)}</AvatarFallback>
                       </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">SnoopTrade</p>
-                        <p className="text-xs leading-none text-muted-foreground">Manage your account</p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/account')}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Account Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:text-red-400">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </Link>
+                  </Button>
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    className="hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11 text-red-400 hover:text-red-500"
+                    aria-label="Log out"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span className="hidden xl:inline">Log out</span>
+                  </Button>
+                </div>
               ) : (
                 <>
                   <Button
@@ -364,7 +361,8 @@ const Navbar = () => {
           aria-modal={isMobileMenuOpen ? "true" : undefined}
           aria-label="Mobile navigation menu"
           className={cn(
-            "lg:hidden fixed inset-x-0 top-16 md:top-20 bg-card border-b border-border shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
+            "lg:hidden fixed inset-x-0 bg-card border-b border-border shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
+            isScrolled ? "top-14 md:top-16" : "top-16 md:top-20",
             isMobileMenuOpen
               ? "max-h-screen opacity-100"
               : "max-h-0 opacity-0 pointer-events-none"

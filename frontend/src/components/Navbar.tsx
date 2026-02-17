@@ -1,8 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun, Menu, X, LogOut, User, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { cn } from '../lib/utils';
 import Logo from './Logo';
 
@@ -212,24 +222,53 @@ const Navbar = () => {
                   <Link to="/account">Account</Link>
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11 w-11"
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={toggleTheme}
+                      className="hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11 w-11"
+                      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                    >
+                      {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isDark ? 'Light mode' : 'Dark mode'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               {token ? (
-                <Button
-                  onClick={handleLogout}
-                  variant="default"
-                  className="px-6 bg-primary-strong hover:bg-primary-strong/90 focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11"
-                >
-                  Logout
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-11 w-11 rounded-full p-0">
+                      <Avatar className="h-9 w-9">
+                        <AvatarFallback>ST</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">SnoopTrade</p>
+                        <p className="text-xs leading-none text-muted-foreground">Manage your account</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/account')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Account Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-400 focus:text-red-400">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <>
                   <Button
@@ -250,15 +289,24 @@ const Navbar = () => {
               )}
             </div>
             <div className="flex items-center gap-2 lg:hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11 w-11"
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={toggleTheme}
+                      className="hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 h-11 w-11"
+                      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                    >
+                      {isDark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isDark ? 'Light mode' : 'Dark mode'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               <Button
                 ref={menuToggleRef}

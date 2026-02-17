@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'sonner';
 import LoginHeader from '../components/Header';
 import WelcomePanel from '../components/login/WelcomePanel';
 import LoginForm from '../components/login/LoginForm';
@@ -35,13 +36,18 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         setToken(data.access_token);
+        toast.success('Welcome back!', { description: 'You have been logged in successfully.' });
         navigate('/dashboard');
       } else {
         const errorData = await response.json();
-        setLoginError(errorData.detail || 'Login failed. Please try again.');
+        const errMsg = errorData.detail || 'Login failed. Please try again.';
+        setLoginError(errMsg);
+        toast.error('Login failed', { description: errMsg });
       }
     } catch (error) {
-      setLoginError('Something went wrong. Please try again.');
+      const errMsg = 'Something went wrong. Please try again.';
+      setLoginError(errMsg);
+      toast.error('Connection error', { description: errMsg });
     }
   };
 
@@ -81,20 +87,26 @@ const Login = () => {
           setRequiresPassword(true);
           navigate('/create-password');
         } else {
+          toast.success('Welcome back!', { description: 'Signed in with Google.' });
           navigate('/dashboard');
         }
       } else {
         const errorData = await tokenResponse.json();
-        setLoginError(errorData.detail || 'Google login failed.');
+        const errMsg = errorData.detail || 'Google login failed.';
+        setLoginError(errMsg);
+        toast.error('Google login failed', { description: errMsg });
       }
     } catch (error) {
       console.error('Error in Google login:', error);
-      setLoginError('Something went wrong with Google login.');
+      const errMsg = 'Something went wrong with Google login.';
+      setLoginError(errMsg);
+      toast.error('Google login error', { description: errMsg });
     }
   };
 
   const handleGoogleFailure = () => {
     setLoginError('Google Login failed.');
+    toast.error('Google Login failed', { description: 'Please try again or use email login.' });
   };
 
   if (token && !requiresPassword) {

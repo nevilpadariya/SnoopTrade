@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { Toaster } from './components/ui/sonner';
 import './App.css';
 
 // ─── Lazy-loaded pages (code-split into separate chunks) ───
@@ -80,6 +81,7 @@ const App = () => {
             </Routes>
           </Suspense>
         </Router>
+        <Toaster position="top-right" richColors closeButton />
       </AuthProvider>
     </HelmetProvider>
   );

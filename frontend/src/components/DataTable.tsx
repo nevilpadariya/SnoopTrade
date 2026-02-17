@@ -2,6 +2,14 @@ import { useState, ChangeEvent } from 'react';
 import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import {
   Table,
   TableBody,
@@ -66,18 +74,18 @@ const DataTable = ({
     return types[code] || code;
   };
 
-  const getTransactionColor = (code: string) => {
-    const colorMap: { [key: string]: string } = {
-      P: 'text-emerald-400',      // Purchase - bright green
-      S: 'text-red-400',          // Sale - keep red for clarity
-      A: 'text-teal-400',         // Grant/Award - teal
-      D: 'text-amber-400',        // Sale to Issuer - amber
-      F: 'text-violet-400',       // Payment of Exercise - violet
-      I: 'text-lime-400',         // Discretionary - lime
-      M: 'text-cyan-400',         // Exercise/Conversion - cyan
-      G: 'text-green-400',        // Gift - green
+  const getTransactionBadgeVariant = (code: string): "purchase" | "sale" | "grant" | "exercise" | "payment" | "discretionary" | "gift" | "neutral" => {
+    const variantMap: { [key: string]: "purchase" | "sale" | "grant" | "exercise" | "payment" | "discretionary" | "gift" | "neutral" } = {
+      P: 'purchase',
+      S: 'sale',
+      A: 'grant',
+      D: 'neutral',
+      F: 'payment',
+      I: 'discretionary',
+      M: 'exercise',
+      G: 'gift',
     };
-    return colorMap[code] || 'text-slate-400';
+    return variantMap[code] || 'neutral';
   };
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -197,9 +205,9 @@ const DataTable = ({
                       {formatDate(row.date)}
                     </TableCell>
                     <TableCell>
-                      <span className={`font-semibold ${getTransactionColor(row.transaction_code)}`}>
+                      <Badge variant={getTransactionBadgeVariant(row.transaction_code)}>
                         {getTransactionType(row.transaction_code)}
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right text-card-foreground/80 font-mono">
                       {row.shares?.toLocaleString() || 'N/A'}
@@ -236,22 +244,26 @@ const DataTable = ({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-border/30">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Rows per page:</span>
-            <select
-              value={rowsPerPage}
-              onChange={(e) => {
+            <Select
+              value={String(rowsPerPage)}
+              onValueChange={(val) => {
                 const syntheticEvent = {
-                  target: { value: e.target.value }
+                  target: { value: val }
                 } as React.ChangeEvent<HTMLInputElement>;
                 handleChangeRowsPerPage(syntheticEvent);
               }}
-              className="bg-card text-card-foreground border border-border/50 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              {[5, 10, 25, 50].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-[70px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 25, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center gap-4">

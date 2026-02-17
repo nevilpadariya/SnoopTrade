@@ -12,6 +12,10 @@ import CompanyList from '../components/CompanyList';
 import CompanyLogo from '../components/CompanyLogo';
 import InsiderTradingChats from '../components/InsiderTradingChats';
 import { Button } from '../components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
+import { Separator } from '../components/ui/separator';
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
@@ -103,6 +107,8 @@ const Dashboard = (_props: DashboardProps) => {
   const [isPredicting, setIsPredicting] = useState(false);
   const [showForecast, setShowForecast] = useState(false);
   const [forecastError, setForecastError] = useState('');
+  const [isLoadingStock, setIsLoadingStock] = useState(false);
+  const [isLoadingTrades, setIsLoadingTrades] = useState(false);
   const navigate = useNavigate();
   const { token, setToken } = useAuth();
   const [userName, setUserName] = useState('');
@@ -158,6 +164,7 @@ const Dashboard = (_props: DashboardProps) => {
       return;
     }
 
+    setIsLoadingStock(true);
     try {
       const url = API_ENDPOINTS.getStocks(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -189,6 +196,8 @@ const Dashboard = (_props: DashboardProps) => {
         setToken(null);
         navigate('/login');
       }
+    } finally {
+      setIsLoadingStock(false);
     }
   }, [selectedCompany, selectedTimePeriod, token, setToken, navigate]);
 
@@ -245,6 +254,7 @@ const Dashboard = (_props: DashboardProps) => {
       return;
     }
 
+    setIsLoadingTrades(true);
     try {
       const url = API_ENDPOINTS.getTransactions(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -274,6 +284,8 @@ const Dashboard = (_props: DashboardProps) => {
       setTradeData(formattedTrades);
     } catch (error) {
       console.error('Error fetching insider trade data:', error);
+    } finally {
+      setIsLoadingTrades(false);
     }
   }, [selectedCompany, selectedTimePeriod, token]);
 
@@ -369,13 +381,20 @@ const Dashboard = (_props: DashboardProps) => {
           <>
             {/* Stock Price Chart */}
             <div className="mobile-card mobile-card-shadow">
-              <ChartContainer
-                title={`Stock Price (${selectedTimePeriod.toUpperCase()})`}
-                data={stockData}
-                dataKey="open"
-                lineColor={COLORS.price}
-                isLogScale={isLogScalePrice}
-              />
+              {isLoadingStock ? (
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-[220px] w-full" />
+                </div>
+              ) : (
+                <ChartContainer
+                  title={`Stock Price (${selectedTimePeriod.toUpperCase()})`}
+                  data={stockData}
+                  dataKey="open"
+                  lineColor={COLORS.price}
+                  isLogScale={isLogScalePrice}
+                />
+              )}
             </div>
 
             {/* Summary cards: 2×2 grid */}
@@ -401,15 +420,9 @@ const Dashboard = (_props: DashboardProps) => {
             {/* Insider Snapshot */}
             <div className="mobile-snapshot">
               <div className="title">Insider Snapshot</div>
-              <div style={{ display: 'flex', gap: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#68D08E' }} />
-                  <span style={{ color: '#A7B7AC', fontSize: 15 }}>Purchases: {purchases}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#E56A6A' }} />
-                  <span style={{ color: '#A7B7AC', fontSize: 15 }}>Sales: {sales}</span>
-                </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <Badge variant="purchase">Purchases: {purchases}</Badge>
+                <Badge variant="sale">Sales: {sales}</Badge>
               </div>
               <p style={{ color: '#64C9A8', fontSize: 15, fontWeight: 600, marginTop: 12 }}>
                 Net signal: {netSignal}
@@ -525,35 +538,15 @@ const Dashboard = (_props: DashboardProps) => {
 
           {selectedCompany && (
             <div className="flex justify-center mt-6 sm:mt-8 w-full px-2">
-              <div
-                className="time-range-row inline-flex rounded-xl border border-border bg-muted/30 p-1 shadow-inner"
-                role="group"
-                aria-label="Stock data range"
-              >
-                {Object.entries(TIME_PERIODS).map(([label, value]) => {
-                  const isActive = selectedTimePeriod === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => handleTimePeriodChange(value)}
-                      className={`
-                        relative px-4 py-2.5 text-sm font-medium rounded-lg
-                        transition-all duration-200 ease-out
-                        min-w-[4rem] whitespace-nowrap
-                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background
-                        ${isActive
-                          ? 'bg-primary text-primary-foreground shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                        }
-                      `}
-                      aria-pressed={isActive}
-                    >
+              <Tabs value={selectedTimePeriod} onValueChange={handleTimePeriodChange}>
+                <TabsList>
+                  {Object.entries(TIME_PERIODS).map(([label, value]) => (
+                    <TabsTrigger key={value} value={value}>
                       {label}
-                    </button>
-                  );
-                })}
-              </div>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
             </div>
           )}
         </div>
@@ -566,14 +559,23 @@ const Dashboard = (_props: DashboardProps) => {
             </h2>
 
             <div className="mb-8 sm:mb-10">
-              <ChartContainer
-                title="Stock Price Trends"
-                data={stockData}
-                dataKey="open"
-                lineColor={COLORS.price}
-                isLogScale={isLogScalePrice}
-              />
+              {isLoadingStock ? (
+                <div className="p-6 space-y-4 bg-card rounded-lg border border-border">
+                  <Skeleton className="h-6 w-56" />
+                  <Skeleton className="h-[360px] w-full" />
+                </div>
+              ) : (
+                <ChartContainer
+                  title="Stock Price Trends"
+                  data={stockData}
+                  dataKey="open"
+                  lineColor={COLORS.price}
+                  isLogScale={isLogScalePrice}
+                />
+              )}
             </div>
+
+            <Separator className="my-6" />
 
             <div className="flex justify-center mb-6 sm:mb-8 px-4">
               <Button

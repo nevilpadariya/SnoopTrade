@@ -32,7 +32,9 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
     return acc;
   }, []);
 
-  const sharesData = tradeData.reduce((acc: any, trade) => {
+  const totalShares = tradeData.reduce((sum, trade) => sum + trade.shares, 0);
+  
+  const rawSharesData = tradeData.reduce((acc: any, trade) => {
     const existingType = acc.find((item: any) => item.name === trade.transaction_code);
     if (existingType) {
       existingType.value += trade.shares;
@@ -41,6 +43,22 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
     }
     return acc;
   }, []);
+
+  // Group small values into "Others" to match the cleaner look of the left chart
+  const sharesData = rawSharesData.reduce((acc: any[], item: any) => {
+    // If value is less than 2% of total, group it
+    if (item.value / totalShares < 0.02) {
+      const others = acc.find(i => i.name === 'Others');
+      if (others) {
+        others.value += item.value;
+      } else {
+        acc.push({ name: 'Others', value: item.value });
+      }
+    } else {
+      acc.push(item);
+    }
+    return acc;
+  }, []).sort((a: any, b: any) => b.value - a.value); // Sort descending for better visual layout
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">

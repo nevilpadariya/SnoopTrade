@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Depends, status, Form
+from fastapi import APIRouter, HTTPException, Depends, status, Form, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
+from utils.limiter import limiter
 
 from database.database import user_db as db
 from models.users import User, UpdateUser, MessageResponse, TokenResponse
@@ -13,7 +14,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 @auth_router.post("/signup", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
-async def signup(user: User) -> MessageResponse:
+@limiter.limit("3/minute")
+async def signup(request: Request, user: User) -> MessageResponse:
     """Register a new user."""
     user_exists = db.users.find_one({"email": user.email})
     if user_exists:
@@ -38,16 +40,20 @@ async def signup(user: User) -> MessageResponse:
 
 
 @auth_router.post("/token", response_model=TokenResponse)
+@limiter.limit("5/minute")
 async def login(
+    request: Request,
     username: str = Form(...),
     password: Optional[str] = Form(None),
     login_type: str = Form("normal"),
     token: str = Form("token")
 ) -> TokenResponse:
     """Authenticate user and return access token."""
-    user = db.users.find_one({"email": username})
+    
+    user = None
 
     if login_type == "normal":
+        user = db.users.find_one({"email": username})
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,6 +90,9 @@ async def login(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Google token is missing email information."
             )
+
+        # Secure Lookup: Find user by the VERIFIED email from Google, not the form username
+        user = db.users.find_one({"email": email})
 
         if not user:
             new_user = {

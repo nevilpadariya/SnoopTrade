@@ -15,6 +15,10 @@ from routers.admin_router import admin_router
 from routers.prefetch_router import prefetch_router
 from scheduler import start_scheduler, shutdown_scheduler
 from services.stock_service import ensure_indexes
+from utils.limiter import limiter
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,6 +37,21 @@ class NoCacheDataMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add security headers to all responses."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Referrer-Policy"] = "same-origin"
+        # Content-Security-Policy is complex and might break things (e.g. inline scripts/styles), 
+        # so proceeding cautiously without strict CSP for now unless requested.
+        return response
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Starts the scheduler on startup and shuts it down on shutdown."""
@@ -47,6 +66,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Rate Limiting
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
+# Security Headers
+app.add_middleware(SecurityHeadersMiddleware)
 
 # GZip: compress JSON responses > 500 bytes (huge win for mobile over WiFi)
 app.add_middleware(GZipMiddleware, minimum_size=500)

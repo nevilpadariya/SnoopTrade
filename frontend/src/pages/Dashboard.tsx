@@ -63,16 +63,8 @@ const COLORS = {
 };
 
 // ─── Client-side data cache ───
-const DATA_CACHE_TTL = 120_000;
-const stockCache = new Map<string, { data: any[]; ts: number }>();
-const tradeCache = new Map<string, { data: any[]; ts: number }>();
-
-function getCached(cache: Map<string, { data: any[]; ts: number }>, key: string) {
-  const entry = cache.get(key);
-  if (entry && Date.now() - entry.ts < DATA_CACHE_TTL) return entry.data;
-  cache.delete(key);
-  return null;
-}
+// ─── Client-side data cache ───
+// Using localStorage for persistence across reloads to ensure "FAANG-level" speed.
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -110,24 +102,38 @@ const Dashboard = (_props: DashboardProps) => {
   const [isLoadingStock, setIsLoadingStock] = useState(false);
   const [isLoadingTrades, setIsLoadingTrades] = useState(false);
   const navigate = useNavigate();
-  const { token, setToken } = useAuth();
-  const [userName, setUserName] = useState('');
+  const { token, setToken, user } = useAuth();
+  // const [userName, setUserName] = useState(''); // Removed redundant state
 
   const abortRef = useRef<AbortController | null>(null);
+  
+  // Cache key helper
+  const getCacheKey = (ticker: string, period: string) => `stock_cache_${ticker}_${period}`;
+  
+  // Simple persistent cache helpers
+  const getPersistentCache = (key: string) => {
+    try {
+      const item = localStorage.getItem(key);
+      if (!item) return null;
+      const { data, ts } = JSON.parse(item);
+      // Valid for 24 hours for historical data, or shorter for intraday? 
+      // User wants "FAANG speed", so stale-while-revalidate is key. 
+      // We return data regardless of age for immediate display, then fetch fresh.
+      return data; 
+    } catch {
+      return null;
+    }
+  };
+  
+  const setPersistentCache = (key: string, data: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+    } catch (e) {
+      console.warn('Failed to save to cache', e);
+    }
+  };
 
-  // Fetch user name for mobile greeting
-  useEffect(() => {
-    if (!token) return;
-    fetch(API_ENDPOINTS.getUserDetails, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => {
-        if (data?.name) setUserName(data.name);
-        else if (data?.first_name) setUserName(data.first_name);
-      })
-      .catch(() => {});
-  }, [token]);
+  // Removed redundant user fetch effect since it's now in AuthContext
 
   const filteredCompanies = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
@@ -157,14 +163,19 @@ const Dashboard = (_props: DashboardProps) => {
   const fetchStockData = useCallback(async () => {
     if (!selectedCompany || !token) return;
 
-    const cacheKey = `${selectedCompany}:${selectedTimePeriod}`;
-    const cached = getCached(stockCache, cacheKey);
+    const cacheKey = getCacheKey(selectedCompany, selectedTimePeriod);
+    const cached = getPersistentCache(cacheKey);
+    
+    // 1. OPTIMISTIC UPDATE: Show cached data immediately if available
     if (cached) {
       setStockData(cached);
-      return;
+      // If data is very recent (e.g. < 1 min), maybe skip fetch? 
+      // For now, we always fetch fresh to be safe (stale-while-revalidate)
+      // unless user demands strictly no network.
+    } else {
+      setIsLoadingStock(true); // Only show spinner if no cache
     }
 
-    setIsLoadingStock(true);
     try {
       const url = API_ENDPOINTS.getStocks(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -188,7 +199,8 @@ const Dashboard = (_props: DashboardProps) => {
         })
         .sort((a: any, b: any) => new Date(a.dateISO).getTime() - new Date(b.dateISO).getTime());
 
-      stockCache.set(cacheKey, { data: formattedData, ts: Date.now() });
+      // 2. Update Cache and State with fresh data
+      setPersistentCache(cacheKey, formattedData);
       setStockData(formattedData);
     } catch (error: any) {
       console.error('Error fetching stock data:', error);
@@ -247,14 +259,15 @@ const Dashboard = (_props: DashboardProps) => {
   const fetchTradeData = useCallback(async () => {
     if (!selectedCompany || !token) return;
 
-    const cacheKey = `${selectedCompany}:${selectedTimePeriod}`;
-    const cached = getCached(tradeCache, cacheKey);
+    const cacheKey = getCacheKey(`${selectedCompany}_trades`, selectedTimePeriod);
+    const cached = getPersistentCache(cacheKey);
+    
+    // 1. OPTIMISTIC UPDATE
     if (cached) {
       setTradeData(cached);
-      return;
+    } else {
+      setIsLoadingTrades(true);
     }
-
-    setIsLoadingTrades(true);
     try {
       const url = API_ENDPOINTS.getTransactions(selectedCompany, selectedTimePeriod);
       const data = await fetchData(url, token);
@@ -280,7 +293,7 @@ const Dashboard = (_props: DashboardProps) => {
           return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
 
-      tradeCache.set(cacheKey, { data: formattedTrades, ts: Date.now() });
+      setPersistentCache(cacheKey, formattedTrades);
       setTradeData(formattedTrades);
     } catch (error) {
       console.error('Error fetching insider trade data:', error);
@@ -301,7 +314,7 @@ const Dashboard = (_props: DashboardProps) => {
   const purchases = tradeData.filter((t) => t.transaction_code === 'P').length;
   const sales = tradeData.filter((t) => t.transaction_code === 'S').length;
   const netSignal = purchases > sales ? 'mildly bullish' : sales > purchases ? 'cautious' : 'neutral';
-  const initials = getInitials(userName);
+  const initials = getInitials(user?.name || user?.first_name || user?.email);
 
   /* ═══════════════════════════════════════════════════════════════
      MOBILE DASHBOARD (< 768px) — matches native HomeScreen
@@ -317,7 +330,7 @@ const Dashboard = (_props: DashboardProps) => {
           <div>
             <p style={{ color: '#A7B7AC', fontSize: 12 }}>{getGreeting()}</p>
             <p style={{ color: '#EAF5EC', fontSize: 22, fontWeight: 700 }}>
-              {userName || 'Trader'}
+              {user?.name || user?.first_name || 'Trader'}
             </p>
           </div>
         </div>

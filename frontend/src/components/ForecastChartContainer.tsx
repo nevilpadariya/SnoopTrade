@@ -131,7 +131,7 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
           </div>
         )}
 
-        <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
+        <ResponsiveContainer width="100%" height={isMobile ? 320 : 400}>
           <ComposedChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
@@ -168,7 +168,9 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
             />
             <Legend 
               wrapperStyle={{ 
-                color: 'hsl(var(--card-foreground))' 
+                color: 'hsl(var(--card-foreground))',
+                paddingTop: '20px',
+                paddingBottom: '10px'
               }}
             />
             

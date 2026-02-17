@@ -20,7 +20,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { token, setToken } = useAuth();
+  const { token, setToken, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -70,6 +70,36 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  
+  const getInitials = (userModel: any) => {
+    if (!userModel) return 'ST';
+    
+    // Check for explicit first/last name
+    if (userModel.first_name && userModel.last_name) {
+      return `${userModel.first_name[0]}${userModel.last_name[0]}`.toUpperCase();
+    }
+    
+    // Check for name field
+    if (userModel.name) {
+      const parts = userModel.name.split(' ');
+      if (parts.length >= 2) {
+        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+      }
+      return userModel.name.substring(0, 2).toUpperCase();
+    }
+    
+    // Check for just first name
+    if (userModel.first_name) {
+      return userModel.first_name.substring(0, 2).toUpperCase();
+    }
+    
+    // Fallback to email
+    if (userModel.email) {
+      return userModel.email.substring(0, 2).toUpperCase();
+    }
+    
+    return 'ST';
+  };
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -246,7 +276,7 @@ const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-11 w-11 rounded-full p-0">
                       <Avatar className="h-9 w-9">
-                        <AvatarFallback>ST</AvatarFallback>
+                        <AvatarFallback>{getInitials(user)}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>

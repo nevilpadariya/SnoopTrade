@@ -31,7 +31,7 @@ const ChartContainer: React.FC<ChartContainerProps> = React.memo(({
         <h3 className="text-base md:text-2xl font-semibold mb-3 md:mb-6 text-card-foreground font-display">
           {title}
         </h3>
-        <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
+        <ResponsiveContainer width="100%" height={isMobile ? 300 : 400}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
@@ -63,7 +63,9 @@ const ChartContainer: React.FC<ChartContainerProps> = React.memo(({
             />
             <Legend 
               wrapperStyle={{ 
-                color: 'hsl(var(--card-foreground))' 
+                color: 'hsl(var(--card-foreground))',
+                paddingTop: '20px',
+                paddingBottom: '10px'
               }}
             />
             <Line type="monotone" dataKey={dataKey} stroke={lineColor} strokeWidth={2} dot={false} />

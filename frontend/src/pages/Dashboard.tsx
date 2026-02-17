@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { COMPANIES, COMPANY_NAMES } from '../data/companies';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -26,33 +27,7 @@ const TIME_PERIODS: Record<string, string> = {
   '1Y': '1y',
 };
 
-const COMPANIES = [
-  'AAPL', 'META', 'NVDA', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NFLX',
-  'JPM', 'JNJ', 'V', 'UNH', 'HD', 'DIS', 'BAC', 'XOM', 'PG', 'MA', 'PEP', 'WMT',
-];
 
-const COMPANY_NAMES: Record<string, string> = {
-  AAPL: 'Apple Inc.',
-  META: 'Meta Platforms',
-  NVDA: 'NVIDIA',
-  GOOGL: 'Alphabet (Google)',
-  MSFT: 'Microsoft',
-  AMZN: 'Amazon',
-  TSLA: 'Tesla',
-  NFLX: 'Netflix',
-  JPM: 'JPMorgan Chase',
-  JNJ: 'Johnson & Johnson',
-  V: 'Visa',
-  UNH: 'UnitedHealth',
-  HD: 'Home Depot',
-  DIS: 'Walt Disney',
-  BAC: 'Bank of America',
-  XOM: 'Exxon Mobil',
-  PG: 'Procter & Gamble',
-  MA: 'Mastercard',
-  PEP: 'PepsiCo',
-  WMT: 'Walmart',
-};
 
 const COLORS = {
   price: 'hsl(var(--primary-strong))',
@@ -85,7 +60,16 @@ function getInitials(name?: string): string {
 interface DashboardProps {}
 
 const Dashboard = (_props: DashboardProps) => {
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (location.state?.company && COMPANIES.includes(location.state.company)) {
+      setSelectedCompany(location.state.company);
+      // Optional: Clear state to avoid persistent selection on reload if desired
+      // navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
   const [showCompanyList, setShowCompanyList] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(TIME_PERIODS['1Y']);

@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Menu, X, LogOut, User } from 'lucide-react';
+import { Moon, Sun, Menu, X, LogOut, User, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { cn } from '../lib/utils';
+import { Input } from './ui/input';
+import { COMPANIES, COMPANY_NAMES, getRandomCompanies } from '../data/companies';
 import Logo from './Logo';
 
 const Navbar = () => {
@@ -118,6 +120,47 @@ const Navbar = () => {
   };
 
   const showAccountButton = ['/dashboard', '/about', '/features'].includes(location.pathname);
+  const showSearchBar = ['/about', '/features', '/account'].includes(location.pathname);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<string[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults(getRandomCompanies(5));
+    } else {
+      const filtered = COMPANIES.filter(ticker => 
+        ticker.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        COMPANY_NAMES[ticker].toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 5);
+      setSearchResults(filtered);
+    }
+  }, [searchQuery]);
+
+  const handleSearchFocus = () => {
+    setShowResults(true);
+    if (searchQuery.trim() === '') {
+      setSearchResults(getRandomCompanies(5));
+    }
+  };
+
+  const handleSelectCompany = (ticker: string) => {
+    setSearchQuery('');
+    setShowResults(false);
+    navigate('/dashboard', { state: { company: ticker } });
+  };
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -230,6 +273,35 @@ const Navbar = () => {
                 SnoopTrade
               </span>
             </Link>
+
+            
+            {showSearchBar && (
+              <div className="hidden lg:block relative max-w-md w-full mx-4" ref={searchRef}>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  placeholder="Search for a company..."
+                  className="pl-9 bg-muted/50 border-input focus-visible:ring-primary-strong transition-all duration-200 focus:bg-background"
+                />
+                {showResults && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto animate-in fade-in zoom-in-95 duration-100 p-1">
+                    {searchResults.map(ticker => (
+                      <button
+                        key={ticker}
+                        onClick={() => handleSelectCompany(ticker)}
+                        className="w-full text-left px-3 py-2 hover:bg-muted rounded-md text-sm flex items-center justify-between group transition-colors"
+                      >
+                        <span className="font-bold text-foreground">{ticker}</span>
+                        <span className="text-muted-foreground text-xs group-hover:text-foreground transition-colors">{COMPANY_NAMES[ticker]}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="hidden lg:flex items-center gap-2 xl:gap-4">
               <Button
                 asChild

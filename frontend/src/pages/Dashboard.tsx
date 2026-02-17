@@ -192,7 +192,7 @@ const Dashboard = (_props: DashboardProps) => {
     }
   }, [selectedCompany, selectedTimePeriod, token, setToken, navigate]);
 
-  const futureForecast = useCallback(async (formattedData: any[]) => {
+  const futureForecast = useCallback(async (formattedData: any[], ticker?: string) => {
     if (!formattedData || formattedData.length === 0) {
       console.error('No formatted data available for forecasting');
       return;
@@ -209,7 +209,7 @@ const Dashboard = (_props: DashboardProps) => {
         close: d.close,
       }));
 
-      const forecastResponse = await fetch(API_ENDPOINTS.fetchFutureData, {
+      const forecastResponse = await fetch(API_ENDPOINTS.fetchFutureData(ticker), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -419,7 +419,7 @@ const Dashboard = (_props: DashboardProps) => {
             {/* Predict button */}
             <button
               className="mobile-btn-primary"
-              onClick={() => futureForecast(stockData)}
+              onClick={() => futureForecast(stockData, selectedCompany ?? undefined)}
               disabled={isPredicting}
             >
               {isPredicting ? 'Predicting...' : 'Predict Future Trends'}
@@ -577,7 +577,7 @@ const Dashboard = (_props: DashboardProps) => {
 
             <div className="flex justify-center mb-6 sm:mb-8 px-4">
               <Button
-                onClick={() => futureForecast(stockData)}
+                onClick={() => futureForecast(stockData, selectedCompany ?? undefined)}
                 disabled={isPredicting}
                 className="w-full sm:w-auto px-6 sm:px-8 h-12 sm:h-auto sm:py-3 text-base sm:text-lg font-semibold"
               >

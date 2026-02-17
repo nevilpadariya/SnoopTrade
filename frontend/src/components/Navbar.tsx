@@ -158,8 +158,6 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
-  console.log('Navbar Debug:', { token, location: location.pathname, showAccountButton });
-
   return (
     <>
       <a

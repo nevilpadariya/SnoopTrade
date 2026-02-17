@@ -7,7 +7,8 @@ const API_ENDPOINTS = {
     `${BASE_URL}/transactions/${company}?time_period=${timePeriod}`,
   getUserDetails: `${BASE_URL}/auth/me`,
   updateUserProfile: `${BASE_URL}/auth/me/update`,
-  fetchFutureData: `${BASE_URL}/future`,
+  fetchFutureData: (ticker?: string) =>
+    ticker ? `${BASE_URL}/future/${ticker}` : `${BASE_URL}/future`,
   login: `${BASE_URL}/auth/token`,
   signUp: `${BASE_URL}/auth/signup`,
 };

@@ -22,3 +22,4 @@ class ForecastOutput(BaseModel):
     yhat_upper: Optional[float]
     momentum: Optional[float]
     acceleration: Optional[float]
+    insider_signal: Optional[float] = 0.0

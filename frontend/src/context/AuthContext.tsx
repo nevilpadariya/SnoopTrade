@@ -19,13 +19,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [requiresPassword, setRequiresPasswordState] = useState<boolean>(getStoredRequiresPassword);
 
+  const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
+
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authTimestamp');
+    localStorage.removeItem(AUTH_REQUIRES_PASSWORD_KEY);
+    setRequiresPasswordState(false);
+    setToken(null);
+  };
+
   const updateToken = (newToken: string | null) => {
     if (newToken) {
       localStorage.setItem('authToken', newToken);
+      localStorage.setItem('authTimestamp', Date.now().toString());
     } else {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem(AUTH_REQUIRES_PASSWORD_KEY);
-      setRequiresPasswordState(false);
+      logout();
     }
     setToken(newToken);
   };
@@ -38,6 +47,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setRequiresPasswordState(value);
   };
+
+  // Check session validity on mount and set up auto-logout
+  useState(() => {
+    const checkSession = () => {
+      const storedToken = localStorage.getItem('authToken');
+      const storedTimestamp = localStorage.getItem('authTimestamp');
+
+      if (storedToken && storedTimestamp) {
+        const now = Date.now();
+        const loginTime = parseInt(storedTimestamp, 10);
+        
+        if (now - loginTime > SESSION_DURATION) {
+          logout();
+        }
+      }
+    };
+
+    checkSession();
+    
+    // Check every minute
+    const interval = setInterval(checkSession, 60 * 1000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <AuthContext.Provider value={{ token, setToken: updateToken, requiresPassword, setRequiresPassword }}>

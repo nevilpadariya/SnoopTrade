@@ -30,21 +30,33 @@ const Navbar = () => {
       }
     };
 
+    // Initial load
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = savedTheme === 'dark' || (savedTheme !== 'light' && prefersDark);
-    applyTheme(shouldBeDark);
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    if (savedTheme === 'dark') {
+      applyTheme(true);
+    } else if (savedTheme === 'light') {
+      applyTheme(false);
+    } else {
+      applyTheme(systemPrefersDark.matches);
+    }
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handlePreferenceChange = () => {
-      if (localStorage.getItem('theme') != null) return;
-      applyTheme(mediaQuery.matches);
+    // Listen for system changes
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      // Only apply system theme if user hasn't manually overridden it
+      // OR if we want to support dynamic switching. 
+      // For "based on browser theme", we should respect it if no override exists.
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches);
+      }
     };
-    mediaQuery.addEventListener('change', handlePreferenceChange);
+
+    systemPrefersDark.addEventListener('change', handleSystemThemeChange);
 
     window.addEventListener('scroll', handleScroll);
     return () => {
-      mediaQuery.removeEventListener('change', handlePreferenceChange);
+      systemPrefersDark.removeEventListener('change', handleSystemThemeChange);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -145,6 +157,8 @@ const Navbar = () => {
       document.removeEventListener('keydown', handleTabKey);
     };
   }, [isMobileMenuOpen]);
+
+  console.log('Navbar Debug:', { token, location: location.pathname, showAccountButton });
 
   return (
     <>

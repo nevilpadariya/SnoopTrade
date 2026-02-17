@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@snooptrade/shared": "*",
+    "@snooptrade/shared": "workspace:*",
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.17",

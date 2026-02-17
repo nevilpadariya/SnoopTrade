@@ -7,9 +7,9 @@
     "mobile"
   ],
   "scripts": {
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "build:frontend": "npm run build --workspace=frontend",
-    "dev:mobile": "npm start --workspace=mobile",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "dev:frontend": "pnpm --filter snooptrade dev",
+    "build:frontend": "pnpm --filter snooptrade build",
+    "dev:mobile": "pnpm --filter snooptrade-mobile start",
+    "typecheck": "pnpm -r run typecheck"
   }
 }

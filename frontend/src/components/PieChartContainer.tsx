@@ -76,7 +76,7 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
         <h3 className="text-sm md:text-xl font-semibold mb-2 md:mb-4 text-card-foreground font-display">
           {title}
         </h3>
-        <ResponsiveContainer width="100%" height={isMobile ? 260 : 350}>
+        <ResponsiveContainer width="100%" height={isMobile ? 320 : 400}>
           <PieChart>
             <defs>
               {colors.map((color, index) => (
@@ -139,14 +139,15 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
               ]}
               labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
             />
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              formatter={formatLegendValue}
-              wrapperStyle={{
-                color: 'hsl(var(--card-foreground))',
-                paddingTop: '20px',
-              }}
+              <Legend
+                verticalAlign="bottom"
+                height={84}
+                formatter={formatLegendValue}
+                wrapperStyle={{
+                  color: 'hsl(var(--card-foreground))',
+                  paddingTop: '20px',
+                  paddingBottom: '10px',
+                }}
               iconType="circle"
               iconSize={10}
             />

@@ -271,6 +271,8 @@ main {
     font-size: 15px;
     width: 100%;
     outline: none;
+    display: flex;
+    align-items: center;
   }
 
   .mobile-input::placeholder {

@@ -192,14 +192,14 @@ const Login = () => {
           </button>
 
           {/* OR divider */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24, marginBottom: 24 }}>
             <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
             <span style={{ color: '#A7B7AC', fontSize: 12 }}>OR</span>
             <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
           </div>
 
           {/* Google button */}
-          <div style={{ marginTop: 12, width: '100%' }}>
+          <div style={{ width: '100%' }}>
             <GoogleLoginButton
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleFailure}

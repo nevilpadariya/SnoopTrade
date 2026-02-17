@@ -8,14 +8,16 @@ interface GoogleLoginButtonProps {
 
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess, onError }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [buttonWidth, setButtonWidth] = useState<number>(400);
+  const [buttonWidth, setButtonWidth] = useState<string>('100%');
   const [renderKey, setRenderKey] = useState(0);
 
   const measure = useCallback(() => {
     if (containerRef.current) {
       const w = Math.floor(containerRef.current.offsetWidth);
-      if (w > 0 && w !== buttonWidth) {
-        setButtonWidth(w);
+      // Google Login button needs explicit pixel width as a string
+      const newWidth = `${w}`;
+      if (w > 0 && newWidth !== buttonWidth) {
+        setButtonWidth(newWidth);
         setRenderKey((k) => k + 1);
       }
     }
@@ -29,7 +31,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onSuccess, onErro
   }, [measure]);
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full flex justify-center">
       <GoogleLogin
         key={renderKey}
         onSuccess={onSuccess}

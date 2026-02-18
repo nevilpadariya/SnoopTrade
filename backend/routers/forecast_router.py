@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Path
+from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.concurrency import run_in_threadpool
 from typing import List, Optional
@@ -11,6 +11,7 @@ from services.sec_service import get_all_transactions
 import logging
 from models.forecast import ForecastInput, ForecastOutput
 from dateutil.parser import parse
+from utils.limiter import limiter
 
 forecast_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -196,7 +197,9 @@ def fallback_forecast(df: pd.DataFrame, periods: int = 30) -> List[ForecastOutpu
 
 @forecast_router.post("/future/{ticker}", response_model=List[ForecastOutput])
 @forecast_router.post("/future", response_model=List[ForecastOutput])
+@limiter.limit("15/minute")
 async def generate_forecast(
+        request: Request,
         data: List[ForecastInput],
         user: dict = Depends(get_current_user),
         ticker: Optional[str] = None,

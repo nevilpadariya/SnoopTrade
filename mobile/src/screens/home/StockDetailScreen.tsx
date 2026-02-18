@@ -109,7 +109,7 @@ export function StockDetailScreen({ route, navigation }: Props) {
         close: Number(row.close) || 0,
       }));
 
-      const forecast = await fetchForecast(token, payload);
+      const forecast = await fetchForecast(token, payload, ticker);
       setForecastSeries(ticker, forecast);
       const parentNav = navigation.getParent<BottomTabNavigationProp<TabParamList>>();
       parentNav?.navigate('Forecast');

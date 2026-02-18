@@ -1,8 +1,12 @@
 import os
+import time
+import uuid
 from contextlib import asynccontextmanager
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 import logging
@@ -15,6 +19,7 @@ from routers.admin_router import admin_router
 from routers.prefetch_router import prefetch_router
 from scheduler import start_scheduler, shutdown_scheduler
 from services.stock_service import ensure_indexes
+from database.database import client as mongo_client
 from utils.limiter import limiter
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -22,6 +27,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+ENABLE_SCHEDULER = os.getenv("ENABLE_SCHEDULER", "false").strip().lower() == "true"
 
 
 class NoCacheDataMiddleware(BaseHTTPMiddleware):
@@ -47,8 +53,37 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "same-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-site"
         # Content-Security-Policy is complex and might break things (e.g. inline scripts/styles), 
         # so proceeding cautiously without strict CSP for now unless requested.
+        return response
+
+
+class RequestIdMiddleware(BaseHTTPMiddleware):
+    """Attach a request ID to each response and emit a concise access log."""
+
+    async def dispatch(self, request: Request, call_next):
+        request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
+        request.state.request_id = request_id
+        start = time.perf_counter()
+
+        try:
+            response = await call_next(request)
+        except Exception:
+            logger.exception("Unhandled error rid=%s path=%s", request_id, request.url.path)
+            raise
+
+        elapsed_ms = int((time.perf_counter() - start) * 1000)
+        response.headers["X-Request-ID"] = request_id
+        logger.info(
+            "rid=%s method=%s path=%s status=%s duration_ms=%s",
+            request_id,
+            request.method,
+            request.url.path,
+            response.status_code,
+            elapsed_ms,
+        )
         return response
 
 
@@ -57,11 +92,16 @@ async def lifespan(app: FastAPI):
     """Starts the scheduler on startup and shuts it down on shutdown."""
     logger.info("Starting application...")
     ensure_indexes()
-    start_scheduler()
+    if ENABLE_SCHEDULER:
+        start_scheduler()
+        logger.info("In-process scheduler enabled")
+    else:
+        logger.info("In-process scheduler disabled (set ENABLE_SCHEDULER=true to enable)")
     logger.info("Application started successfully")
     yield
     logger.info("Shutting down application...")
-    shutdown_scheduler()
+    if ENABLE_SCHEDULER:
+        shutdown_scheduler()
     logger.info("Application shut down successfully")
 
 
@@ -73,6 +113,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 
 # Security Headers
+app.add_middleware(RequestIdMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 
 # GZip: compress JSON responses > 500 bytes (huge win for mobile over WiFi)
@@ -108,5 +149,16 @@ async def welcome():
 
 @app.get("/health")
 async def health():
-    """Health check for load balancers and App Platform."""
+    """Liveness check for load balancers."""
     return {"status": "ok"}
+
+
+@app.get("/health/ready")
+async def readiness():
+    """Readiness check including MongoDB connectivity."""
+    try:
+        await run_in_threadpool(mongo_client.admin.command, "ping")
+    except Exception as exc:
+        logger.exception("Readiness check failed")
+        return JSONResponse(status_code=503, content={"status": "degraded", "reason": str(exc)})
+    return {"status": "ready"}

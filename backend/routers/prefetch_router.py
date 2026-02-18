@@ -1,15 +1,16 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from typing import List, Optional, Any
 
 # Services
-from services.stock_service import fetch_stock_data, ensure_indexes
+from services.stock_service import fetch_stock_data
 from services.stock_cache import get as get_stock_cache, put as put_stock_cache
 from services.sec_service import get_all_transactions
 from services.auth_services import decode_access_token
 from routers.stock_router import _populate_stock_data_if_missing, VALID_TICKERS
+from utils.limiter import limiter
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 prefetch_router = APIRouter()
@@ -28,7 +29,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 @prefetch_router.get("/prefetch/{ticker}", response_model=PrefetchResponse)
+@limiter.limit("30/minute")
 async def prefetch_ticker_data(
+    request: Request,
     ticker: str,
     period: str = Query("1y", pattern="^(1w|1m|3m|6m|1y)$"),
     user: dict = Depends(get_current_user)

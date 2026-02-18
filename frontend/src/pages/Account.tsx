@@ -10,6 +10,7 @@ import { Label } from '../components/ui/label';
 import { Card, CardContent } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
+import { authFetch } from '../utils/authFetch';
 
 interface UserData {
   email: string;
@@ -59,17 +60,17 @@ const Account = () => {
           return;
         }
 
-        const response = await fetch(API_ENDPOINTS.getUserDetails, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-          },
-        });
+        const response = await authFetch(API_ENDPOINTS.getUserDetails, undefined, authToken);
 
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
+        } else if (response.status === 401) {
+          setToken(null);
+          navigate('/login', { replace: true });
+          return;
         } else {
-          const errorData = await response.json();
+          const errorData = await response.json().catch(() => ({}));
           setError(errorData.detail || 'Failed to fetch user data.');
         }
       } catch (err) {
@@ -80,7 +81,7 @@ const Account = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate, setToken, token]);
 
   const isGoogleOnlyUser = userData?.login_type === 'google';
 
@@ -114,17 +115,16 @@ const Account = () => {
 
     try {
       const authToken = token;
-      const response = await fetch(API_ENDPOINTS.updateUserProfile, {
+      const response = await authFetch(API_ENDPOINTS.updateUserProfile, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           password: newPassword,
           current_password: currentPassword,
         }),
-      });
+      }, authToken ?? undefined);
 
       if (response.ok) {
         setSuccessMessage(
@@ -140,8 +140,12 @@ const Account = () => {
         if (isGoogleOnlyUser) {
           setUserData(prev => prev ? { ...prev, login_type: 'both' } : null);
         }
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+        return;
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         setFormError(errorData.detail || 'Failed to update password.');
       }
     } catch (err) {

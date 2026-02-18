@@ -5,16 +5,17 @@ Admin router for scheduler management and per-ticker updates via external cron.
 import os
 import gc
 import logging
+import secrets
 from typing import Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Query, Depends
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Query, Depends, status
 from fastapi.security import APIKeyHeader
 from scheduler import get_scheduled_jobs, trigger_stock_update_now, trigger_sec_update_now
 
 logger = logging.getLogger(__name__)
 
-admin_router = APIRouter()
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
-ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "").strip()
+ALLOW_INSECURE_ADMIN = os.getenv("ALLOW_INSECURE_ADMIN", "false").strip().lower() == "true"
 
 VALID_TICKERS = [
     "AAPL", "NVDA", "META", "GOOGL", "MSFT", "AMZN", "TSLA", "NFLX",
@@ -47,22 +48,29 @@ TICKER_CIK_MAPPING = {
 
 async def verify_api_key(
     api_key_header: Optional[str] = Depends(API_KEY_HEADER),
-    key: Optional[str] = Query(None, description="API key as query parameter")
 ):
     """
-    Verify API key from header or query parameter.
-    If ADMIN_API_KEY is not set, allow all requests (development).
+    Verify API key from X-API-Key header only.
+    Admin endpoints stay locked by default even in development.
     """
-    if not ADMIN_API_KEY:
-        return True
-    
-    provided_key = api_key_header or key
-    if not provided_key or provided_key != ADMIN_API_KEY:
+    if not ADMIN_API_KEY and not ALLOW_INSECURE_ADMIN:
         raise HTTPException(
-            status_code=401,
-            detail="Invalid or missing API key"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Admin endpoints are disabled: set ADMIN_API_KEY to enable.",
+        )
+
+    if not ADMIN_API_KEY and ALLOW_INSECURE_ADMIN:
+        return True
+
+    if not api_key_header or not secrets.compare_digest(api_key_header, ADMIN_API_KEY):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing X-API-Key header.",
         )
     return True
+
+
+admin_router = APIRouter(dependencies=[Depends(verify_api_key)])
 
 
 def validate_ticker(ticker: str) -> str:
@@ -131,14 +139,13 @@ async def trigger_all_updates(background_tasks: BackgroundTasks):
 @admin_router.get("/update/stock/{ticker}")
 async def update_single_stock(
     ticker: str,
-    _: bool = Depends(verify_api_key)
 ):
     """
     Update stock data for a SINGLE ticker.
     Memory-efficient endpoint for external cron services.
     
-    Usage with cron-job.org:
-    - URL: https://your-api.ondigitalocean.app/admin/update/stock/AAPL?key=YOUR_API_KEY
+    Usage with cron-job.org (add X-API-Key request header):
+    - URL: https://your-api.ondigitalocean.app/admin/update/stock/AAPL
     - Method: GET
     - Schedule: Every 15 minutes (stagger different tickers)
     """
@@ -168,14 +175,13 @@ async def update_single_stock(
 @admin_router.get("/update/sec/{ticker}")
 async def update_single_sec(
     ticker: str,
-    _: bool = Depends(verify_api_key)
 ):
     """
     Update SEC Form 4 data for a SINGLE ticker.
     Memory-efficient endpoint for external cron services.
     
-    Usage with cron-job.org:
-    - URL: https://your-api.ondigitalocean.app/admin/update/sec/AAPL?key=YOUR_API_KEY
+    Usage with cron-job.org (add X-API-Key request header):
+    - URL: https://your-api.ondigitalocean.app/admin/update/sec/AAPL
     - Method: GET
     - Schedule: Daily (stagger different tickers by 5 minutes)
     """
@@ -212,7 +218,6 @@ async def update_single_sec(
 
 @admin_router.get("/update/all-sequential")
 async def update_all_sequential(
-    _: bool = Depends(verify_api_key),
     type: str = Query("both", description="Update type: stock, sec, or both")
 ):
     """

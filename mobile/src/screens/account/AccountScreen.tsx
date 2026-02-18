@@ -24,11 +24,13 @@ function getLoginBadge(loginType?: string): string {
 
 export function AccountScreen() {
   const { user, token, requiresPassword, refreshUser, signOut } = useAuth();
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const needsCurrentPassword = user?.login_type !== 'google' && !requiresPassword;
 
   useEffect(() => {
     refreshUser().catch(() => {
@@ -59,10 +61,16 @@ export function AccountScreen() {
       return;
     }
 
+    if (needsCurrentPassword && !currentPassword) {
+      setError('Current password is required.');
+      return;
+    }
+
     try {
       setLoading(true);
-      await updatePassword(token, newPassword);
+      await updatePassword(token, newPassword, currentPassword || undefined);
       setSuccess('Password updated successfully.');
+      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       await refreshUser();
@@ -114,6 +122,14 @@ export function AccountScreen() {
       {/* ── Change Password ── */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{requiresPassword ? 'Create Password' : 'Change Password'}</Text>
+        {needsCurrentPassword ? (
+          <SnoopInput
+            label="Current Password"
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            secureTextEntry
+          />
+        ) : null}
         <SnoopInput label="New Password" value={newPassword} onChangeText={setNewPassword} secureTextEntry />
         <SnoopInput label="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
         {error ? <Text style={styles.error}>{error}</Text> : null}

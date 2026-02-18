@@ -84,6 +84,11 @@ function authHeaders(token: string): HeadersInit {
   };
 }
 
+function tokenScope(token: string): string {
+  // Keep cache partitioned by signed-in user session.
+  return token.slice(-12);
+}
+
 export async function loginWithPassword(email: string, password: string): Promise<AuthTokenResponse> {
   const body = new URLSearchParams();
   body.append('username', email);
@@ -118,6 +123,27 @@ export async function loginWithGoogle(email: string, googleIdToken: string): Pro
   return parseResponse<AuthTokenResponse>(response);
 }
 
+export async function refreshAccessToken(refreshToken: string): Promise<AuthTokenResponse> {
+  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  });
+
+  return parseResponse<AuthTokenResponse>(response);
+}
+
+export async function logoutSession(token: string): Promise<void> {
+  await fetch(`${BASE_URL}/auth/logout`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export async function signUp(name: string, email: string, password: string): Promise<MessageResponse> {
   const response = await fetch(`${BASE_URL}/auth/signup`, {
     method: 'POST',
@@ -140,18 +166,21 @@ export async function getCurrentUser(token: string): Promise<UserProfile> {
   return parseResponse<UserProfile>(response);
 }
 
-export async function updatePassword(token: string, password: string): Promise<MessageResponse> {
+export async function updatePassword(token: string, password: string, currentPassword?: string): Promise<MessageResponse> {
   const response = await fetch(`${BASE_URL}/auth/me/update`, {
     method: 'PUT',
     headers: authHeaders(token),
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({
+      password,
+      ...(currentPassword ? { current_password: currentPassword } : {}),
+    }),
   });
 
   return parseResponse<MessageResponse>(response);
 }
 
 export async function fetchStocks(token: string, ticker: string, period: string): Promise<StockPoint[]> {
-  return dedupFetch(`stocks:${ticker}:${period}`, async () => {
+  return dedupFetch(`stocks:${tokenScope(token)}:${ticker}:${period}`, async () => {
     const response = await fetch(`${BASE_URL}/stocks/${ticker}?period=${period}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -162,7 +191,7 @@ export async function fetchStocks(token: string, ticker: string, period: string)
 }
 
 export async function fetchTransactions(token: string, ticker: string, period: string): Promise<TransactionItem[]> {
-  return dedupFetch(`txn:${ticker}:${period}`, async () => {
+  return dedupFetch(`txn:${tokenScope(token)}:${ticker}:${period}`, async () => {
     const response = await fetch(`${BASE_URL}/transactions/${ticker}?time_period=${period}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -172,8 +201,9 @@ export async function fetchTransactions(token: string, ticker: string, period: s
   });
 }
 
-export async function fetchForecast(token: string, payload: ForecastInput[]): Promise<ForecastPoint[]> {
-  const response = await fetch(`${BASE_URL}/future`, {
+export async function fetchForecast(token: string, payload: ForecastInput[], ticker?: string): Promise<ForecastPoint[]> {
+  const path = ticker ? `/future/${ticker}` : '/future';
+  const response = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: authHeaders(token),
     body: JSON.stringify(payload),

@@ -1,5 +1,6 @@
 export interface AuthTokenResponse {
   access_token: string;
+  refresh_token?: string;
   token_type: string;
   email: string;
   requires_password: boolean;

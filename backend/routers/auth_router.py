@@ -1,16 +1,50 @@
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, status, Form, Request
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from fastapi.security import OAuth2PasswordBearer
 from utils.limiter import limiter
 
 from database.database import user_db as db
-from models.users import User, UpdateUser, MessageResponse, TokenResponse
-from services.auth_services import hash_password, verify_password, create_access_token, decode_access_token, decode_access_google_token
+from models.users import User, UpdateUser, MessageResponse, TokenResponse, RefreshTokenRequest
+from services.auth_services import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+    decode_access_token,
+    decode_refresh_token,
+    decode_access_google_token,
+    hash_refresh_token_id,
+)
 
 auth_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+
+
+def _persist_refresh_token(email: str, refresh_token_id: str, refresh_expires_at: datetime) -> None:
+    db.users.update_one(
+        {"email": email},
+        {
+            "$set": {
+                "refresh_token_jti_hash": hash_refresh_token_id(refresh_token_id),
+                "refresh_token_expires_at": refresh_expires_at,
+                "updated_at": datetime.now(timezone.utc),
+            }
+        },
+    )
+
+
+def _issue_tokens_for_user(user: Dict[str, Any]) -> TokenResponse:
+    access_token = create_access_token(data={"sub": user["email"]})
+    refresh_token, refresh_token_id, refresh_expires_at = create_refresh_token(data={"sub": user["email"]})
+    _persist_refresh_token(user["email"], refresh_token_id, refresh_expires_at)
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        email=user["email"],
+        requires_password=not bool(user.get("hashed_password")),
+    )
 
 
 @auth_router.post("/signup", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
@@ -46,7 +80,7 @@ async def login(
     username: str = Form(...),
     password: Optional[str] = Form(None),
     login_type: str = Form("normal"),
-    token: str = Form("token")
+    token: Optional[str] = Form(None)
 ) -> TokenResponse:
     """Authenticate user and return access token."""
     
@@ -118,17 +152,60 @@ async def login(
             detail="Invalid login type."
         )
 
-    access_token = create_access_token(data={"sub": user["email"]})
-    return TokenResponse(
-        access_token=access_token,
-        token_type="bearer",
-        email=user["email"],
-        requires_password=not bool(user.get("hashed_password")),
-    )
+    return _issue_tokens_for_user(user)
+
+
+@auth_router.post("/refresh", response_model=TokenResponse)
+@limiter.limit("20/minute")
+async def refresh_access_token(request: Request, payload: RefreshTokenRequest) -> TokenResponse:
+    """Rotate refresh token and mint a new access token."""
+    decoded = decode_refresh_token(payload.refresh_token)
+    if not decoded:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
+    email = decoded.get("sub")
+    token_id = decoded.get("jti")
+    if not email or not token_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token payload")
+
+    user = db.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+
+    stored_hash = user.get("refresh_token_jti_hash")
+    stored_exp = user.get("refresh_token_expires_at")
+    if not stored_hash or not stored_exp or hash_refresh_token_id(token_id) != stored_hash:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token has been revoked")
+
+    if stored_exp and isinstance(stored_exp, datetime):
+        if stored_exp.tzinfo is None:
+            stored_exp = stored_exp.replace(tzinfo=timezone.utc)
+        if stored_exp < datetime.now(timezone.utc):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token has expired")
+
+    return _issue_tokens_for_user(user)
+
+
+@auth_router.post("/logout", response_model=MessageResponse)
+@limiter.limit("20/minute")
+async def logout(request: Request, token: str = Depends(oauth2_scheme)) -> MessageResponse:
+    """Revoke the current refresh token for the authenticated user."""
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+    email = payload.get("sub")
+    if email:
+        db.users.update_one(
+            {"email": email},
+            {"$unset": {"refresh_token_jti_hash": "", "refresh_token_expires_at": ""}},
+        )
+    return MessageResponse(message="Logged out successfully")
 
 
 @auth_router.get("/me", response_model=Dict[str, Any])
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
+@limiter.limit("60/minute")
+async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
     """Return current user info (excluding password)."""
     payload = decode_access_token(token)
     if not payload:
@@ -143,7 +220,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
 
 
 @auth_router.put("/me/update", response_model=MessageResponse)
-async def update_user_info(update_info: UpdateUser, token: str = Depends(oauth2_scheme)) -> MessageResponse:
+@limiter.limit("10/minute")
+async def update_user_info(request: Request, update_info: UpdateUser, token: str = Depends(oauth2_scheme)) -> MessageResponse:
     """Update current user name and/or password."""
     payload = decode_access_token(token)
     if not payload:

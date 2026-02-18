@@ -17,7 +17,7 @@ const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 const Login = () => {
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
-  const { token, setToken, requiresPassword, setRequiresPassword } = useAuth();
+  const { token, setToken, setRefreshToken, requiresPassword, setRequiresPassword } = useAuth();
 
   const handleFormSubmit = async (email: string, password: string) => {
     try {
@@ -36,6 +36,8 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         setToken(data.access_token);
+        setRefreshToken(data.refresh_token || null);
+        setRequiresPassword(Boolean(data.requires_password));
         toast.success('Welcome back!', { description: 'You have been logged in successfully.' });
         navigate('/dashboard');
       } else {
@@ -53,13 +55,13 @@ const Login = () => {
 
   const handleGoogleSuccess = async (response: any) => {
     try {
-      const token = response.credential;
-      if (!token) {
+      const googleCredential = response.credential;
+      if (!googleCredential) {
         setLoginError('Google token is missing or invalid.');
         return;
       }
 
-      const decodedToken: { email?: string } = jwtDecode(token);
+      const decodedToken: { email?: string } = jwtDecode(googleCredential);
 
       if (!decodedToken.email) {
         setLoginError('Google token does not contain email information.');
@@ -70,7 +72,7 @@ const Login = () => {
       formData.append('username', decodedToken.email);
       formData.append('password', '');
       formData.append('login_type', 'google');
-      formData.append('token', token);
+      formData.append('token', googleCredential);
 
       const tokenResponse = await fetch(API_ENDPOINTS.login, {
         method: 'POST',
@@ -83,8 +85,9 @@ const Login = () => {
       if (tokenResponse.ok) {
         const data = await tokenResponse.json();
         setToken(data.access_token);
+        setRefreshToken(data.refresh_token || null);
+        setRequiresPassword(Boolean(data.requires_password));
         if (data.requires_password) {
-          setRequiresPassword(true);
           navigate('/create-password');
         } else {
           toast.success('Welcome back!', { description: 'Signed in with Google.' });

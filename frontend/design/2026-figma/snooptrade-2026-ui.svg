@@ -1,0 +1,378 @@
+<svg width="3800" height="3020" viewBox="0 0 3800 3020" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="3800" y2="3020" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#070A08"/>
+      <stop offset="0.5" stop-color="#0A110C"/>
+      <stop offset="1" stop-color="#060908"/>
+    </linearGradient>
+    <radialGradient id="mintGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(2100 460) rotate(140) scale(1600 920)">
+      <stop offset="0" stop-color="#7BC97A" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#7BC97A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mintGlowSoft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 2500) rotate(90) scale(1000 800)">
+      <stop offset="0" stop-color="#90D987" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#90D987" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="surface" x1="0" y1="0" x2="0" y2="860" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#101712"/>
+      <stop offset="1" stop-color="#0C120E"/>
+    </linearGradient>
+    <linearGradient id="panelGradient" x1="0" y1="0" x2="760" y2="860" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#132019"/>
+      <stop offset="1" stop-color="#0B120E"/>
+    </linearGradient>
+    <linearGradient id="ctaGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A7E89A"/>
+      <stop offset="1" stop-color="#7BC97A"/>
+    </linearGradient>
+    <linearGradient id="cardBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34503E"/>
+      <stop offset="1" stop-color="#243027"/>
+    </linearGradient>
+    <filter id="shadow" x="-60" y="-60" width="1900" height="1060" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="softShadow" x="-30" y="-30" width="900" height="600" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.30"/>
+    </filter>
+    <style>
+      .title { font-family: 'Sora', 'Manrope', sans-serif; fill: #E6ECE8; font-weight: 700; }
+      .label { font-family: 'Sora', 'Manrope', sans-serif; fill: #A7B7AC; font-weight: 600; }
+      .body { font-family: 'Manrope', sans-serif; fill: #C7D0CA; font-weight: 500; }
+      .muted { font-family: 'Manrope', sans-serif; fill: #8EA197; font-weight: 500; }
+      .mono { font-family: 'JetBrains Mono', monospace; fill: #CFEFD1; font-weight: 600; }
+      .accent { fill: #A7E89A; }
+      .chipText { font-family: 'Manrope', sans-serif; fill: #D9E6DB; font-size: 18px; font-weight: 600; }
+      .small { font-family: 'Manrope', sans-serif; fill: #91A59A; font-size: 16px; }
+    </style>
+  </defs>
+
+  <rect width="3800" height="3020" fill="url(#bgGradient)"/>
+  <rect width="3800" height="3020" fill="url(#mintGlow)"/>
+  <rect width="3800" height="3020" fill="url(#mintGlowSoft)"/>
+
+  <text x="80" y="74" class="title" font-size="42">SnoopTrade 2026 UI Concept - Signal Glass</text>
+  <text x="80" y="114" class="muted" font-size="22">Single SVG board for Figma import and implementation planning with shadcn/ui</text>
+
+  <!-- LANDING DESKTOP -->
+  <text x="80" y="164" class="label" font-size="24">Landing / Desktop</text>
+  <g transform="translate(80 180)" filter="url(#shadow)">
+    <rect x="0" y="0" width="1700" height="860" rx="36" fill="url(#surface)" stroke="#304236" stroke-width="2"/>
+
+    <rect x="24" y="24" width="1652" height="74" rx="18" fill="#111A15" stroke="#2C4034"/>
+    <text x="58" y="70" class="title" font-size="28">SnoopTrade</text>
+    <text x="230" y="70" class="body" font-size="21">Features</text>
+    <text x="350" y="70" class="body" font-size="21">About</text>
+    <text x="450" y="70" class="body" font-size="21">Pricing</text>
+    <rect x="1380" y="40" width="118" height="42" rx="12" fill="#1B2A21" stroke="#314538"/>
+    <text x="1416" y="67" class="body" font-size="18">Login</text>
+    <rect x="1514" y="40" width="142" height="42" rx="12" fill="url(#ctaGradient)"/>
+    <text x="1552" y="67" class="title" font-size="18" fill="#0E1410">Get Started</text>
+
+    <text x="72" y="208" class="muted" font-size="18">Insider Intelligence Platform</text>
+    <text x="72" y="268" class="title" font-size="62">Track Insider Moves</text>
+    <text x="72" y="338" class="title" font-size="62">Before Market Reactions</text>
+    <text x="72" y="392" class="body" font-size="28">Realtime filings, behavior signals, and forecast confidence</text>
+    <text x="72" y="430" class="body" font-size="28">for smarter decisions without terminal-level complexity.</text>
+
+    <rect x="72" y="482" width="220" height="62" rx="16" fill="url(#ctaGradient)"/>
+    <text x="132" y="520" class="title" font-size="24" fill="#0E1410">Start Free</text>
+    <rect x="310" y="482" width="220" height="62" rx="16" fill="#18241D" stroke="#35503D"/>
+    <text x="362" y="520" class="body" font-size="24">View Demo</text>
+
+    <rect x="930" y="150" width="700" height="430" rx="24" fill="#0F1712" stroke="url(#cardBorder)"/>
+    <text x="966" y="198" class="label" font-size="20">AAPL Insider Signal</text>
+    <text x="966" y="234" class="mono" font-size="28">+12.4% predictive confidence</text>
+    <rect x="966" y="258" width="628" height="272" rx="16" fill="#121E17"/>
+    <polyline points="988,464 1060,442 1135,452 1208,410 1286,394 1360,360 1435,372 1510,338 1580,314" fill="none" stroke="#A7E89A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="988,496 1060,488 1135,476 1208,462 1286,450 1360,430 1435,420 1510,410 1580,395" fill="none" stroke="#5C7664" stroke-width="2" stroke-dasharray="8 8"/>
+
+    <rect x="72" y="610" width="500" height="206" rx="20" fill="#111A15" stroke="#2A3C31"/>
+    <text x="104" y="662" class="label" font-size="24">SEC Sync</text>
+    <text x="104" y="706" class="body" font-size="20">Fresh Form 4 ingestion with resilient retry pipelines</text>
+
+    <rect x="600" y="610" width="500" height="206" rx="20" fill="#111A15" stroke="#2A3C31"/>
+    <text x="632" y="662" class="label" font-size="24">Signal Quality</text>
+    <text x="632" y="706" class="body" font-size="20">Confidence-weighted scoring and anomaly detection</text>
+
+    <rect x="1128" y="610" width="500" height="206" rx="20" fill="#111A15" stroke="#2A3C31"/>
+    <text x="1160" y="662" class="label" font-size="24">Actionable Views</text>
+    <text x="1160" y="706" class="body" font-size="20">Portfolio-ready dashboard optimized for web and mobile</text>
+  </g>
+
+  <!-- LOGIN DESKTOP -->
+  <text x="2020" y="164" class="label" font-size="24">Login / Desktop</text>
+  <g transform="translate(2020 180)" filter="url(#shadow)">
+    <rect x="0" y="0" width="1700" height="860" rx="36" fill="url(#surface)" stroke="#304236" stroke-width="2"/>
+
+    <rect x="24" y="24" width="770" height="812" rx="28" fill="url(#panelGradient)" stroke="#2E4637"/>
+    <text x="78" y="104" class="label" font-size="24">SnoopTrade</text>
+    <text x="78" y="176" class="title" font-size="66">Welcome back</text>
+    <text x="78" y="226" class="body" font-size="28">Sign in to track insider behavior in real time.</text>
+
+    <rect x="78" y="286" width="314" height="140" rx="20" fill="#122019" stroke="#35503E"/>
+    <text x="108" y="338" class="muted" font-size="18">Daily filings tracked</text>
+    <text x="108" y="388" class="mono" font-size="36">14,832</text>
+
+    <rect x="420" y="286" width="314" height="140" rx="20" fill="#122019" stroke="#35503E"/>
+    <text x="450" y="338" class="muted" font-size="18">Avg signal latency</text>
+    <text x="450" y="388" class="mono" font-size="36">3.2m</text>
+
+    <rect x="78" y="458" width="656" height="320" rx="20" fill="#101A14" stroke="#2A3D31"/>
+    <text x="110" y="514" class="label" font-size="24">Why analysts choose SnoopTrade</text>
+    <text x="110" y="566" class="body" font-size="21">- Fast SEC event detection</text>
+    <text x="110" y="606" class="body" font-size="21">- Explainable transaction signals</text>
+    <text x="110" y="646" class="body" font-size="21">- Clean workflows for daily monitoring</text>
+
+    <rect x="836" y="24" width="840" height="812" rx="28" fill="#121B16" stroke="#304438"/>
+    <text x="920" y="132" class="title" font-size="52">Login</text>
+    <text x="920" y="176" class="muted" font-size="24">Use your email and password</text>
+
+    <text x="920" y="254" class="small" font-size="18">Email</text>
+    <rect x="920" y="272" width="672" height="70" rx="16" fill="#18241D" stroke="#35503D"/>
+    <text x="950" y="316" class="muted" font-size="22">you@example.com</text>
+
+    <text x="920" y="388" class="small" font-size="18">Password</text>
+    <rect x="920" y="406" width="672" height="70" rx="16" fill="#18241D" stroke="#35503D"/>
+    <text x="950" y="450" class="muted" font-size="22">••••••••••••</text>
+
+    <rect x="920" y="510" width="672" height="72" rx="16" fill="url(#ctaGradient)"/>
+    <text x="1202" y="555" class="title" font-size="26" fill="#0E1410">Login</text>
+
+    <text x="1240" y="630" class="muted" font-size="20">OR</text>
+    <line x1="920" y1="622" x2="1200" y2="622" stroke="#2A3D31"/>
+    <line x1="1280" y1="622" x2="1592" y2="622" stroke="#2A3D31"/>
+
+    <rect x="920" y="654" width="672" height="72" rx="16" fill="#18241D" stroke="#35503D"/>
+    <circle cx="962" cy="690" r="14" fill="#E6ECE8"/>
+    <text x="994" y="698" class="body" font-size="24">Continue with Google</text>
+
+    <text x="1132" y="782" class="muted" font-size="20">No account yet?</text>
+    <text x="1302" y="782" class="accent" font-family="Manrope" font-size="22" font-weight="700">Sign up</text>
+  </g>
+
+  <!-- DASHBOARD DESKTOP -->
+  <text x="80" y="1144" class="label" font-size="24">Dashboard / Desktop</text>
+  <g transform="translate(80 1160)" filter="url(#shadow)">
+    <rect x="0" y="0" width="1700" height="860" rx="36" fill="url(#surface)" stroke="#304236" stroke-width="2"/>
+
+    <rect x="24" y="24" width="1652" height="72" rx="18" fill="#111A15" stroke="#2C4034"/>
+    <text x="58" y="69" class="title" font-size="28">SnoopTrade</text>
+    <rect x="220" y="38" width="630" height="44" rx="12" fill="#18241D" stroke="#35503D"/>
+    <text x="254" y="66" class="muted" font-size="19">Search ticker or company...</text>
+    <rect x="1364" y="38" width="130" height="44" rx="12" fill="#18241D" stroke="#35503D"/>
+    <text x="1400" y="66" class="body" font-size="18">AAPL</text>
+    <circle cx="1600" cy="60" r="20" fill="#22362A" stroke="#3D5A45"/>
+    <text x="1588" y="67" class="body" font-size="16">NU</text>
+
+    <rect x="60" y="124" width="380" height="108" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="90" y="166" class="muted" font-size="18">Open</text>
+    <text x="90" y="212" class="mono" font-size="36">$224.38</text>
+
+    <rect x="460" y="124" width="380" height="108" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="490" y="166" class="muted" font-size="18">Close</text>
+    <text x="490" y="212" class="mono" font-size="36">$229.16</text>
+
+    <rect x="860" y="124" width="380" height="108" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="890" y="166" class="muted" font-size="18">High</text>
+    <text x="890" y="212" class="mono" font-size="36">$231.05</text>
+
+    <rect x="1260" y="124" width="380" height="108" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="1290" y="166" class="muted" font-size="18">Low</text>
+    <text x="1290" y="212" class="mono" font-size="36">$221.92</text>
+
+    <rect x="60" y="252" width="1040" height="340" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <text x="92" y="298" class="label" font-size="22">Stock Price Trend (1Y)</text>
+    <rect x="90" y="316" width="980" height="244" rx="14" fill="#142119"/>
+    <polyline points="120,522 198,510 278,500 358,468 438,486 518,430 598,452 678,392 758,378 838,340 918,350 998,304" fill="none" stroke="#A7E89A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="120,548 198,538 278,528 358,520 438,510 518,502 598,492 678,478 758,470 838,456 918,446 998,432" fill="none" stroke="#3B5A45" stroke-width="2" stroke-dasharray="8 8"/>
+
+    <rect x="1120" y="252" width="520" height="340" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <text x="1154" y="298" class="label" font-size="22">Signal Summary</text>
+    <rect x="1154" y="320" width="452" height="84" rx="14" fill="#15241A" stroke="#36513F"/>
+    <text x="1180" y="356" class="muted" font-size="18">Net Insider Direction</text>
+    <text x="1180" y="386" class="title" font-size="28" fill="#A7E89A">Mildly Bullish</text>
+    <rect x="1154" y="420" width="452" height="154" rx="14" fill="#15241A"/>
+    <text x="1180" y="460" class="body" font-size="20">Purchases: 23</text>
+    <text x="1180" y="494" class="body" font-size="20">Sales: 14</text>
+    <text x="1180" y="528" class="body" font-size="20">Forecast confidence: 82%</text>
+
+    <rect x="60" y="610" width="1580" height="220" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <text x="92" y="654" class="label" font-size="22">Recent Transactions</text>
+    <line x1="92" y1="676" x2="1608" y2="676" stroke="#294034"/>
+    <text x="92" y="710" class="muted" font-size="17">Date</text>
+    <text x="320" y="710" class="muted" font-size="17">Insider</text>
+    <text x="620" y="710" class="muted" font-size="17">Type</text>
+    <text x="860" y="710" class="muted" font-size="17">Shares</text>
+    <text x="1120" y="710" class="muted" font-size="17">Price</text>
+    <text x="1380" y="710" class="muted" font-size="17">Signal</text>
+
+    <line x1="92" y1="730" x2="1608" y2="730" stroke="#22362C"/>
+    <text x="92" y="760" class="body" font-size="18">2026-02-14</text>
+    <text x="320" y="760" class="body" font-size="18">Director A.</text>
+    <text x="620" y="760" class="body" font-size="18">Purchase</text>
+    <text x="860" y="760" class="mono" font-size="18">12,500</text>
+    <text x="1120" y="760" class="mono" font-size="18">$223.10</text>
+    <text x="1380" y="760" class="accent" font-family="Manrope" font-size="18" font-weight="700">Bullish</text>
+
+    <line x1="92" y1="778" x2="1608" y2="778" stroke="#22362C"/>
+    <text x="92" y="808" class="body" font-size="18">2026-02-13</text>
+    <text x="320" y="808" class="body" font-size="18">Officer B.</text>
+    <text x="620" y="808" class="body" font-size="18">Sale</text>
+    <text x="860" y="808" class="mono" font-size="18">4,200</text>
+    <text x="1120" y="808" class="mono" font-size="18">$229.00</text>
+    <text x="1380" y="808" font-family="Manrope" fill="#F26D6D" font-size="18" font-weight="700">Cautious</text>
+  </g>
+
+  <!-- ACCOUNT DESKTOP -->
+  <text x="2020" y="1144" class="label" font-size="24">Account / Desktop</text>
+  <g transform="translate(2020 1160)" filter="url(#shadow)">
+    <rect x="0" y="0" width="1700" height="860" rx="36" fill="url(#surface)" stroke="#304236" stroke-width="2"/>
+
+    <rect x="24" y="24" width="1652" height="72" rx="18" fill="#111A15" stroke="#2C4034"/>
+    <text x="58" y="69" class="title" font-size="28">SnoopTrade</text>
+    <text x="1380" y="69" class="body" font-size="20">Account Settings</text>
+
+    <rect x="60" y="140" width="760" height="300" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <circle cx="152" cy="230" r="46" fill="#203228" stroke="#3E5B47"/>
+    <text x="130" y="240" class="body" font-size="28">NU</text>
+    <text x="224" y="222" class="title" font-size="34">Nevil User</text>
+    <text x="224" y="264" class="muted" font-size="22">nevil@example.com</text>
+    <rect x="224" y="288" width="190" height="42" rx="12" fill="#1C2B22" stroke="#36503E"/>
+    <text x="262" y="315" class="body" font-size="18">Google + Email</text>
+
+    <text x="92" y="374" class="muted" font-size="18">Plan</text>
+    <text x="92" y="404" class="body" font-size="22">Student / Free Tier</text>
+
+    <rect x="860" y="140" width="780" height="460" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <text x="900" y="196" class="label" font-size="28">Security</text>
+    <text x="900" y="234" class="muted" font-size="20">Change your password and login preferences</text>
+
+    <text x="900" y="286" class="small" font-size="18">Current password</text>
+    <rect x="900" y="304" width="700" height="64" rx="14" fill="#18241D" stroke="#35503D"/>
+
+    <text x="900" y="402" class="small" font-size="18">New password</text>
+    <rect x="900" y="420" width="700" height="64" rx="14" fill="#18241D" stroke="#35503D"/>
+
+    <text x="900" y="518" class="small" font-size="18">Confirm password</text>
+    <rect x="900" y="536" width="700" height="64" rx="14" fill="#18241D" stroke="#35503D"/>
+
+    <rect x="1368" y="628" width="232" height="70" rx="16" fill="url(#ctaGradient)"/>
+    <text x="1422" y="672" class="title" font-size="24" fill="#0E1410">Save Changes</text>
+
+    <rect x="60" y="470" width="760" height="330" rx="22" fill="#111A15" stroke="#2D4035"/>
+    <text x="92" y="524" class="label" font-size="28">Session Controls</text>
+    <text x="92" y="566" class="body" font-size="20">Current session: Web Chrome / macOS</text>
+    <text x="92" y="602" class="muted" font-size="18">Last login: 2026-02-17 21:42 UTC</text>
+
+    <rect x="92" y="648" width="206" height="62" rx="14" fill="#2B1717" stroke="#603333"/>
+    <text x="146" y="686" font-family="Manrope" font-size="22" font-weight="700" fill="#F7D1D1">Logout</text>
+
+    <rect x="320" y="648" width="260" height="62" rx="14" fill="#18241D" stroke="#35503D"/>
+    <text x="362" y="686" class="body" font-size="20">Revoke all sessions</text>
+  </g>
+
+  <!-- MOBILE SECTION TITLE -->
+  <text x="80" y="2094" class="label" font-size="24">Mobile Previews</text>
+
+  <!-- MOBILE LOGIN -->
+  <g transform="translate(460 2120)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="400" height="780" rx="52" fill="#0B100D" stroke="#2D4035" stroke-width="2"/>
+    <rect x="18" y="18" width="364" height="744" rx="40" fill="#0D1410"/>
+    <rect x="130" y="32" width="140" height="24" rx="12" fill="#0A0A0A"/>
+
+    <text x="46" y="106" class="muted" font-size="16">SnoopTrade</text>
+    <text x="46" y="150" class="title" font-size="46">Welcome back</text>
+    <text x="46" y="186" class="body" font-size="22">Sign in to track insider activity.</text>
+
+    <rect x="46" y="236" width="308" height="62" rx="16" fill="#17231C" stroke="#32483A"/>
+    <text x="70" y="275" class="muted" font-size="20">Email</text>
+
+    <rect x="46" y="316" width="308" height="62" rx="16" fill="#17231C" stroke="#32483A"/>
+    <text x="70" y="355" class="muted" font-size="20">Password</text>
+
+    <rect x="46" y="414" width="308" height="66" rx="16" fill="url(#ctaGradient)"/>
+    <text x="167" y="456" class="title" font-size="30" fill="#0E1410">Login</text>
+
+    <line x1="56" y1="532" x2="168" y2="532" stroke="#33483A"/>
+    <text x="190" y="538" class="muted" font-size="17">OR</text>
+    <line x1="228" y1="532" x2="344" y2="532" stroke="#33483A"/>
+
+    <rect x="46" y="566" width="308" height="62" rx="16" fill="#17231C" stroke="#32483A"/>
+    <circle cx="74" cy="598" r="11" fill="#E7ECE8"/>
+    <text x="98" y="605" class="body" font-size="20">Continue with Google</text>
+
+    <text x="118" y="692" class="muted" font-size="20">No account yet?</text>
+    <text x="252" y="692" class="accent" font-family="Manrope" font-size="22" font-weight="700">Sign up</text>
+  </g>
+
+  <!-- MOBILE DASHBOARD -->
+  <g transform="translate(1700 2120)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="400" height="780" rx="52" fill="#0B100D" stroke="#2D4035" stroke-width="2"/>
+    <rect x="18" y="18" width="364" height="744" rx="40" fill="#0D1410"/>
+    <rect x="130" y="32" width="140" height="24" rx="12" fill="#0A0A0A"/>
+
+    <circle cx="60" cy="98" r="22" fill="#203228" stroke="#3E5B47"/>
+    <text x="48" y="106" class="body" font-size="16">NU</text>
+    <text x="94" y="92" class="muted" font-size="14">Good evening</text>
+    <text x="94" y="116" class="title" font-size="26">Nevil</text>
+
+    <rect x="42" y="142" width="316" height="54" rx="14" fill="#17231C" stroke="#32483A"/>
+    <text x="68" y="176" class="muted" font-size="18">Search ticker...</text>
+
+    <rect x="42" y="212" width="316" height="42" rx="12" fill="#17231C" stroke="#32483A"/>
+    <text x="58" y="239" class="body" font-size="17">AAPL  Apple Inc.</text>
+
+    <rect x="42" y="272" width="316" height="176" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="60" y="305" class="label" font-size="18">Stock Price</text>
+    <polyline points="58,422 92,408 126,398 160,390 194,372 228,378 262,356 296,334 330,326" fill="none" stroke="#A7E89A" stroke-width="3" stroke-linecap="round"/>
+
+    <rect x="42" y="464" width="152" height="94" rx="14" fill="#111A15" stroke="#2A3C31"/>
+    <text x="58" y="496" class="muted" font-size="14">Open</text>
+    <text x="58" y="532" class="mono" font-size="24">$224.38</text>
+
+    <rect x="206" y="464" width="152" height="94" rx="14" fill="#111A15" stroke="#2A3C31"/>
+    <text x="222" y="496" class="muted" font-size="14">Close</text>
+    <text x="222" y="532" class="mono" font-size="24">$229.16</text>
+
+    <rect x="42" y="574" width="316" height="60" rx="14" fill="url(#ctaGradient)"/>
+    <text x="110" y="612" class="title" font-size="22" fill="#0E1410">Predict Future Trends</text>
+
+    <rect x="42" y="650" width="316" height="84" rx="14" fill="#111A15" stroke="#2A3C31"/>
+    <text x="58" y="682" class="muted" font-size="14">Insider Snapshot</text>
+    <text x="58" y="715" class="body" font-size="18">Purchases 23  |  Sales 14</text>
+  </g>
+
+  <!-- MOBILE ACCOUNT -->
+  <g transform="translate(2940 2120)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="400" height="780" rx="52" fill="#0B100D" stroke="#2D4035" stroke-width="2"/>
+    <rect x="18" y="18" width="364" height="744" rx="40" fill="#0D1410"/>
+    <rect x="130" y="32" width="140" height="24" rx="12" fill="#0A0A0A"/>
+
+    <text x="42" y="98" class="title" font-size="34">Account</text>
+
+    <rect x="42" y="122" width="316" height="126" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <circle cx="86" cy="172" r="28" fill="#22362A" stroke="#3D5A45"/>
+    <text x="74" y="180" class="body" font-size="18">NU</text>
+    <text x="126" y="168" class="body" font-size="22">Nevil User</text>
+    <text x="126" y="196" class="muted" font-size="16">nevil@example.com</text>
+
+    <rect x="42" y="266" width="316" height="286" rx="18" fill="#111A15" stroke="#2A3C31"/>
+    <text x="58" y="302" class="label" font-size="20">Change Password</text>
+
+    <text x="58" y="336" class="small" font-size="14">Current password</text>
+    <rect x="58" y="348" width="284" height="48" rx="12" fill="#17231C" stroke="#32483A"/>
+
+    <text x="58" y="424" class="small" font-size="14">New password</text>
+    <rect x="58" y="436" width="284" height="48" rx="12" fill="#17231C" stroke="#32483A"/>
+
+    <text x="58" y="512" class="small" font-size="14">Confirm password</text>
+    <rect x="58" y="524" width="284" height="48" rx="12" fill="#17231C" stroke="#32483A"/>
+
+    <rect x="42" y="570" width="316" height="58" rx="14" fill="url(#ctaGradient)"/>
+    <text x="136" y="606" class="title" font-size="22" fill="#0E1410">Save Changes</text>
+
+    <rect x="42" y="652" width="316" height="58" rx="14" fill="#2B1717" stroke="#603333"/>
+    <text x="170" y="688" font-family="Manrope" font-size="22" font-weight="700" fill="#F7D1D1">Logout</text>
+  </g>
+</svg>

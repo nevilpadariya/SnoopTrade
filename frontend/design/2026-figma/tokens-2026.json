@@ -1,0 +1,142 @@
+{
+  "meta": {
+    "name": "SnoopTrade Signal Glass 2026",
+    "version": "1.0.0",
+    "description": "Design tokens for Figma and shadcn/ui implementation"
+  },
+  "primitives": {
+    "color": {
+      "graphite": {
+        "950": "#080B09",
+        "900": "#0E1410",
+        "800": "#18211A",
+        "700": "#243027",
+        "600": "#314036",
+        "500": "#4A5C50",
+        "400": "#6D7F73",
+        "300": "#9AA99F",
+        "200": "#C7D0CA",
+        "100": "#E6ECE8",
+        "50": "#F4F7F5"
+      },
+      "mint": {
+        "700": "#68B36B",
+        "600": "#7BC97A",
+        "500": "#90D987",
+        "400": "#A7E89A",
+        "300": "#C2F1B1"
+      },
+      "signal": {
+        "buy": "#48C78E",
+        "sell": "#F26D6D",
+        "neutral": "#8AA0FF",
+        "warning": "#F0B55A"
+      }
+    },
+    "radius": {
+      "xs": 6,
+      "sm": 10,
+      "md": 14,
+      "lg": 18,
+      "xl": 24,
+      "pill": 999
+    },
+    "spacing": {
+      "1": 4,
+      "2": 8,
+      "3": 12,
+      "4": 16,
+      "5": 20,
+      "6": 24,
+      "8": 32,
+      "10": 40,
+      "12": 48,
+      "16": 64,
+      "20": 80,
+      "24": 96
+    }
+  },
+  "semantic": {
+    "light": {
+      "background": "#F4F7F5",
+      "foreground": "#0E1410",
+      "card": "#FFFFFF",
+      "cardForeground": "#0E1410",
+      "muted": "#E6ECE8",
+      "mutedForeground": "#4A5C50",
+      "border": "#C7D0CA",
+      "input": "#C7D0CA",
+      "primary": "#90D987",
+      "primaryForeground": "#0E1410",
+      "primaryStrong": "#68B36B",
+      "accent": "#A7E89A",
+      "ring": "#68B36B",
+      "destructive": "#F26D6D",
+      "destructiveForeground": "#0E1410"
+    },
+    "dark": {
+      "background": "#080B09",
+      "foreground": "#E6ECE8",
+      "card": "#0E1410",
+      "cardForeground": "#E6ECE8",
+      "muted": "#18211A",
+      "mutedForeground": "#9AA99F",
+      "border": "#243027",
+      "input": "#243027",
+      "primary": "#90D987",
+      "primaryForeground": "#0E1410",
+      "primaryStrong": "#A7E89A",
+      "accent": "#7BC97A",
+      "ring": "#A7E89A",
+      "destructive": "#F26D6D",
+      "destructiveForeground": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "display": "Sora",
+      "body": "Manrope",
+      "mono": "JetBrains Mono"
+    },
+    "size": {
+      "xs": 12,
+      "sm": 14,
+      "md": 16,
+      "lg": 18,
+      "xl": 20,
+      "2xl": 24,
+      "3xl": 32,
+      "4xl": 40,
+      "5xl": 52
+    },
+    "lineHeight": {
+      "tight": 1.15,
+      "normal": 1.4,
+      "relaxed": 1.6
+    },
+    "weight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800
+    }
+  },
+  "elevation": {
+    "sm": "0 1px 2px rgba(0, 0, 0, 0.20)",
+    "md": "0 8px 24px rgba(0, 0, 0, 0.18)",
+    "lg": "0 16px 40px rgba(0, 0, 0, 0.24)",
+    "glow": "0 0 0 1px rgba(167, 232, 154, 0.25), 0 14px 40px rgba(103, 180, 114, 0.20)"
+  },
+  "motion": {
+    "duration": {
+      "fast": 120,
+      "base": 180,
+      "slow": 280
+    },
+    "easing": {
+      "standard": "cubic-bezier(0.2, 0, 0, 1)",
+      "entrance": "cubic-bezier(0.16, 1, 0.3, 1)"
+    }
+  }
+}

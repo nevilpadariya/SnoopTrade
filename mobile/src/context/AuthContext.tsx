@@ -1,7 +1,22 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { UserProfile } from '../types/api';
-import { ApiError, getCurrentUser, loginWithGoogle, loginWithPassword, signUp as signUpApi } from '../services/api';
-import { clearStoredToken, getStoredToken, setStoredToken } from '../services/authStorage';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { AuthTokenResponse, UserProfile } from '../types/api';
+import {
+  ApiError,
+  getCurrentUser,
+  loginWithGoogle,
+  loginWithPassword,
+  logoutSession,
+  refreshAccessToken,
+  signUp as signUpApi,
+} from '../services/api';
+import {
+  clearStoredToken,
+  getStoredRefreshToken,
+  getStoredToken,
+  setStoredRefreshToken,
+  setStoredToken,
+} from '../services/authStorage';
 
 interface AuthContextValue {
   token: string | null;
@@ -15,92 +30,178 @@ interface AuthContextValue {
   refreshUser: () => Promise<void>;
 }
 
+type JwtPayload = { exp?: number };
+
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+function shouldRefreshSoon(token: string, thresholdSeconds = 300): boolean {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    if (!decoded.exp) {
+      return false;
+    }
+    const now = Math.floor(Date.now() / 1000);
+    return decoded.exp - now <= thresholdSeconds;
+  } catch {
+    return false;
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [requiresPassword, setRequiresPassword] = useState(false);
+  const tokenRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
+  const persistAuthTokens = useCallback(async (auth: AuthTokenResponse) => {
+    setToken(auth.access_token);
+    setRequiresPassword(auth.requires_password);
+    await setStoredToken(auth.access_token);
+    if (auth.refresh_token) {
+      setRefreshToken(auth.refresh_token);
+      await setStoredRefreshToken(auth.refresh_token);
+    }
+  }, []);
+
+  const signOut = useCallback(async () => {
+    if (tokenRef.current) {
+      try {
+        await logoutSession(tokenRef.current);
+      } catch {
+        // local logout should still succeed if network call fails
+      }
+    }
+    await clearStoredToken();
+    setToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    setRequiresPassword(false);
+  }, []);
+
+  const rotateAccessToken = useCallback(async (): Promise<string | null> => {
+    if (!refreshToken) {
+      return null;
+    }
+
+    try {
+      const rotated = await refreshAccessToken(refreshToken);
+      await persistAuthTokens(rotated);
+      return rotated.access_token;
+    } catch {
+      await signOut();
+      return null;
+    }
+  }, [refreshToken, persistAuthTokens, signOut]);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const stored = await getStoredToken();
-        if (!stored) {
+        const [storedAccess, storedRefresh] = await Promise.all([getStoredToken(), getStoredRefreshToken()]);
+        if (!storedAccess) {
           setLoading(false);
           return;
         }
 
-        setToken(stored);
-        const me = await getCurrentUser(stored);
-        setUser(me);
+        setToken(storedAccess);
+        setRefreshToken(storedRefresh);
+
+        try {
+          const me = await getCurrentUser(storedAccess);
+          setUser(me);
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 401 && storedRefresh) {
+            const rotated = await refreshAccessToken(storedRefresh);
+            await persistAuthTokens(rotated);
+            const me = await getCurrentUser(rotated.access_token);
+            setUser(me);
+          } else {
+            await signOut();
+          }
+        }
       } catch {
-        await clearStoredToken();
-        setToken(null);
-        setUser(null);
+        await signOut();
       } finally {
         setLoading(false);
       }
     };
 
-    init();
-  }, []);
+    void init();
+  }, [persistAuthTokens, signOut]);
+
+  useEffect(() => {
+    if (!token || !refreshToken) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (token && shouldRefreshSoon(token)) {
+        void rotateAccessToken();
+      }
+    }, 60_000);
+
+    return () => clearInterval(interval);
+  }, [token, refreshToken, rotateAccessToken]);
 
   const refreshUser = useCallback(async () => {
     if (!token) {
       return;
     }
 
-    const me = await getCurrentUser(token);
-    setUser(me);
-  }, [token]);
+    try {
+      const me = await getCurrentUser(token);
+      setUser(me);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        const newAccess = await rotateAccessToken();
+        if (!newAccess) {
+          return;
+        }
+        const me = await getCurrentUser(newAccess);
+        setUser(me);
+        return;
+      }
+      throw error;
+    }
+  }, [token, rotateAccessToken]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const auth = await loginWithPassword(email, password);
-    setToken(auth.access_token);
-    setRequiresPassword(auth.requires_password);
-    await setStoredToken(auth.access_token);
+    await persistAuthTokens(auth);
 
     try {
       const me = await getCurrentUser(auth.access_token);
       setUser(me);
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        await clearStoredToken();
-        setToken(null);
+        await signOut();
       }
       throw error;
     }
-  }, []);
+  }, [persistAuthTokens, signOut]);
 
   const signInWithGoogle = useCallback(async (email: string, googleIdToken: string) => {
     const auth = await loginWithGoogle(email, googleIdToken);
-    setToken(auth.access_token);
-    setRequiresPassword(auth.requires_password);
-    await setStoredToken(auth.access_token);
+    await persistAuthTokens(auth);
 
     try {
       const me = await getCurrentUser(auth.access_token);
       setUser(me);
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        await clearStoredToken();
-        setToken(null);
+        await signOut();
       }
       throw error;
     }
-  }, []);
+  }, [persistAuthTokens, signOut]);
 
   const signUp = useCallback(async (name: string, email: string, password: string) => {
     await signUpApi(name, email, password);
-  }, []);
-
-  const signOut = useCallback(async () => {
-    await clearStoredToken();
-    setToken(null);
-    setUser(null);
-    setRequiresPassword(false);
   }, []);
 
   const value = useMemo(

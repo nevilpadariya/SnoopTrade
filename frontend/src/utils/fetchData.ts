@@ -1,14 +1,21 @@
-export const fetchData = async (url: string, token: string) => {
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+import { authFetch } from './authFetch';
+
+export const fetchData = async (url: string, token?: string | null) => {
+  const response = await authFetch(
+    url,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  });
+    token ?? undefined,
+  );
 
   if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+    const error = new Error(`Error ${response.status}: ${response.statusText}`) as Error & { status?: number };
+    error.status = response.status;
+    throw error;
   }
 
   return response.json();

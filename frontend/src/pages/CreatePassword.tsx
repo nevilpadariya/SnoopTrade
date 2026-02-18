@@ -9,6 +9,7 @@ import { Label } from '../components/ui/label';
 import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
+import { authFetch } from '../utils/authFetch';
 
 const CreatePassword = () => {
   const [password, setPassword] = useState('');
@@ -18,7 +19,7 @@ const CreatePassword = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { token, requiresPassword, setRequiresPassword } = useAuth();
+  const { token, setToken, requiresPassword, setRequiresPassword } = useAuth();
 
   useEffect(() => {
     if (!token) {
@@ -48,17 +49,19 @@ const CreatePassword = () => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(API_ENDPOINTS.updateUserProfile, {
+      const response = await authFetch(API_ENDPOINTS.updateUserProfile, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ password }),
-      });
+      }, token ?? undefined);
       if (response.ok) {
         setRequiresPassword(false);
         navigate('/dashboard', { replace: true });
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
       } else {
         const errData = await response.json().catch(() => ({}));
         setError(errData.detail || 'Failed to set password. Please try again.');

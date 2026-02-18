@@ -16,6 +16,7 @@ class UpdateUser(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str
     email: str
     requires_password: bool = False
@@ -23,3 +24,7 @@ class TokenResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str = Field(min_length=16)

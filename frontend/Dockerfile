@@ -7,8 +7,8 @@ WORKDIR /usr/share/nginx/html
 # Remove default Nginx static files
 RUN rm -rf ./*
 
-# Copy React build files to the Nginx web root
-COPY build/ .
+# Copy Vite build files to the Nginx web root
+COPY dist/ .
 
 # Copy custom Nginx configuration to override default behavior
 COPY nginx.conf /etc/nginx/conf.d/default.conf

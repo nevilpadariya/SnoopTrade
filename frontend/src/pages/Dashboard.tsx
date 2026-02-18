@@ -19,6 +19,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Separator } from '../components/ui/separator';
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
+import { authFetch } from '../utils/authFetch';
 
 const TIME_PERIODS: Record<string, string> = {
   '1M': '1m',
@@ -188,7 +189,7 @@ const Dashboard = (_props: DashboardProps) => {
       setStockData(formattedData);
     } catch (error: any) {
       console.error('Error fetching stock data:', error);
-      if (error.message.includes('401')) {
+      if (error?.status === 401) {
         setToken(null);
         navigate('/login');
       }
@@ -214,16 +215,20 @@ const Dashboard = (_props: DashboardProps) => {
         close: d.close,
       }));
 
-      const forecastResponse = await fetch(API_ENDPOINTS.fetchFutureData(ticker), {
+      const forecastResponse = await authFetch(API_ENDPOINTS.fetchFutureData(ticker), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      });
+      }, token ?? undefined);
 
       if (!forecastResponse.ok) {
+        if (forecastResponse.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
         const errBody = await forecastResponse.json().catch(() => ({}));
         const message = errBody.detail ?? `Error from forecast API: ${forecastResponse.statusText}`;
         throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
@@ -238,7 +243,7 @@ const Dashboard = (_props: DashboardProps) => {
     } finally {
       setIsPredicting(false);
     }
-  }, [token]);
+  }, [navigate, setToken, token]);
 
   const fetchTradeData = useCallback(async () => {
     if (!selectedCompany || !token) return;
@@ -279,12 +284,16 @@ const Dashboard = (_props: DashboardProps) => {
 
       setPersistentCache(cacheKey, formattedTrades);
       setTradeData(formattedTrades);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching insider trade data:', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+      }
     } finally {
       setIsLoadingTrades(false);
     }
-  }, [selectedCompany, selectedTimePeriod, token]);
+  }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
 
   useEffect(() => {
     if (token && selectedCompany) {

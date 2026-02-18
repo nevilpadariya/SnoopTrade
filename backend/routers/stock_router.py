@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, Query, status, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, Query, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
 import pytz
@@ -9,6 +9,7 @@ from models.stock_data import StockDataModel
 from services.stock_service import fetch_stock_data
 from services.auth_services import decode_access_token
 from services import stock_cache
+from utils.limiter import limiter
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 stock_router = APIRouter()
@@ -56,7 +57,9 @@ def _populate_stock_data_if_missing(ticker: str) -> None:
 from fastapi.concurrency import run_in_threadpool
 
 @stock_router.get("/stocks/{ticker}", response_model=List[StockDataModel])
+@limiter.limit("60/minute")
 async def get_stock_data(
+        request: Request,
         ticker: str,
         background_tasks: BackgroundTasks,
         period: str = Query("1y", pattern="^(1w|1m|3m|6m|1y)$"),

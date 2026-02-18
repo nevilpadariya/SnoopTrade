@@ -62,7 +62,7 @@ const Features = () => {
         />
       </Helmet>
 
-      <div className="signal-surface min-h-screen text-[#E6ECE8]">
+      <div className="signal-surface signal-page text-[#E6ECE8]">
         <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">

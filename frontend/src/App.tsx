@@ -37,6 +37,13 @@ const CreatePasswordRoute = () => {
   return <CreatePassword />;
 };
 
+const HomeRoute = () => {
+  const { token, requiresPassword } = useAuth();
+  if (!token) return <Landing />;
+  if (requiresPassword) return <Navigate to="/create-password" replace />;
+  return <Navigate to="/dashboard" replace />;
+};
+
 const App = () => {
   useEffect(() => {
     // Force dark mode so shadcn semantic tokens match the new Signal Glass theme.
@@ -49,7 +56,7 @@ const App = () => {
         <Router>
           <Suspense fallback={<PageSpinner />}>
             <Routes>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<HomeRoute />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/create-password" element={<CreatePasswordRoute />} />

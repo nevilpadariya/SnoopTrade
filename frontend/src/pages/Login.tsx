@@ -12,6 +12,7 @@ import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const LOGIN_WELCOME_ANIMATION_KEY = 'snooptrade.login_welcome_animation';
 
 const Login = () => {
   const [loginError, setLoginError] = useState('');
@@ -44,10 +45,15 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
+        const requiresPasswordSetup = Boolean(data.requires_password);
         setToken(data.access_token);
         setRefreshToken(data.refresh_token || null);
-        setRequiresPassword(Boolean(data.requires_password));
-        toast.success('Welcome back!', { description: 'You have been logged in successfully.' });
+        setRequiresPassword(requiresPasswordSetup);
+        if (requiresPasswordSetup) {
+          navigate('/create-password');
+          return;
+        }
+        sessionStorage.setItem(LOGIN_WELCOME_ANIMATION_KEY, '1');
         navigate('/dashboard');
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -99,13 +105,14 @@ const Login = () => {
 
       if (tokenResponse.ok) {
         const data = await tokenResponse.json();
+        const requiresPasswordSetup = Boolean(data.requires_password);
         setToken(data.access_token);
         setRefreshToken(data.refresh_token || null);
-        setRequiresPassword(Boolean(data.requires_password));
-        if (data.requires_password) {
+        setRequiresPassword(requiresPasswordSetup);
+        if (requiresPasswordSetup) {
           navigate('/create-password');
         } else {
-          toast.success('Welcome back!', { description: 'Signed in with Google.' });
+          sessionStorage.setItem(LOGIN_WELCOME_ANIMATION_KEY, '1');
           navigate('/dashboard');
         }
       } else {
@@ -136,7 +143,7 @@ const Login = () => {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-      <div className="signal-surface min-h-screen text-[#E6ECE8]">
+      <div className="signal-surface signal-page text-[#E6ECE8]">
         <Helmet>
           <title>Login - SnoopTrade</title>
         </Helmet>

@@ -79,7 +79,7 @@ const CreatePassword = () => {
   }
 
   return (
-    <div className="signal-surface min-h-screen text-[#E6ECE8]">
+    <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
         <title>Create Password - SnoopTrade</title>
       </Helmet>

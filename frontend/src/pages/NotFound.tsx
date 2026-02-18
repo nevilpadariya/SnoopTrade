@@ -4,12 +4,12 @@ import { Button } from '../components/ui/button';
 
 const NotFound = () => {
   return (
-    <div className="signal-surface min-h-screen text-[#E6ECE8]">
+    <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
         <title>Page Not Found - SnoopTrade</title>
       </Helmet>
 
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center">
+      <div className="mx-auto flex signal-page max-w-3xl flex-col items-center justify-center px-6 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">404</p>
         <h1 className="mt-3 text-5xl font-extrabold text-[#EAF5EC] sm:text-6xl">Page not found</h1>
         <p className="mt-4 text-base text-[#B6C8BB] sm:text-lg">

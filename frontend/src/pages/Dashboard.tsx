@@ -26,6 +26,7 @@ const TIME_PERIODS: Record<string, string> = {
 
 const WATCHLIST_STORAGE_KEY = 'snooptrade.watchlist';
 const RECENT_STORAGE_KEY = 'snooptrade.recent_tickers';
+const LOGIN_WELCOME_ANIMATION_KEY = 'snooptrade.login_welcome_animation';
 const MAX_WATCHLIST = 12;
 const MAX_RECENT = 8;
 
@@ -74,6 +75,7 @@ const Dashboard = () => {
   const [isLoadingTrades, setIsLoadingTrades] = useState(false);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [recentTickers, setRecentTickers] = useState<string[]>([]);
+  const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
 
   useEffect(() => {
     if (location.state?.company && COMPANIES.includes(location.state.company)) {
@@ -97,6 +99,14 @@ const Dashboard = () => {
 
     setWatchlist(parseTickerList(localStorage.getItem(WATCHLIST_STORAGE_KEY)).slice(0, MAX_WATCHLIST));
     setRecentTickers(parseTickerList(localStorage.getItem(RECENT_STORAGE_KEY)).slice(0, MAX_RECENT));
+  }, []);
+
+  useEffect(() => {
+    if (sessionStorage.getItem(LOGIN_WELCOME_ANIMATION_KEY) !== '1') return;
+    sessionStorage.removeItem(LOGIN_WELCOME_ANIMATION_KEY);
+    setShowWelcomeAnimation(true);
+    const timer = window.setTimeout(() => setShowWelcomeAnimation(false), 2600);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -318,6 +328,7 @@ const Dashboard = () => {
   const initials = getInitials(user?.name || user?.first_name || user?.email);
   const selectedCompanyName = selectedCompany ? COMPANY_NAMES[selectedCompany] ?? selectedCompany : '';
   const isInWatchlist = selectedCompany ? watchlist.includes(selectedCompany) : false;
+  const displayName = user?.first_name || user?.name?.split(' ')[0] || 'Trader';
 
   const statCards = [
     { label: 'Open', value: latestStock ? `$${Number(latestStock.open).toFixed(2)}` : '--' },
@@ -327,10 +338,42 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="signal-surface min-h-screen text-[#E6ECE8]">
+    <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
         <title>Dashboard - SnoopTrade</title>
       </Helmet>
+
+      {showWelcomeAnimation && (
+        <div className="welcome-login-overlay" aria-hidden="true">
+          <div className="welcome-login-panel">
+            <p className="welcome-login-kicker">Signal active</p>
+            <h2 className="welcome-login-title">Welcome back, {displayName}</h2>
+            <svg
+              className="welcome-login-chart"
+              viewBox="0 0 420 160"
+              role="presentation"
+              focusable="false"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="welcomeLineGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#7BC97A" />
+                  <stop offset="100%" stopColor="#C7F6AE" />
+                </linearGradient>
+              </defs>
+              <polyline
+                className="welcome-login-area"
+                points="24,136 82,112 130,122 192,88 248,102 308,56 364,72 396,24 396,136 24,136"
+              />
+              <polyline
+                className="welcome-login-line"
+                points="24,136 82,112 130,122 192,88 248,102 308,56 364,72 396,24"
+              />
+              <circle className="welcome-login-dot" cx="396" cy="24" r="6" />
+            </svg>
+          </div>
+        </div>
+      )}
 
       <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">

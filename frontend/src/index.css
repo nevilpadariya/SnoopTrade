@@ -60,6 +60,8 @@
   
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    min-height: 100dvh;
     font-family: "Google Sans", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-optical-sizing: auto;
@@ -169,6 +171,11 @@
       radial-gradient(1000px 520px at 20% 100%, rgba(123, 201, 122, 0.14) 0%, rgba(123, 201, 122, 0) 70%);
   }
 
+  .signal-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
   .signal-grid-overlay {
     background-image:
       linear-gradient(rgba(108, 135, 116, 0.08) 1px, transparent 1px),
@@ -252,6 +259,143 @@ main {
 .time-range-row button {
   flex: 1 1 0;
   min-width: 3.5rem;
+}
+
+@keyframes welcome-overlay-life {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes welcome-panel-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(110%) scale(0.96);
+  }
+  16% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+}
+
+@keyframes welcome-chart-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes welcome-area-rise {
+  0% {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes welcome-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.7;
+  }
+}
+
+.welcome-login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(900px 320px at 50% 100%, rgba(62, 110, 76, 0.38) 0%, rgba(10, 14, 12, 0.1) 55%, rgba(6, 9, 7, 0) 100%);
+  animation: welcome-overlay-life 2.6s ease forwards;
+}
+
+.welcome-login-panel {
+  width: min(560px, 100%);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(101, 154, 112, 0.45);
+  background: linear-gradient(160deg, rgba(23, 37, 28, 0.96) 0%, rgba(10, 18, 13, 0.94) 100%);
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(194, 241, 178, 0.13);
+  backdrop-filter: blur(8px);
+  padding: 1rem 1rem 0.9rem;
+  transform-origin: bottom center;
+  animation: welcome-panel-rise 2.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.welcome-login-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #97ba9e;
+}
+
+.welcome-login-title {
+  margin: 0.35rem 0 0.7rem;
+  font-size: clamp(1.15rem, 2.8vw, 1.55rem);
+  line-height: 1.2;
+  color: #eaf5ec;
+}
+
+.welcome-login-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.welcome-login-line {
+  fill: none;
+  stroke: url(#welcomeLineGradient);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  filter: drop-shadow(0 0 9px rgba(150, 226, 140, 0.42));
+  animation: welcome-chart-draw 1.15s 0.26s cubic-bezier(0.3, 0.9, 0.3, 1) forwards;
+}
+
+.welcome-login-area {
+  fill: rgba(123, 201, 122, 0.17);
+  clip-path: inset(100% 0 0 0);
+  animation: welcome-area-rise 0.8s 0.45s ease-out forwards;
+}
+
+.welcome-login-dot {
+  fill: #c7f6ae;
+  transform-origin: center;
+  animation: welcome-dot-pulse 0.7s 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-login-overlay,
+  .welcome-login-panel,
+  .welcome-login-line,
+  .welcome-login-area,
+  .welcome-login-dot {
+    animation: none !important;
+  }
 }
 
 

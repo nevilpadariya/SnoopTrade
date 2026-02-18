@@ -149,7 +149,7 @@ const Account = () => {
   const loginBadge = userData?.login_type === 'google' ? 'Google' : userData?.login_type === 'both' ? 'Google + Email' : 'Email';
 
   return (
-    <div className="signal-surface min-h-screen text-[#E6ECE8]">
+    <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
         <title>Account Settings - SnoopTrade</title>
       </Helmet>

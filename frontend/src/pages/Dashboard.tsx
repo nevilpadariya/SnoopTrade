@@ -512,8 +512,8 @@ const Dashboard = () => {
                         onClick={() => handleTimePeriodChange(value)}
                         className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                           active
-                            ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#2A4236] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {label}
@@ -541,8 +541,8 @@ const Dashboard = () => {
                         onClick={() => handleCompanySelect(ticker)}
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
-                            ? 'border-[#91D88C] bg-[#1F3325] text-[#173025] dark:text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#31483C] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#244135] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -568,8 +568,8 @@ const Dashboard = () => {
                         onClick={() => handleCompanySelect(ticker)}
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
-                            ? 'border-[#91D88C] bg-[#1F3325] text-[#173025] dark:text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#31483C] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#244135] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -605,8 +605,8 @@ const Dashboard = () => {
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {statCards.map((card) => (
                   <article key={card.label} className="signal-glass rounded-2xl p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">{card.label}</p>
-                    <p className="mt-2 font-mono text-2xl font-bold text-[#D6E8D7]">{card.value}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#516C5E] dark:text-[#8EA197]">{card.label}</p>
+                    <p className="mt-2 font-mono text-2xl font-bold text-[#1E3A2D] dark:text-[#D6E8D7]">{card.value}</p>
                   </article>
                 ))}
               </div>

@@ -16,7 +16,7 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
         purchase:
-          "border-transparent bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25",
+          "border-transparent bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/25",
         sale:
           "border-transparent bg-red-500/15 text-red-400 hover:bg-red-500/25",
         grant:
@@ -26,9 +26,9 @@ const badgeVariants = cva(
         payment:
           "border-transparent bg-violet-500/15 text-violet-400 hover:bg-violet-500/25",
         gift:
-          "border-transparent bg-green-500/15 text-green-400 hover:bg-green-500/25",
+          "border-transparent bg-green-500/15 text-green-800 dark:text-green-300 hover:bg-green-500/25",
         discretionary:
-          "border-transparent bg-lime-500/15 text-lime-400 hover:bg-lime-500/25",
+          "border-transparent bg-lime-500/15 text-lime-800 dark:text-lime-300 hover:bg-lime-500/25",
         neutral:
           "border-transparent bg-slate-500/15 text-slate-400 hover:bg-slate-500/25",
       },

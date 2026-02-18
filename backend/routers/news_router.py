@@ -8,15 +8,18 @@ from urllib.parse import quote_plus, urlparse
 from xml.etree import ElementTree
 
 import requests
-from fastapi import APIRouter, Query, Request
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel, Field, field_validator
 
 from database.database import user_db, sec_db, stock_db
+from services.auth_services import decode_access_token
 from utils.limiter import limiter
 
 logger = logging.getLogger(__name__)
 
 news_router = APIRouter(prefix="/news")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
 CACHE_TTL_SECONDS = 600
@@ -33,6 +36,11 @@ _landing_metrics_cache: dict[str, Any] = {
     "ts": 0.0,
     "value": None,
 }
+_watchlist_news_cache: dict[str, Any] = {
+    "key": None,
+    "ts": 0.0,
+    "items": [],
+}
 _click_indexes_initialized = False
 
 LANDING_METRICS_TTL_SECONDS = 600
@@ -47,6 +55,27 @@ class InsiderNewsItem(BaseModel):
     source: str
     source_url: str | None = None
     published_at: str | None = None
+    ticker_mentions: list[str] = Field(default_factory=list)
+
+
+class WatchlistNewsRequest(BaseModel):
+    tickers: list[str] = Field(min_length=1, max_length=12)
+    limit: int = Field(default=10, ge=4, le=24)
+
+    @field_validator("tickers")
+    @classmethod
+    def normalize_tickers(cls, value: list[str]) -> list[str]:
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for ticker in value:
+            cleaned = str(ticker or "").upper().strip()
+            if not cleaned or cleaned in seen:
+                continue
+            seen.add(cleaned)
+            normalized.append(cleaned)
+        if not normalized:
+            raise ValueError("At least one valid ticker is required.")
+        return normalized[:12]
 
 
 class InsiderNewsClickPayload(BaseModel):
@@ -71,6 +100,16 @@ class LandingHeroMetrics(BaseModel):
     average_filing_lag_days: float | None = None
     lag_sample_size: int = 0
     generated_at: str
+
+
+def _get_user_email(token: str = Depends(oauth2_scheme)) -> str:
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+    email = payload.get("sub")
+    if not email:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication payload")
+    return email
 
 
 def _ensure_click_indexes() -> None:
@@ -102,6 +141,24 @@ def _extract_source(item_el: ElementTree.Element, link: str) -> tuple[str, str |
 
     hostname = urlparse(link).hostname or "Unknown Source"
     return hostname.replace("www.", ""), None
+
+
+def _extract_ticker_mentions(text: str, tickers: list[str]) -> list[str]:
+    text_upper = text.upper()
+    mentions: list[str] = []
+    for ticker in tickers:
+        if ticker in text_upper or f"${ticker}" in text_upper:
+            mentions.append(ticker)
+    return mentions
+
+
+def _published_sort_key(value: str | None) -> float:
+    if not value:
+        return 0.0
+    try:
+        return datetime.fromisoformat(value).timestamp()
+    except Exception:
+        return 0.0
 
 
 def _fetch_google_news(query: str, limit: int) -> list[InsiderNewsItem]:
@@ -264,6 +321,56 @@ def get_insider_news(
     _news_cache["ts"] = now
     _news_cache["items"] = items
     return items
+
+
+@news_router.post("/insider/watchlist", response_model=list[InsiderNewsItem])
+@limiter.limit("30/minute")
+def get_watchlist_news(
+    request: Request,
+    payload: WatchlistNewsRequest,
+    user_email: str = Depends(_get_user_email),
+) -> list[InsiderNewsItem]:
+    """Return live insider-related headlines tailored to a user's watchlist tickers."""
+    _ = user_email
+    cache_key = f"{','.join(payload.tickers)}|{payload.limit}"
+    now = time.time()
+    if _watchlist_news_cache["key"] == cache_key and now - float(_watchlist_news_cache["ts"]) < CACHE_TTL_SECONDS:
+        return _watchlist_news_cache["items"]
+
+    per_ticker = max(3, min(6, (payload.limit // len(payload.tickers)) + 2))
+    aggregated: list[InsiderNewsItem] = []
+    seen_links: set[str] = set()
+
+    for ticker in payload.tickers:
+        query = f"{ticker} insider trading Form 4 SEC filing"
+        try:
+            ticker_items = _fetch_google_news(query, per_ticker)
+        except Exception as exc:
+            logger.warning("Failed to fetch watchlist news for %s: %s", ticker, exc, exc_info=True)
+            continue
+
+        for item in ticker_items:
+            if not item.link or item.link in seen_links:
+                continue
+            seen_links.add(item.link)
+            mentions = _extract_ticker_mentions(f"{item.title} {item.link}", payload.tickers)
+            if ticker not in mentions:
+                mentions = [ticker, *mentions]
+            aggregated.append(item.model_copy(update={"ticker_mentions": mentions[:5]}))
+
+    ranked = sorted(
+        aggregated,
+        key=lambda item: (
+            len(item.ticker_mentions),
+            _published_sort_key(item.published_at),
+        ),
+        reverse=True,
+    )
+    result = ranked[: payload.limit]
+    _watchlist_news_cache["key"] = cache_key
+    _watchlist_news_cache["ts"] = now
+    _watchlist_news_cache["items"] = result
+    return result
 
 
 @news_router.post("/insider/click")

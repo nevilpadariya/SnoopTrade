@@ -260,7 +260,7 @@ const Landing = () => {
   return (
     <>
       <Helmet>
-        <title>SnoopTrade - Signal Glass 2026</title>
+        <title>SnoopTrade - Insider Trading Platform</title>
         <meta
           name="description"
           content="Track insider behavior before market reactions with realtime filings, confidence signals, and clean portfolio-ready workflows."

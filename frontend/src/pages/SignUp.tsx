@@ -113,8 +113,8 @@ const SignUp = () => {
                 <p className="mt-3 font-mono text-4xl font-bold text-[#1B372B] dark:text-[#D5E9D6]">24/7</p>
               </article>
               <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6A5D] dark:text-[#8EA197]">Forecast insights</p>
-                <p className="mt-3 font-mono text-4xl font-bold text-[#1B372B] dark:text-[#D5E9D6]">AI</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6A5D] dark:text-[#8EA197]">Forecast horizon</p>
+                <p className="mt-3 font-mono text-4xl font-bold text-[#1B372B] dark:text-[#D5E9D6]">30D</p>
               </article>
             </div>
           </section>

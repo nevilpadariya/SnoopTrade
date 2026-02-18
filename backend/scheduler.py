@@ -1,6 +1,7 @@
 """Scheduler for daily stock and SEC Form 4 data updates."""
 
 import logging
+import os
 import time
 from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -45,6 +46,16 @@ TIMEZONE = pytz.timezone('America/New_York')
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 60
 scheduler = AsyncIOScheduler(timezone=TIMEZONE)
+ENABLE_ALERT_SCANNER = os.getenv("ENABLE_ALERT_SCANNER", "true").strip().lower() == "true"
+ALERT_SCAN_CRON_MINUTE = os.getenv("ALERT_SCAN_CRON_MINUTE", "*/30").strip() or "*/30"
+
+try:
+    _ALERT_SCAN_MAX_USERS_RAW = os.getenv("ALERT_SCAN_MAX_USERS", "0").strip()
+    _parsed_max_users = int(_ALERT_SCAN_MAX_USERS_RAW)
+    ALERT_SCAN_MAX_USERS: int | None = _parsed_max_users if _parsed_max_users > 0 else None
+except ValueError:
+    logger.warning("Invalid ALERT_SCAN_MAX_USERS value. Falling back to all users.")
+    ALERT_SCAN_MAX_USERS = None
 
 
 def retry_on_failure(func, *args, max_retries=MAX_RETRIES, delay=RETRY_DELAY_SECONDS):
@@ -137,6 +148,41 @@ def update_sec_data():
     logger.info("=" * 50)
 
 
+def scan_alert_events():
+    """
+    Evaluate alert rules for all users on a recurring cadence.
+    Generates unread notification events without requiring manual scans.
+    """
+    from routers.alerts_router import run_alert_scan_for_all_users
+
+    start_time = datetime.now()
+    logger.info("=" * 50)
+    logger.info(f"ALERT EVENT SCAN - Started at {start_time}")
+    logger.info("=" * 50)
+
+    try:
+        stats = run_alert_scan_for_all_users(limit_users=ALERT_SCAN_MAX_USERS)
+        scanned_users = int(stats.get("scanned_users", 0))
+        failed_users = int(stats.get("failed_users", 0))
+        generated_events = int(stats.get("generated_events", 0))
+        total_rules = int(stats.get("total_rules", 0))
+    except Exception as exc:
+        logger.error("ALERT EVENT SCAN failed: %s", exc, exc_info=True)
+        raise
+
+    end_time = datetime.now()
+    duration = (end_time - start_time).total_seconds()
+
+    logger.info("=" * 50)
+    logger.info("ALERT EVENT SCAN - Completed")
+    logger.info(f"  Duration: {duration:.2f} seconds")
+    logger.info(f"  Users scanned: {scanned_users}")
+    logger.info(f"  Failed users: {failed_users}")
+    logger.info(f"  Rules evaluated: {total_rules}")
+    logger.info(f"  New events generated: {generated_events}")
+    logger.info("=" * 50)
+
+
 def job_error_listener(event):
     """
     Listen for job execution errors and log them.
@@ -164,9 +210,23 @@ def setup_scheduled_jobs():
         replace_existing=True,
         misfire_grace_time=3600
     )
+    if ENABLE_ALERT_SCANNER:
+        scheduler.add_job(
+            scan_alert_events,
+            CronTrigger(minute=ALERT_SCAN_CRON_MINUTE, timezone=TIMEZONE),
+            id="alert_event_scan",
+            name="Recurring Alert Event Scan",
+            replace_existing=True,
+            misfire_grace_time=900,
+        )
+
     logger.info("Scheduled jobs configured:")
     logger.info("  - Stock data update: Daily at 6:00 AM EST")
     logger.info("  - SEC Form 4 update: Daily at 7:00 AM EST")
+    if ENABLE_ALERT_SCANNER:
+        logger.info("  - Alert event scan: Cron minute=%s EST", ALERT_SCAN_CRON_MINUTE)
+    else:
+        logger.info("  - Alert event scan: Disabled (set ENABLE_ALERT_SCANNER=true to enable)")
 
 
 def start_scheduler():
@@ -210,3 +270,9 @@ def trigger_sec_update_now():
     """Manually trigger SEC data update (for testing/admin)."""
     logger.info("Manual trigger: SEC data update")
     update_sec_data()
+
+
+def trigger_alert_scan_now():
+    """Manually trigger alert event scan (for testing/admin)."""
+    logger.info("Manual trigger: Alert event scan")
+    scan_alert_events()

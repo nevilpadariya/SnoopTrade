@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends, status, Form, Request
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel, Field, field_validator
 from utils.limiter import limiter
 
 from database.database import user_db as db
@@ -19,6 +20,46 @@ from services.auth_services import (
 
 auth_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+
+MAX_WATCHLIST_ITEMS = 20
+MAX_RECENT_ITEMS = 12
+
+
+class WatchlistUpdateRequest(BaseModel):
+    watchlist: list[str] = Field(default_factory=list, max_length=MAX_WATCHLIST_ITEMS)
+    recent_tickers: list[str] = Field(default_factory=list, max_length=MAX_RECENT_ITEMS)
+
+    @staticmethod
+    def _normalize_tickers(values: list[str], max_items: int) -> list[str]:
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for value in values:
+            ticker = str(value or "").upper().strip()
+            if not ticker or ticker in seen:
+                continue
+            if len(ticker) > 8:
+                continue
+            if not all(ch.isalnum() or ch in ".-" for ch in ticker):
+                continue
+            seen.add(ticker)
+            normalized.append(ticker)
+        return normalized[:max_items]
+
+    @field_validator("watchlist")
+    @classmethod
+    def validate_watchlist(cls, value: list[str]) -> list[str]:
+        return cls._normalize_tickers(value, MAX_WATCHLIST_ITEMS)
+
+    @field_validator("recent_tickers")
+    @classmethod
+    def validate_recent(cls, value: list[str]) -> list[str]:
+        return cls._normalize_tickers(value, MAX_RECENT_ITEMS)
+
+
+class WatchlistResponse(BaseModel):
+    watchlist: list[str]
+    recent_tickers: list[str]
+    updated_at: str
 
 
 def _persist_refresh_token(email: str, refresh_token_id: str, refresh_expires_at: datetime) -> None:
@@ -256,3 +297,67 @@ async def update_user_info(request: Request, update_info: UpdateUser, token: str
         db.users.update_one({"email": user_email}, {"$set": update_data})
 
     return MessageResponse(message="User information updated successfully")
+
+
+@auth_router.get("/watchlist", response_model=WatchlistResponse)
+@limiter.limit("120/minute")
+async def get_watchlist(request: Request, token: str = Depends(oauth2_scheme)) -> WatchlistResponse:
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+    user_email = payload.get("sub")
+    user = db.users.find_one(
+        {"email": user_email},
+        {"_id": 0, "watchlist": 1, "recent_tickers": 1, "watchlist_updated_at": 1},
+    )
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    watchlist = WatchlistUpdateRequest._normalize_tickers(user.get("watchlist") or [], MAX_WATCHLIST_ITEMS)
+    recent_tickers = WatchlistUpdateRequest._normalize_tickers(user.get("recent_tickers") or [], MAX_RECENT_ITEMS)
+    updated_at_raw = user.get("watchlist_updated_at")
+    if isinstance(updated_at_raw, datetime):
+        if updated_at_raw.tzinfo is None:
+            updated_at_raw = updated_at_raw.replace(tzinfo=timezone.utc)
+        updated_at = updated_at_raw.isoformat()
+    else:
+        updated_at = datetime.now(timezone.utc).isoformat()
+
+    return WatchlistResponse(watchlist=watchlist, recent_tickers=recent_tickers, updated_at=updated_at)
+
+
+@auth_router.put("/watchlist", response_model=WatchlistResponse)
+@limiter.limit("60/minute")
+async def update_watchlist(
+    request: Request,
+    watchlist_update: WatchlistUpdateRequest,
+    token: str = Depends(oauth2_scheme),
+) -> WatchlistResponse:
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+    user_email = payload.get("sub")
+    user = db.users.find_one({"email": user_email}, {"_id": 1})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    now = datetime.now(timezone.utc)
+    db.users.update_one(
+        {"email": user_email},
+        {
+            "$set": {
+                "watchlist": watchlist_update.watchlist,
+                "recent_tickers": watchlist_update.recent_tickers,
+                "watchlist_updated_at": now,
+                "updated_at": now,
+            }
+        },
+    )
+
+    return WatchlistResponse(
+        watchlist=watchlist_update.watchlist,
+        recent_tickers=watchlist_update.recent_tickers,
+        updated_at=now.isoformat(),
+    )

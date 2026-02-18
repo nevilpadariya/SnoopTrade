@@ -9,7 +9,12 @@ import secrets
 from typing import Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Query, Depends, status
 from fastapi.security import APIKeyHeader
-from scheduler import get_scheduled_jobs, trigger_stock_update_now, trigger_sec_update_now
+from scheduler import (
+    get_scheduled_jobs,
+    trigger_stock_update_now,
+    trigger_sec_update_now,
+    trigger_alert_scan_now,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -130,9 +135,23 @@ async def trigger_all_updates(background_tasks: BackgroundTasks):
     """
     background_tasks.add_task(trigger_stock_update_now)
     background_tasks.add_task(trigger_sec_update_now)
+    background_tasks.add_task(trigger_alert_scan_now)
     return {
         "status": "ok",
-        "message": "All data updates triggered. Running in background."
+        "message": "All data updates triggered (stock, SEC, alerts). Running in background."
+    }
+
+
+@admin_router.post("/trigger/alerts")
+async def trigger_alert_scan(background_tasks: BackgroundTasks):
+    """
+    Manually trigger alert event scanning for users with active rules.
+    Runs in background to avoid timeout.
+    """
+    background_tasks.add_task(trigger_alert_scan_now)
+    return {
+        "status": "ok",
+        "message": "Alert event scan triggered. Running in background."
     }
 
 

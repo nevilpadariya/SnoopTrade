@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookmarkCheck, BookmarkPlus, History, Loader2, LogOut, Moon, Search, Sparkles, Sun, User as UserIcon } from 'lucide-react';
+import { Bell, BookmarkCheck, BookmarkPlus, ExternalLink, History, Loader2, LogOut, Moon, Search, Sparkles, Sun, User as UserIcon } from 'lucide-react';
 import { COMPANIES, COMPANY_NAMES } from '../data/companies';
 import { useAuth } from '../context/AuthContext';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -9,6 +9,7 @@ import DataTable from '../components/DataTable';
 import ChartContainer from '../components/ChartContainer';
 import ForecastChartContainer from '../components/ForecastChartContainer';
 import InsiderTradingChats from '../components/InsiderTradingChats';
+import AlertsPanel from '../components/AlertsPanel';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
@@ -25,6 +26,12 @@ const TIME_PERIODS: Record<string, string> = {
   '6M': '6m',
   '1Y': '1y',
 };
+const LOOKBACK_DAYS_BY_PERIOD: Record<string, number> = {
+  '1m': 30,
+  '3m': 90,
+  '6m': 180,
+  '1y': 365,
+};
 
 const WATCHLIST_STORAGE_KEY = 'snooptrade.watchlist';
 const RECENT_STORAGE_KEY = 'snooptrade.recent_tickers';
@@ -38,6 +45,81 @@ const COLORS = {
   forecast: '#ef4444',
   trend: '#f97316',
   seasonal: '#3b82f6',
+};
+
+type ConvictionScore = {
+  ticker: string;
+  lookback_days: number;
+  score: number;
+  label: string;
+  purchases: number;
+  sales: number;
+  unique_buyers: number;
+  buy_sell_imbalance: number;
+  latest_buy_days_ago: number | null;
+  explanation: string[];
+  updated_at: string;
+};
+
+type WatchlistRadarItem = {
+  ticker: string;
+  score: number;
+  label: string;
+  purchases: number;
+  sales: number;
+  unique_buyers: number;
+  latest_buy_days_ago: number | null;
+  explanation: string[];
+};
+
+type WatchlistRadarResponse = {
+  lookback_days: number;
+  evaluated: number;
+  items: WatchlistRadarItem[];
+  updated_at: string;
+};
+
+type WatchlistNewsItem = {
+  title: string;
+  link: string;
+  source: string;
+  source_url?: string | null;
+  published_at?: string | null;
+  ticker_mentions?: string[];
+};
+
+type DailyBriefItem = {
+  ticker: string;
+  score: number;
+  label: string;
+  latest_buy_days_ago: number | null;
+  action: string;
+  reason: string;
+};
+
+type DailyBriefResponse = {
+  lookback_days: number;
+  market_mood: string;
+  highest_conviction_ticker: string | null;
+  average_score: number;
+  items: DailyBriefItem[];
+  generated_at: string;
+};
+
+type AlertSummaryItem = {
+  id: string;
+  ticker: string;
+  title: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high';
+  created_at: string;
+};
+
+type AlertSummary = {
+  unread_count: number;
+  high_severity_unread: number;
+  latest_event_at: string | null;
+  items: AlertSummaryItem[];
 };
 
 function getGreeting(): string {
@@ -54,6 +136,50 @@ function getInitials(name?: string): string {
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() || '')
     .join('');
+}
+
+function getScoreBarClass(score: number): string {
+  if (score >= 70) return 'bg-emerald-400';
+  if (score >= 55) return 'bg-lime-400';
+  if (score >= 45) return 'bg-amber-300';
+  if (score >= 30) return 'bg-orange-300';
+  return 'bg-rose-400';
+}
+
+function formatNewsTime(dateValue?: string | null): string {
+  if (!dateValue) return 'Recent';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return 'Recent';
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+  if (diffMinutes < 60) return `${Math.max(1, diffMinutes)}m ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+}
+
+function formatAlertTime(value?: string | null): string {
+  if (!value) return 'Recent';
+  return formatNewsTime(value);
+}
+
+function normalizeTickerList(values: unknown, maxItems: number): string[] {
+  if (!Array.isArray(values)) return [];
+  const normalized = values
+    .map((value) => String(value).toUpperCase().trim())
+    .filter((ticker, index, arr) => ticker.length > 0 && COMPANIES.includes(ticker) && arr.indexOf(ticker) === index);
+  return normalized.slice(0, maxItems);
+}
+
+function parseStoredTickerList(raw: string | null, maxItems: number): string[] {
+  if (!raw) return [];
+  try {
+    return normalizeTickerList(JSON.parse(raw), maxItems);
+  } catch {
+    return [];
+  }
 }
 
 const Dashboard = () => {
@@ -75,8 +201,24 @@ const Dashboard = () => {
   const [forecastError, setForecastError] = useState('');
   const [isLoadingStock, setIsLoadingStock] = useState(false);
   const [isLoadingTrades, setIsLoadingTrades] = useState(false);
+  const [isLoadingConviction, setIsLoadingConviction] = useState(false);
+  const [convictionData, setConvictionData] = useState<ConvictionScore | null>(null);
+  const [convictionError, setConvictionError] = useState('');
+  const [isLoadingRadar, setIsLoadingRadar] = useState(false);
+  const [radarData, setRadarData] = useState<WatchlistRadarResponse | null>(null);
+  const [radarError, setRadarError] = useState('');
+  const [isLoadingWatchlistNews, setIsLoadingWatchlistNews] = useState(false);
+  const [watchlistNews, setWatchlistNews] = useState<WatchlistNewsItem[]>([]);
+  const [watchlistNewsError, setWatchlistNewsError] = useState('');
+  const [isLoadingDailyBrief, setIsLoadingDailyBrief] = useState(false);
+  const [dailyBrief, setDailyBrief] = useState<DailyBriefResponse | null>(null);
+  const [dailyBriefError, setDailyBriefError] = useState('');
+  const [isLoadingAlertSummary, setIsLoadingAlertSummary] = useState(false);
+  const [alertSummary, setAlertSummary] = useState<AlertSummary | null>(null);
+  const [alertSummaryError, setAlertSummaryError] = useState('');
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [recentTickers, setRecentTickers] = useState<string[]>([]);
+  const [hasHydratedWatchlist, setHasHydratedWatchlist] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
 
@@ -87,21 +229,8 @@ const Dashboard = () => {
   }, [location.state]);
 
   useEffect(() => {
-    const parseTickerList = (raw: string | null): string[] => {
-      if (!raw) return [];
-      try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed
-          .map((value) => String(value).toUpperCase())
-          .filter((ticker) => COMPANIES.includes(ticker));
-      } catch {
-        return [];
-      }
-    };
-
-    setWatchlist(parseTickerList(localStorage.getItem(WATCHLIST_STORAGE_KEY)).slice(0, MAX_WATCHLIST));
-    setRecentTickers(parseTickerList(localStorage.getItem(RECENT_STORAGE_KEY)).slice(0, MAX_RECENT));
+    setWatchlist(parseStoredTickerList(localStorage.getItem(WATCHLIST_STORAGE_KEY), MAX_WATCHLIST));
+    setRecentTickers(parseStoredTickerList(localStorage.getItem(RECENT_STORAGE_KEY), MAX_RECENT));
   }, []);
 
   useEffect(() => {
@@ -123,6 +252,77 @@ const Dashboard = () => {
   useEffect(() => {
     localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recentTickers));
   }, [recentTickers]);
+
+  const fetchWatchlistPreferences = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await fetchData(API_ENDPOINTS.getUserWatchlist, token);
+      const serverWatchlist = normalizeTickerList(data?.watchlist, MAX_WATCHLIST);
+      const serverRecent = normalizeTickerList(data?.recent_tickers, MAX_RECENT);
+
+      setWatchlist((previous) => {
+        const localOnly = previous.filter((ticker) => !serverWatchlist.includes(ticker));
+        return [...serverWatchlist, ...localOnly].slice(0, MAX_WATCHLIST);
+      });
+      setRecentTickers((previous) => {
+        const localOnly = previous.filter((ticker) => !serverRecent.includes(ticker));
+        return [...serverRecent, ...localOnly].slice(0, MAX_RECENT);
+      });
+    } catch (error: any) {
+      console.error('Failed to fetch watchlist preferences', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+      }
+    } finally {
+      setHasHydratedWatchlist(true);
+    }
+  }, [navigate, setToken, token]);
+
+  const persistWatchlistPreferences = useCallback(async () => {
+    if (!token || !hasHydratedWatchlist) return;
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.updateUserWatchlist,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            watchlist,
+            recent_tickers: recentTickers,
+          }),
+        },
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Watchlist sync failed (${response.status})`);
+      }
+    } catch (error) {
+      console.error('Failed to sync watchlist preferences', error);
+    }
+  }, [hasHydratedWatchlist, navigate, recentTickers, setToken, token, watchlist]);
+
+  useEffect(() => {
+    if (!token) {
+      setHasHydratedWatchlist(false);
+      return;
+    }
+    void fetchWatchlistPreferences();
+  }, [fetchWatchlistPreferences, token]);
+
+  useEffect(() => {
+    if (!token || !hasHydratedWatchlist) return;
+    const timer = window.setTimeout(() => {
+      void persistWatchlistPreferences();
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [hasHydratedWatchlist, persistWatchlistPreferences, recentTickers, token, watchlist]);
 
   const getCacheKey = (ticker: string, period: string) => `stock_cache_${ticker}_${period}`;
 
@@ -153,6 +353,10 @@ const Dashboard = () => {
       return ticker.toLowerCase().includes(term) || name.includes(term);
     });
   }, [searchTerm]);
+  const radarTickers = useMemo(
+    () => (watchlist.length > 0 ? watchlist : selectedCompany ? [selectedCompany] : []),
+    [selectedCompany, watchlist],
+  );
 
   useEffect(() => {
     setShowCompanyList(searchTerm.length > 0);
@@ -164,6 +368,8 @@ const Dashboard = () => {
     setShowCompanyList(false);
     setShowForecast(false);
     setForecastError('');
+    setConvictionError('');
+    setConvictionData(null);
     setPage(0);
     setRecentTickers((previous) => [company, ...previous.filter((ticker) => ticker !== company)].slice(0, MAX_RECENT));
   }, []);
@@ -182,6 +388,7 @@ const Dashboard = () => {
     setSelectedTimePeriod(period);
     setShowForecast(false);
     setForecastError('');
+    setConvictionError('');
   }, []);
 
   const fetchStockData = useCallback(async () => {
@@ -273,12 +480,243 @@ const Dashboard = () => {
     }
   }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
 
+  const fetchConvictionScore = useCallback(async () => {
+    if (!selectedCompany || !token) return;
+
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingConviction(true);
+    setConvictionError('');
+    try {
+      const url = API_ENDPOINTS.getConvictionScore(selectedCompany, lookbackDays);
+      const data = await fetchData(url, token);
+      setConvictionData(data);
+    } catch (error: any) {
+      console.error('Error fetching conviction score:', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+        return;
+      }
+      setConvictionError('Could not load conviction score right now.');
+      setConvictionData(null);
+    } finally {
+      setIsLoadingConviction(false);
+    }
+  }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
+
+  const fetchWatchlistRadar = useCallback(async () => {
+    if (!token) return;
+    if (radarTickers.length === 0) {
+      setRadarData(null);
+      setRadarError('');
+      return;
+    }
+
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingRadar(true);
+    setRadarError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.getWatchlistRadar,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tickers: radarTickers,
+            lookback_days: lookbackDays,
+            limit: 5,
+          }),
+        },
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        const body = await response.json().catch(() => ({}));
+        const message = body.detail ?? 'Unable to load watchlist radar.';
+        throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
+      }
+
+      const result = await response.json();
+      setRadarData(result);
+    } catch (error: any) {
+      console.error('Error fetching watchlist radar:', error);
+      setRadarError('Could not load watchlist radar right now.');
+      setRadarData(null);
+    } finally {
+      setIsLoadingRadar(false);
+    }
+  }, [navigate, radarTickers, selectedTimePeriod, setToken, token]);
+
+  const fetchWatchlistNews = useCallback(async () => {
+    if (!token) return;
+    if (radarTickers.length === 0) {
+      setWatchlistNews([]);
+      setWatchlistNewsError('');
+      return;
+    }
+
+    setIsLoadingWatchlistNews(true);
+    setWatchlistNewsError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.getWatchlistNews,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tickers: radarTickers,
+            limit: 8,
+          }),
+        },
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Watchlist news failed (${response.status})`);
+      }
+
+      const result = (await response.json()) as WatchlistNewsItem[];
+      setWatchlistNews(result);
+    } catch (error) {
+      console.error('Error fetching watchlist news:', error);
+      setWatchlistNewsError('Could not load watchlist news right now.');
+      setWatchlistNews([]);
+    } finally {
+      setIsLoadingWatchlistNews(false);
+    }
+  }, [navigate, radarTickers, setToken, token]);
+
+  const fetchAlertSummary = useCallback(async () => {
+    if (!token) return;
+    setIsLoadingAlertSummary(true);
+    setAlertSummaryError('');
+    try {
+      const response = await authFetch(API_ENDPOINTS.getAlertSummary(6), undefined, token ?? undefined);
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Alert summary failed (${response.status})`);
+      }
+      const payload = (await response.json()) as AlertSummary;
+      setAlertSummary(payload);
+    } catch (error) {
+      console.error('Failed to fetch alert summary', error);
+      setAlertSummaryError('Unable to load notifications.');
+      setAlertSummary(null);
+    } finally {
+      setIsLoadingAlertSummary(false);
+    }
+  }, [navigate, setToken, token]);
+
+  const fetchDailyBrief = useCallback(async () => {
+    if (!token) return;
+    if (radarTickers.length === 0) {
+      setDailyBrief(null);
+      setDailyBriefError('');
+      return;
+    }
+
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingDailyBrief(true);
+    setDailyBriefError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.getDailyBrief,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tickers: radarTickers,
+            lookback_days: lookbackDays,
+            limit: 5,
+          }),
+        },
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Daily brief failed (${response.status})`);
+      }
+
+      const result = (await response.json()) as DailyBriefResponse;
+      setDailyBrief(result);
+    } catch (error) {
+      console.error('Error fetching daily brief:', error);
+      setDailyBriefError('Could not load daily brief right now.');
+      setDailyBrief(null);
+    } finally {
+      setIsLoadingDailyBrief(false);
+    }
+  }, [navigate, radarTickers, selectedTimePeriod, setToken, token]);
+
   useEffect(() => {
     if (token && selectedCompany) {
       void fetchStockData();
       void fetchTradeData();
+      void fetchConvictionScore();
+    } else {
+      setConvictionData(null);
+      setConvictionError('');
     }
-  }, [fetchStockData, fetchTradeData, selectedCompany, token]);
+  }, [fetchConvictionScore, fetchStockData, fetchTradeData, selectedCompany, token]);
+
+  useEffect(() => {
+    if (!token) {
+      setRadarData(null);
+      setRadarError('');
+      return;
+    }
+    void fetchWatchlistRadar();
+  }, [fetchWatchlistRadar, token]);
+
+  useEffect(() => {
+    if (!token) {
+      setWatchlistNews([]);
+      setWatchlistNewsError('');
+      return;
+    }
+    void fetchWatchlistNews();
+  }, [fetchWatchlistNews, token]);
+
+  useEffect(() => {
+    if (!token) {
+      setDailyBrief(null);
+      setDailyBriefError('');
+      return;
+    }
+    void fetchDailyBrief();
+  }, [fetchDailyBrief, token]);
+
+  useEffect(() => {
+    if (!token) {
+      setAlertSummary(null);
+      setAlertSummaryError('');
+      return;
+    }
+    void fetchAlertSummary();
+    const timer = window.setInterval(() => {
+      void fetchAlertSummary();
+    }, 45000);
+    return () => window.clearInterval(timer);
+  }, [fetchAlertSummary, token]);
 
   const futureForecast = useCallback(async (formattedData: any[], ticker?: string) => {
     if (!formattedData || formattedData.length === 0) {
@@ -329,9 +767,13 @@ const Dashboard = () => {
   }, [navigate, setToken, token]);
 
   const latestStock = stockData.length ? stockData[stockData.length - 1] : null;
-  const purchases = tradeData.filter((t) => t.transaction_code === 'P').length;
-  const sales = tradeData.filter((t) => t.transaction_code === 'S').length;
-  const netSignal = purchases > sales ? 'Mildly Bullish' : sales > purchases ? 'Cautious' : 'Neutral';
+  const fallbackPurchases = tradeData.filter((t) => t.transaction_code === 'P').length;
+  const fallbackSales = tradeData.filter((t) => t.transaction_code === 'S').length;
+  const purchases = convictionData?.purchases ?? fallbackPurchases;
+  const sales = convictionData?.sales ?? fallbackSales;
+  const netSignal = convictionData?.label ?? (fallbackPurchases > fallbackSales ? 'Mildly Bullish' : fallbackSales > fallbackPurchases ? 'Cautious' : 'Neutral');
+  const convictionScore = convictionData?.score ?? 0;
+  const convictionFillClass = getScoreBarClass(convictionScore);
   const initials = getInitials(user?.name || user?.first_name || user?.email);
   const selectedCompanyName = selectedCompany ? COMPANY_NAMES[selectedCompany] ?? selectedCompany : '';
   const isInWatchlist = selectedCompany ? watchlist.includes(selectedCompany) : false;
@@ -356,6 +798,106 @@ const Dashboard = () => {
   const handleThemeToggle = useCallback(() => {
     setThemeMode(toggleThemePreference());
   }, []);
+
+  const handleMarkNotificationRead = useCallback(async (eventId: string) => {
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.markAlertRead(eventId),
+        { method: 'PATCH' },
+        token ?? undefined,
+      );
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Failed to mark notification read (${response.status})`);
+      }
+      setAlertSummary((previous) => {
+        if (!previous) return previous;
+        return {
+          ...previous,
+          unread_count: Math.max(0, previous.unread_count - 1),
+          high_severity_unread: Math.max(
+            0,
+            previous.high_severity_unread -
+              (previous.items.find((item) => item.id === eventId)?.severity === 'high' ? 1 : 0),
+          ),
+          items: previous.items.filter((item) => item.id !== eventId),
+        };
+      });
+    } catch (error) {
+      console.error('Failed to mark notification as read', error);
+      setAlertSummaryError('Could not mark notification as read.');
+    }
+  }, [navigate, setToken, token]);
+
+  const handleMarkAllNotificationsRead = useCallback(async () => {
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.markAllAlertsRead,
+        { method: 'PATCH' },
+        token ?? undefined,
+      );
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Failed to mark all notifications read (${response.status})`);
+      }
+      setAlertSummary((previous) =>
+        previous
+          ? {
+              ...previous,
+              unread_count: 0,
+              high_severity_unread: 0,
+              items: [],
+            }
+          : previous,
+      );
+    } catch (error) {
+      console.error('Failed to mark all notifications as read', error);
+      setAlertSummaryError('Could not mark all notifications as read.');
+    }
+  }, [navigate, setToken, token]);
+
+  const handleAlertsChanged = useCallback(() => {
+    void fetchAlertSummary();
+  }, [fetchAlertSummary]);
+
+  const trackWatchlistNewsClick = useCallback((item: WatchlistNewsItem) => {
+    const payload = {
+      title: item.title,
+      link: item.link,
+      source: item.source,
+      source_url: item.source_url ?? null,
+      published_at: item.published_at ?? null,
+      click_target: 'story',
+      total_items: watchlistNews.length,
+      page: 'dashboard',
+      session_id: 'dashboard-session',
+      referrer: typeof window !== 'undefined' ? window.location.href : '',
+    };
+    const body = JSON.stringify(payload);
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      const accepted = navigator.sendBeacon(
+        API_ENDPOINTS.trackInsiderNewsClick,
+        new Blob([body], { type: 'application/json' }),
+      );
+      if (accepted) return;
+    }
+    void fetch(API_ENDPOINTS.trackInsiderNewsClick, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      keepalive: true,
+    }).catch((error) => {
+      console.warn('Failed to track watchlist news click', error);
+    });
+  }, [watchlistNews.length]);
 
   return (
     <div className="signal-surface signal-page text-[#E6ECE8]">
@@ -401,6 +943,83 @@ const Dashboard = () => {
             SnoopTrade
           </Link>
           <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                  aria-label="Open notifications"
+                >
+                  <Bell className="h-4 w-4" />
+                  {(alertSummary?.unread_count ?? 0) > 0 && (
+                    <span className="absolute -right-1 -top-1 inline-flex min-w-[18px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+                      {Math.min(alertSummary?.unread_count ?? 0, 99)}
+                    </span>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 rounded-xl border-border bg-card p-2 text-foreground shadow-2xl">
+                <div className="mb-2 flex items-center justify-between gap-2 px-1">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Notifications</p>
+                    <p className="text-xs text-[#A9BCB0]">
+                      {(alertSummary?.unread_count ?? 0)} unread
+                      {(alertSummary?.high_severity_unread ?? 0) > 0 ? ` • ${alertSummary?.high_severity_unread} high` : ''}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleMarkAllNotificationsRead}
+                    disabled={(alertSummary?.unread_count ?? 0) === 0}
+                    className="rounded-lg border border-[#35503D] bg-[#18241D] px-2 py-1 text-xs font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Mark all
+                  </button>
+                </div>
+                {isLoadingAlertSummary ? (
+                  <div className="space-y-2 p-1">
+                    <Skeleton className="h-12 w-full rounded-lg" />
+                    <Skeleton className="h-12 w-full rounded-lg" />
+                  </div>
+                ) : alertSummaryError ? (
+                  <p className="rounded-lg border border-[#603333] bg-[#2B1717] px-2 py-1.5 text-xs text-[#F7D1D1]">{alertSummaryError}</p>
+                ) : alertSummary?.items?.length ? (
+                  <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
+                    {alertSummary.items.map((item) => (
+                      <article key={item.id} className="rounded-lg border border-[#35503D] bg-[#111A15] p-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-xs font-bold text-[#EAF5EC]">{item.title}</p>
+                            <p className="mt-1 line-clamp-2 text-xs text-[#A9BCB0]">{item.message}</p>
+                            <p className="mt-1 text-[11px] text-[#8EA197]">
+                              {item.ticker} • {formatAlertTime(item.created_at)}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleMarkNotificationRead(item.id)}
+                            className="rounded-md border border-[#35503D] bg-[#18241D] px-2 py-1 text-[10px] font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23]"
+                          >
+                            Read
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="px-1 py-2 text-xs text-[#8EA197]">No unread alerts.</p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    document.getElementById('alerts-center')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="mt-2 w-full rounded-lg border border-[#35503D] bg-[#18241D] px-2 py-2 text-xs font-semibold text-[#DFF0DF] transition hover:bg-[#1E2D23]"
+                >
+                  Open Alerts Center
+                </button>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <div className="hidden text-right sm:block">
               <p className="text-xs text-[#8EA197]">{getGreeting()}</p>
               <p className="text-sm font-semibold text-[#D4E2D6]">{user?.name || user?.first_name || 'Trader'}</p>
@@ -583,6 +1202,188 @@ const Dashboard = () => {
             </div>
           </section>
 
+          <section className="mt-6" id="alerts-center">
+            <AlertsPanel selectedCompany={selectedCompany} watchlist={watchlist} onAlertsChanged={handleAlertsChanged} />
+          </section>
+
+          <section className="mt-6">
+            <div className="signal-glass rounded-3xl p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Watchlist Radar</p>
+                  <p className="mt-1 text-xs text-[#8EA197]">
+                    Ranked by insider conviction for the active {selectedTimePeriod.toUpperCase()} window.
+                  </p>
+                </div>
+                {radarData && (
+                  <p className="text-[11px] text-[#8EA197]">
+                    {radarData.evaluated} ticker{radarData.evaluated === 1 ? '' : 's'} analyzed
+                  </p>
+                )}
+              </div>
+
+              {isLoadingRadar ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                </div>
+              ) : radarError ? (
+                <p className="mt-4 rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F7D1D1]">{radarError}</p>
+              ) : radarData?.items?.length ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {radarData.items.map((item) => (
+                    <button
+                      key={item.ticker}
+                      type="button"
+                      onClick={() => handleCompanySelect(item.ticker)}
+                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
+                        <p className="text-xs font-semibold text-[#A9BCB0]">{item.label}</p>
+                      </div>
+                      <p className="mt-1 text-xs text-[#8EA197]">
+                        Buys {item.purchases} | Sales {item.sales} | Buyers {item.unique_buyers}
+                      </p>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                        <div
+                          className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
+                          style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-[#A8BCB0]">
+                        Score {item.score.toFixed(1)}
+                        {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-[#8EA197]">Add a watchlist ticker to see ranked opportunities.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <div className="signal-glass rounded-3xl p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Daily Brief</p>
+                  <p className="mt-1 text-xs text-[#8EA197]">
+                    Actionable summary built from live insider conviction.
+                  </p>
+                </div>
+                {dailyBrief && (
+                  <p className="text-[11px] text-[#8EA197]">
+                    Mood: {dailyBrief.market_mood} • Avg {dailyBrief.average_score.toFixed(1)}
+                  </p>
+                )}
+              </div>
+
+              {isLoadingDailyBrief ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                </div>
+              ) : dailyBriefError ? (
+                <p className="mt-4 rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F7D1D1]">{dailyBriefError}</p>
+              ) : dailyBrief?.items?.length ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {dailyBrief.items.map((item, index) => (
+                    <button
+                      key={`${item.ticker}-${index}`}
+                      type="button"
+                      onClick={() => handleCompanySelect(item.ticker)}
+                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
+                        <span className="rounded-md border border-[#33533F] bg-[#17261E] px-2 py-0.5 text-[10px] font-semibold text-[#A9D6AF]">
+                          #{index + 1}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-semibold text-[#B7C8BC]">{item.action}</p>
+                      <p className="mt-1 text-xs text-[#8EA197]">{item.reason}</p>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                        <div
+                          className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
+                          style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-[#A8BCB0]">
+                        Score {item.score.toFixed(1)} • {item.label}
+                        {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-[#8EA197]">Add watchlist tickers to generate a daily brief.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <div className="signal-glass rounded-3xl p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Watchlist News</p>
+                  <p className="mt-1 text-xs text-[#8EA197]">
+                    Live insider-related headlines for your tracked tickers.
+                  </p>
+                </div>
+                <p className="text-[11px] text-[#8EA197]">{radarTickers.length} ticker{radarTickers.length === 1 ? '' : 's'} monitored</p>
+              </div>
+
+              {isLoadingWatchlistNews ? (
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                </div>
+              ) : watchlistNewsError ? (
+                <p className="mt-4 rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F7D1D1]">{watchlistNewsError}</p>
+              ) : watchlistNews.length > 0 ? (
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  {watchlistNews.slice(0, 8).map((item, idx) => (
+                    <a
+                      key={`${item.link}-${idx}`}
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackWatchlistNewsClick(item)}
+                      className="group rounded-xl border border-[#35503D] bg-[#111A15] px-3 py-2 transition hover:border-[#496B55] hover:bg-[#15221B]"
+                    >
+                      <p className="line-clamp-2 text-sm font-semibold text-[#E6ECE8] group-hover:text-[#D7F0DA]">
+                        {item.title}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2 text-xs text-[#8EA197]">
+                        <span>{item.source}</span>
+                        <span>•</span>
+                        <span>{formatNewsTime(item.published_at)}</span>
+                        <ExternalLink className="ml-auto h-3.5 w-3.5 opacity-75 transition group-hover:opacity-100" />
+                      </div>
+                      {item.ticker_mentions && item.ticker_mentions.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {item.ticker_mentions.slice(0, 3).map((ticker) => (
+                            <span key={ticker} className="rounded-md border border-[#34513E] bg-[#17271E] px-2 py-0.5 text-[10px] font-semibold text-[#A9D6AF]">
+                              {ticker}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-[#8EA197]">No watchlist headlines available right now.</p>
+              )}
+            </div>
+          </section>
+
           {!selectedCompany && (
             <section className="mt-6 grid gap-4 md:grid-cols-3">
               {['AAPL', 'MSFT', 'NVDA'].map((ticker) => (
@@ -641,6 +1442,34 @@ const Dashboard = () => {
                       <Badge variant="sale" className="px-3 py-1.5 text-sm">Sales: {sales}</Badge>
                     </div>
                     <p className="mt-4 text-xl font-bold text-[#A7E89A]">Net signal: {netSignal}</p>
+                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Conviction Score</p>
+                        {convictionData && (
+                          <p className="text-[11px] text-[#8EA197]">{convictionData.lookback_days}d window</p>
+                        )}
+                      </div>
+                      {isLoadingConviction ? (
+                        <p className="mt-2 text-sm text-[#9EB2A5]">Analyzing insider conviction...</p>
+                      ) : convictionError ? (
+                        <p className="mt-2 text-sm text-[#E9B5B5]">{convictionError}</p>
+                      ) : (
+                        <>
+                          <div className="mt-2 flex items-center justify-between gap-3">
+                            <p className="text-2xl font-bold text-[#E6ECE8]">{convictionData ? convictionData.score.toFixed(1) : '--'}</p>
+                            {convictionData?.latest_buy_days_ago !== null && convictionData?.latest_buy_days_ago !== undefined && (
+                              <p className="text-xs text-[#9EB2A5]">Latest buy {convictionData.latest_buy_days_ago}d ago</p>
+                            )}
+                          </div>
+                          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                            <div className={`h-full rounded-full transition-all ${convictionFillClass}`} style={{ width: `${Math.max(0, Math.min(100, convictionScore))}%` }} />
+                          </div>
+                          {convictionData?.explanation?.[0] && (
+                            <p className="mt-2 text-xs text-[#A8BCB0]">{convictionData.explanation[0]}</p>
+                          )}
+                        </>
+                      )}
+                    </div>
 
                     <Button
                       onClick={() => futureForecast(stockData, selectedCompany)}

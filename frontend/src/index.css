@@ -271,21 +271,33 @@ html:not(.dark) .text-\[\#E6ECE8\],
 html:not(.dark) .text-\[\#EAF5EC\],
 html:not(.dark) .text-\[\#D4E2D6\],
 html:not(.dark) .text-\[\#D6E2D8\],
+html:not(.dark) .text-\[\#D6E8D7\],
 html:not(.dark) .text-\[\#D7E8D8\],
 html:not(.dark) .text-\[\#D5E9D6\],
+html:not(.dark) .text-\[\#D4E5D6\],
+html:not(.dark) .text-\[\#DFF0DF\],
 html:not(.dark) .text-\[\#DDEADF\],
-html:not(.dark) .text-\[\#DCEADA\] {
+html:not(.dark) .text-\[\#DCEADA\],
+html:not(.dark) .text-\[\#CFE7CE\] {
   color: #1f3228 !important;
 }
 
 html:not(.dark) .text-\[\#BED0C2\],
 html:not(.dark) .text-\[\#BDCDC0\],
+html:not(.dark) .text-\[\#BDD0C1\],
 html:not(.dark) .text-\[\#B9C9BD\],
 html:not(.dark) .text-\[\#B8C8BC\],
 html:not(.dark) .text-\[\#B7C8BC\],
 html:not(.dark) .text-\[\#B6C8BB\],
 html:not(.dark) .text-\[\#B3C4B8\],
+html:not(.dark) .text-\[\#C7D0CA\],
+html:not(.dark) .text-\[\#C6D7CB\],
+html:not(.dark) .text-\[\#AFBFB3\],
+html:not(.dark) .text-\[\#AEC1B4\],
+html:not(.dark) .text-\[\#AFC0B3\],
 html:not(.dark) .text-\[\#A8BAAD\],
+html:not(.dark) .text-\[\#A8B8AD\],
+html:not(.dark) .text-\[\#A9BCB0\],
 html:not(.dark) .text-\[\#9BAEA1\],
 html:not(.dark) .text-\[\#9AA99F\],
 html:not(.dark) .text-\[\#98AB9E\] {
@@ -304,6 +316,11 @@ html:not(.dark) .text-\[\#A7E89A\],
 html:not(.dark) .text-\[\#B9EDAF\],
 html:not(.dark) .text-\[\#CFF1C7\] {
   color: #2f8f4c !important;
+}
+
+html:not(.dark) .text-\[\#60776A\],
+html:not(.dark) .text-\[\#5A7064\] {
+  color: #476255 !important;
 }
 
 html:not(.dark) .bg-\[\#101813\]\/90 {

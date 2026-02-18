@@ -1,7 +1,7 @@
 import html
 import logging
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any
 from urllib.parse import quote_plus, urlparse
@@ -11,7 +11,7 @@ import requests
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
 
-from database.database import user_db
+from database.database import user_db, sec_db, stock_db
 from utils.limiter import limiter
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,17 @@ _news_cache: dict[str, Any] = {
     "ts": 0.0,
     "items": [],
 }
+_landing_metrics_cache: dict[str, Any] = {
+    "key": None,
+    "ts": 0.0,
+    "value": None,
+}
 _click_indexes_initialized = False
+
+LANDING_METRICS_TTL_SECONDS = 600
+MAX_FILING_LAG_DAYS = 30
+FILING_LAG_SAMPLE_PER_COLLECTION = 25
+STOCK_SPARKLINE_POINTS = 30
 
 
 class InsiderNewsItem(BaseModel):
@@ -51,6 +61,16 @@ class InsiderNewsClickPayload(BaseModel):
     page: str = Field(default="landing", max_length=80)
     session_id: str | None = Field(default=None, max_length=120)
     referrer: str | None = Field(default=None, max_length=1024)
+
+
+class LandingHeroMetrics(BaseModel):
+    ticker: str
+    price_change_percent_30d: float | None = None
+    sparkline_prices: list[float] = Field(default_factory=list)
+    daily_transactions_24h: int
+    average_filing_lag_days: float | None = None
+    lag_sample_size: int = 0
+    generated_at: str
 
 
 def _ensure_click_indexes() -> None:
@@ -113,6 +133,109 @@ def _fetch_google_news(query: str, limit: int) -> list[InsiderNewsItem]:
             break
 
     return parsed_items
+
+
+def _parse_iso_day(value: Any) -> date | None:
+    if value is None:
+        return None
+
+    if isinstance(value, datetime):
+        return value.date()
+
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        if len(text) >= 10:
+            text = text[:10]
+        try:
+            return datetime.strptime(text, "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
+    return None
+
+
+def _compute_daily_transactions_24h() -> int:
+    since_day = (datetime.now(timezone.utc) - timedelta(days=1)).date().isoformat()
+    total = 0
+    for collection_name in sec_db.list_collection_names():
+        if not collection_name.startswith("form_4_links_"):
+            continue
+        try:
+            total += sec_db[collection_name].count_documents({"transaction_date": {"$gte": since_day}})
+        except Exception as exc:
+            logger.warning("Failed to count daily transactions for %s: %s", collection_name, exc, exc_info=True)
+    return total
+
+
+def _compute_average_filing_lag_days() -> tuple[float | None, int]:
+    lags: list[int] = []
+    projection = {"_id": 0, "transaction_date": 1, "filing_date": 1}
+
+    for collection_name in sec_db.list_collection_names():
+        if not collection_name.startswith("form_4_links_"):
+            continue
+        try:
+            cursor = (
+                sec_db[collection_name]
+                .find(
+                    {
+                        "transaction_date": {"$exists": True, "$ne": None},
+                        "filing_date": {"$exists": True, "$ne": None},
+                    },
+                    projection,
+                )
+                .sort("transaction_date", -1)
+                .limit(FILING_LAG_SAMPLE_PER_COLLECTION)
+            )
+            for doc in cursor:
+                transaction_day = _parse_iso_day(doc.get("transaction_date"))
+                filing_day = _parse_iso_day(doc.get("filing_date"))
+                if transaction_day is None or filing_day is None:
+                    continue
+                lag_days = (filing_day - transaction_day).days
+                if 0 <= lag_days <= MAX_FILING_LAG_DAYS:
+                    lags.append(lag_days)
+        except Exception as exc:
+            logger.warning("Failed to compute filing lag for %s: %s", collection_name, exc, exc_info=True)
+
+    if not lags:
+        return None, 0
+    avg_lag = round(sum(lags) / len(lags), 2)
+    return avg_lag, len(lags)
+
+
+def _compute_ticker_price_metrics(ticker: str) -> tuple[float | None, list[float]]:
+    collection = stock_db[f"stock_data_{ticker}"]
+    docs = list(
+        collection.find({}, {"_id": 0, "Date": 1, "Close": 1})
+        .sort("Date", -1)
+        .limit(STOCK_SPARKLINE_POINTS)
+    )
+    if not docs:
+        return None, []
+
+    ordered = list(reversed(docs))
+    prices: list[float] = []
+    for doc in ordered:
+        close_value = doc.get("Close")
+        try:
+            if close_value is None:
+                continue
+            prices.append(round(float(close_value), 2))
+        except (TypeError, ValueError):
+            continue
+
+    if len(prices) < 2:
+        return None, prices
+
+    first_price = prices[0]
+    if first_price <= 0:
+        return None, prices
+
+    percent_change = round(((prices[-1] - first_price) / first_price) * 100, 2)
+    return percent_change, prices
 
 
 @news_router.get("/insider", response_model=list[InsiderNewsItem])
@@ -227,3 +350,40 @@ def get_insider_news_stats(
             "top_sources": [],
             "top_headlines": [],
         }
+
+
+@news_router.get("/landing/hero-metrics", response_model=LandingHeroMetrics)
+@limiter.limit("30/minute")
+def get_landing_hero_metrics(
+    request: Request,
+    ticker: str = Query("AAPL", min_length=1, max_length=8),
+) -> LandingHeroMetrics:
+    ticker_upper = ticker.upper().strip()
+    cache_key = ticker_upper
+    now = time.time()
+
+    if (
+        _landing_metrics_cache["key"] == cache_key
+        and now - float(_landing_metrics_cache["ts"]) < LANDING_METRICS_TTL_SECONDS
+        and _landing_metrics_cache["value"] is not None
+    ):
+        return _landing_metrics_cache["value"]
+
+    price_change, sparkline_prices = _compute_ticker_price_metrics(ticker_upper)
+    daily_transactions = _compute_daily_transactions_24h()
+    avg_lag_days, lag_sample_size = _compute_average_filing_lag_days()
+
+    metrics = LandingHeroMetrics(
+        ticker=ticker_upper,
+        price_change_percent_30d=price_change,
+        sparkline_prices=sparkline_prices,
+        daily_transactions_24h=daily_transactions,
+        average_filing_lag_days=avg_lag_days,
+        lag_sample_size=lag_sample_size,
+        generated_at=datetime.now(timezone.utc).isoformat(),
+    )
+
+    _landing_metrics_cache["key"] = cache_key
+    _landing_metrics_cache["ts"] = now
+    _landing_metrics_cache["value"] = metrics
+    return metrics

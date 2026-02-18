@@ -13,6 +13,16 @@ interface InsiderNewsItem {
   published_at?: string | null;
 }
 
+interface LandingHeroMetrics {
+  ticker: string;
+  price_change_percent_30d: number | null;
+  sparkline_prices: number[];
+  daily_transactions_24h: number;
+  average_filing_lag_days: number | null;
+  lag_sample_size: number;
+  generated_at: string;
+}
+
 const NEWS_SESSION_STORAGE_KEY = 'snooptrade.news_session_id';
 
 function getNewsSessionId(): string {
@@ -42,10 +52,58 @@ function formatRelativeTime(dateValue?: string | null): string {
   return `${diffDays}d ago`;
 }
 
+function formatSignedPercent(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) return 'Live data unavailable';
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}% 30D move`;
+}
+
+function formatLatency(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) return 'N/A';
+  return `${value.toFixed(1)}d`;
+}
+
+function buildSparklinePointString(points: number[], width = 640, height = 220): string {
+  if (points.length < 2) return '10,190 630,70';
+
+  const padding = 10;
+  const drawableWidth = width - padding * 2;
+  const drawableHeight = height - padding * 2;
+  const minPrice = Math.min(...points);
+  const maxPrice = Math.max(...points);
+  const range = maxPrice - minPrice || 1;
+
+  return points
+    .map((price, index) => {
+      const x = padding + (index * drawableWidth) / (points.length - 1);
+      const y = padding + ((maxPrice - price) / range) * drawableHeight;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+
+function buildTrendlinePointString(points: number[], width = 640, height = 220): string {
+  if (points.length < 2) return '10,206 630,102';
+
+  const padding = 10;
+  const drawableWidth = width - padding * 2;
+  const drawableHeight = height - padding * 2;
+  const minPrice = Math.min(...points);
+  const maxPrice = Math.max(...points);
+  const range = maxPrice - minPrice || 1;
+  const first = points[0];
+  const last = points[points.length - 1];
+  const firstY = padding + ((maxPrice - first) / range) * drawableHeight;
+  const lastY = padding + ((maxPrice - last) / range) * drawableHeight;
+  return `${padding},${firstY.toFixed(1)} ${padding + drawableWidth},${lastY.toFixed(1)}`;
+}
+
 const Landing = () => {
   const [newsItems, setNewsItems] = useState<InsiderNewsItem[]>([]);
   const [loadingNews, setLoadingNews] = useState(true);
   const [newsError, setNewsError] = useState('');
+  const [heroMetrics, setHeroMetrics] = useState<LandingHeroMetrics | null>(null);
+  const [loadingHeroMetrics, setLoadingHeroMetrics] = useState(true);
   const [activeNewsIndex, setActiveNewsIndex] = useState(0);
   const [lastNewsRefreshAt, setLastNewsRefreshAt] = useState<Date | null>(null);
   const [newsSessionId] = useState<string>(() => getNewsSessionId());
@@ -86,6 +144,39 @@ const Landing = () => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const loadHeroMetrics = async (initial = false) => {
+      if (initial) setLoadingHeroMetrics(true);
+      try {
+        const response = await fetch(API_ENDPOINTS.getLandingHeroMetrics('AAPL'));
+        if (!response.ok) {
+          throw new Error(`Hero metrics endpoint returned ${response.status}`);
+        }
+        const payload = (await response.json()) as LandingHeroMetrics;
+        if (cancelled) return;
+        setHeroMetrics(payload);
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Failed to load landing hero metrics', error);
+      } finally {
+        if (!cancelled) {
+          setLoadingHeroMetrics(false);
+        }
+      }
+    };
+
+    void loadHeroMetrics(true);
+    const refreshTimer = window.setInterval(() => {
+      void loadHeroMetrics(false);
+    }, 5 * 60 * 1000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(refreshTimer);
+    };
+  }, []);
+
+  useEffect(() => {
     if (newsItems.length < 2) return;
     const autoplay = window.setInterval(() => {
       setActiveNewsIndex((prev) => (prev + 1) % newsItems.length);
@@ -102,6 +193,14 @@ const Landing = () => {
   const hasNews = newsItems.length > 0;
   const activeNews = hasNews ? newsItems[activeNewsIndex] : null;
   const refreshLabel = useMemo(() => formatRelativeTime(lastNewsRefreshAt?.toISOString()), [lastNewsRefreshAt]);
+  const heroTicker = heroMetrics?.ticker || 'AAPL';
+  const heroHeadline = formatSignedPercent(heroMetrics?.price_change_percent_30d ?? null);
+  const sparklinePoints = buildSparklinePointString(heroMetrics?.sparkline_prices ?? []);
+  const trendlinePoints = buildTrendlinePointString(heroMetrics?.sparkline_prices ?? []);
+  const dailyTransactionsLabel =
+    heroMetrics?.daily_transactions_24h !== undefined ? heroMetrics.daily_transactions_24h.toLocaleString() : 'N/A';
+  const latencyLabel = formatLatency(heroMetrics?.average_filing_lag_days ?? null);
+  const heroUpdatedLabel = formatRelativeTime(heroMetrics?.generated_at ?? null);
 
   const goPrev = () => {
     if (!newsItems.length) return;
@@ -212,20 +311,25 @@ const Landing = () => {
             </div>
 
             <div className="signal-glass rounded-3xl p-5 sm:p-7 lg:col-span-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">AAPL Insider Signal</p>
-              <p className="mt-3 font-mono text-2xl font-bold text-[#CFF1C7] sm:text-3xl">+12.4% predictive confidence</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">{heroTicker} Live Signal</p>
+              <p className="mt-3 font-mono text-2xl font-bold text-[#CFF1C7] sm:text-3xl">
+                {loadingHeroMetrics ? 'Loading live metrics...' : heroHeadline}
+              </p>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">
+                Updated {heroUpdatedLabel}
+              </p>
               <div className="mt-6 rounded-2xl bg-[#142119] p-4">
                 <div className="relative h-52 overflow-hidden rounded-xl bg-[#111A15]">
                   <svg className="h-full w-full" viewBox="0 0 640 220" fill="none">
                     <polyline
-                      points="10,190 70,178 130,166 190,140 250,156 310,112 370,128 430,84 490,70 550,38 630,46"
+                      points={sparklinePoints}
                       stroke="#A7E89A"
                       strokeWidth="4"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                     <polyline
-                      points="10,206 70,196 130,184 190,176 250,166 310,160 370,152 430,138 490,128 550,116 630,102"
+                      points={trendlinePoints}
                       stroke="#3B5A45"
                       strokeWidth="2"
                       strokeDasharray="8 7"
@@ -235,12 +339,12 @@ const Landing = () => {
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Daily Filings</p>
-                  <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">14,832</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">24h Transactions</p>
+                  <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{dailyTransactionsLabel}</p>
                 </div>
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg Latency</p>
-                  <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">3.2m</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg Filing Lag</p>
+                  <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{latencyLabel}</p>
                 </div>
               </div>
             </div>

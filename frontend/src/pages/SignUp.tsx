@@ -99,22 +99,22 @@ const SignUp = () => {
           <section className="signal-glass hidden rounded-3xl p-8 lg:block lg:h-full">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">SnoopTrade</p>
             <h1 className="mt-4 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Create your account</h1>
-            <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
+            <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#3F5B4E] dark:text-[#BED0C2]">
               Start tracking insider activity with clean, realtime market intelligence.
             </p>
-            <div className="mt-10 space-y-3 text-sm text-[#BDD0C1]">
+            <div className="mt-10 space-y-3 text-sm text-[#4A6659] dark:text-[#BDD0C1]">
               <p>- Track insider trading activity in realtime</p>
               <p>- Analyze trend and confidence signals</p>
               <p>- Keep your workflow fast and secure</p>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-4">
               <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Realtime filings</p>
-                <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">24/7</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6A5D] dark:text-[#8EA197]">Realtime filings</p>
+                <p className="mt-3 font-mono text-4xl font-bold text-[#1B372B] dark:text-[#D5E9D6]">24/7</p>
               </article>
               <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Forecast insights</p>
-                <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">AI</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6A5D] dark:text-[#8EA197]">Forecast insights</p>
+                <p className="mt-3 font-mono text-4xl font-bold text-[#1B372B] dark:text-[#D5E9D6]">AI</p>
               </article>
             </div>
           </section>
@@ -122,11 +122,11 @@ const SignUp = () => {
           <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:flex lg:h-full lg:flex-col lg:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">SnoopTrade</p>
             <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Sign Up</h2>
-            <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Create your account and start exploring insider signals.</p>
+            <p className="mt-2 text-sm text-[#476355] dark:text-[#98AB9E] sm:text-base">Create your account and start exploring insider signals.</p>
 
             <form onSubmit={handleFormSubmit} className="mt-6 space-y-4 lg:flex-1 lg:overflow-y-auto lg:pr-1">
               <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-semibold text-[#A7B7AC]">Full Name</label>
+                <label htmlFor="name" className="text-sm font-semibold text-[#3C5B4E] dark:text-[#A7B7AC]">Full Name</label>
                 <Input
                   id="name"
                   type="text"
@@ -138,7 +138,7 @@ const SignUp = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-semibold text-[#A7B7AC]">Email</label>
+                <label htmlFor="email" className="text-sm font-semibold text-[#3C5B4E] dark:text-[#A7B7AC]">Email</label>
                 <Input
                   id="email"
                   type="email"
@@ -150,7 +150,7 @@ const SignUp = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-semibold text-[#A7B7AC]">Password</label>
+                <label htmlFor="password" className="text-sm font-semibold text-[#3C5B4E] dark:text-[#A7B7AC]">Password</label>
                 <Input
                   id="password"
                   type="password"
@@ -162,7 +162,7 @@ const SignUp = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-semibold text-[#A7B7AC]">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="text-sm font-semibold text-[#3C5B4E] dark:text-[#A7B7AC]">Confirm Password</label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -197,9 +197,9 @@ const SignUp = () => {
               </Button>
             </form>
 
-            <p className="mt-7 text-center text-sm text-[#9AA99F]">
+            <p className="mt-7 text-center text-sm text-[#4B6558] dark:text-[#9AA99F]">
               Already have an account?{' '}
-              <Link to="/login" className="font-bold text-[#B9EDAF] hover:underline">
+              <Link to="/login" className="font-bold text-[#267D45] dark:text-[#B9EDAF] hover:underline">
                 Login
               </Link>
             </p>

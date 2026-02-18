@@ -14,6 +14,7 @@ const API_ENDPOINTS = {
   getInsiderNews: (limit = 8) => `${BASE_URL}/news/insider?limit=${limit}`,
   trackInsiderNewsClick: `${BASE_URL}/news/insider/click`,
   getInsiderNewsStats: (days = 7) => `${BASE_URL}/news/insider/stats?days=${days}`,
+  getLandingHeroMetrics: (ticker = "AAPL") => `${BASE_URL}/news/landing/hero-metrics?ticker=${ticker}`,
   login: `${BASE_URL}/auth/token`,
   signUp: `${BASE_URL}/auth/signup`,
 };

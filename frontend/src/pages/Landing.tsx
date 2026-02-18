@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 
@@ -61,6 +61,11 @@ function formatSignedPercent(value: number | null): string {
 function formatLatency(value: number | null): string {
   if (value === null || !Number.isFinite(value)) return 'N/A';
   return `${value.toFixed(1)}d`;
+}
+
+function formatSampleSize(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return 'n/a';
+  return value.toLocaleString();
 }
 
 function buildSparklinePointString(points: number[], width = 640, height = 220): string {
@@ -201,6 +206,9 @@ const Landing = () => {
     heroMetrics?.daily_transactions_24h !== undefined ? heroMetrics.daily_transactions_24h.toLocaleString() : 'N/A';
   const latencyLabel = formatLatency(heroMetrics?.average_filing_lag_days ?? null);
   const heroUpdatedLabel = formatRelativeTime(heroMetrics?.generated_at ?? null);
+  const lagSampleLabel = formatSampleSize(heroMetrics?.lag_sample_size ?? 0);
+  const secSourceUrl = `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(`form 4 ${heroTicker}`)}`;
+  const marketSourceUrl = `https://finance.yahoo.com/quote/${encodeURIComponent(heroTicker)}/history`;
 
   const goPrev = () => {
     if (!newsItems.length) return;
@@ -318,6 +326,28 @@ const Landing = () => {
               <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">
                 Updated {heroUpdatedLabel}
               </p>
+              <div className="mt-4 grid gap-2 rounded-2xl border border-[#35503D] bg-[#111A15] p-3 sm:grid-cols-2">
+                <a
+                  href={secSourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-lg px-2 py-1 text-xs font-semibold tracking-[0.12em] text-[#B8C8BC] transition hover:bg-[#18241D]"
+                >
+                  <ShieldCheck className="h-4 w-4 text-[#A7E89A]" />
+                  Data source: SEC Form 4 filings
+                  <ExternalLink className="h-3.5 w-3.5 opacity-70 transition group-hover:opacity-100" />
+                </a>
+                <a
+                  href={marketSourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-lg px-2 py-1 text-xs font-semibold tracking-[0.12em] text-[#B8C8BC] transition hover:bg-[#18241D]"
+                >
+                  <BarChart3 className="h-4 w-4 text-[#A7E89A]" />
+                  Market source: Yahoo daily close
+                  <ExternalLink className="h-3.5 w-3.5 opacity-70 transition group-hover:opacity-100" />
+                </a>
+              </div>
               <div className="mt-6 rounded-2xl bg-[#142119] p-4">
                 <div className="relative h-52 overflow-hidden rounded-xl bg-[#111A15]">
                   <svg className="h-full w-full" viewBox="0 0 640 220" fill="none">
@@ -345,6 +375,7 @@ const Landing = () => {
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg Filing Lag</p>
                   <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{latencyLabel}</p>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Sample {lagSampleLabel}</p>
                 </div>
               </div>
             </div>

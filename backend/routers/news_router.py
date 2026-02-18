@@ -369,9 +369,23 @@ def get_landing_hero_metrics(
     ):
         return _landing_metrics_cache["value"]
 
-    price_change, sparkline_prices = _compute_ticker_price_metrics(ticker_upper)
-    daily_transactions = _compute_daily_transactions_24h()
-    avg_lag_days, lag_sample_size = _compute_average_filing_lag_days()
+    try:
+        price_change, sparkline_prices = _compute_ticker_price_metrics(ticker_upper)
+    except Exception as exc:
+        logger.warning("Failed to compute ticker price metrics for %s: %s", ticker_upper, exc, exc_info=True)
+        price_change, sparkline_prices = None, []
+
+    try:
+        daily_transactions = _compute_daily_transactions_24h()
+    except Exception as exc:
+        logger.warning("Failed to compute 24h transaction count: %s", exc, exc_info=True)
+        daily_transactions = 0
+
+    try:
+        avg_lag_days, lag_sample_size = _compute_average_filing_lag_days()
+    except Exception as exc:
+        logger.warning("Failed to compute filing lag metrics: %s", exc, exc_info=True)
+        avg_lag_days, lag_sample_size = None, 0
 
     metrics = LandingHeroMetrics(
         ticker=ticker_upper,

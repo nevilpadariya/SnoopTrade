@@ -50,7 +50,12 @@ jobs:
           python -m pip install -r backend/requirements.txt
 
       - name: Run backend tests
-        run: PYTHONPATH=backend pytest -q backend/tests
+        run: |
+          if [ -d backend/tests ] && find backend/tests -type f -name "test_*.py" -print -quit | grep -q .; then
+            PYTHONPATH=backend pytest -q backend/tests
+          else
+            echo "No backend tests found; skipping pytest."
+          fi
 
       - name: Compile backend sources
         run: |

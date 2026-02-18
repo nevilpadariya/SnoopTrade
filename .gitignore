@@ -33,3 +33,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# local package manager/cache and virtualenv artifacts
+.pnpm-store/
+backend/.venv/
+**/.venv/

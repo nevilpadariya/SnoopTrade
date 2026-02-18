@@ -409,7 +409,7 @@ const Dashboard = () => {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#35503D] bg-[#1A2B21] text-sm font-bold text-[#DDEADF] transition hover:bg-[#22372B] focus:outline-none focus:ring-2 focus:ring-[#8BCF86] focus:ring-offset-2 focus:ring-offset-[#101813]"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-sm font-bold text-foreground transition hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                   aria-label="Open user menu"
                 >
                   {initials}
@@ -417,26 +417,26 @@ const Dashboard = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-48 rounded-xl border-[#35503D] bg-[#15221B] p-1 text-[#DDEADF] shadow-2xl"
+                className="w-48 rounded-xl border-border bg-card p-1 text-foreground shadow-2xl"
               >
                 <DropdownMenuItem
                   onSelect={handleAccountOpen}
-                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-[#203027] focus:text-[#EAF5EC]"
+                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-muted focus:text-foreground"
                 >
                   <UserIcon className="mr-2 h-4 w-4" />
                   Account
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={handleThemeToggle}
-                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-[#203027] focus:text-[#EAF5EC]"
+                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-muted focus:text-foreground"
                 >
                   {themeMode === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
                   {themeMode === 'dark' ? 'Light mode' : 'Dark mode'}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-[#2F4438]" />
+                <DropdownMenuSeparator className="bg-border" />
                 <DropdownMenuItem
                   onSelect={handleLogout}
-                  className="cursor-pointer rounded-lg px-3 py-2 text-[#F1C8C8] focus:bg-[#3A2020] focus:text-[#FFDADA]"
+                  className="cursor-pointer rounded-lg px-3 py-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
@@ -447,7 +447,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="signal-grid-overlay">
+      <main className="signal-grid-overlay min-h-[calc(100dvh-4rem)]">
         <div className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-8">
           <section className="signal-glass relative rounded-3xl p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

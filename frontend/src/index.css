@@ -502,6 +502,39 @@ main {
   animation: welcome-dot-pulse 0.7s 1.2s ease-in-out infinite;
 }
 
+html:not(.dark) .welcome-login-overlay {
+  background:
+    radial-gradient(920px 340px at 50% 100%, rgba(111, 170, 118, 0.26) 0%, rgba(223, 240, 227, 0.12) 56%, rgba(223, 240, 227, 0) 100%);
+}
+
+html:not(.dark) .welcome-login-panel {
+  border: 1px solid rgba(134, 176, 145, 0.55);
+  background: linear-gradient(160deg, rgba(247, 252, 249, 0.97) 0%, rgba(236, 246, 239, 0.95) 100%);
+  box-shadow:
+    0 18px 42px rgba(37, 61, 48, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+html:not(.dark) .welcome-login-kicker {
+  color: #587267;
+}
+
+html:not(.dark) .welcome-login-title {
+  color: #21362b;
+}
+
+html:not(.dark) .welcome-login-line {
+  filter: drop-shadow(0 0 6px rgba(104, 173, 109, 0.32));
+}
+
+html:not(.dark) .welcome-login-area {
+  fill: rgba(101, 183, 109, 0.18);
+}
+
+html:not(.dark) .welcome-login-dot {
+  fill: #6fc877;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .welcome-login-overlay,
   .welcome-login-panel,

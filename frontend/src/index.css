@@ -161,6 +161,57 @@
     width: 100%;
     height: 100%;
   }
+
+  .signal-surface {
+    background-color: #080b09;
+    background-image:
+      radial-gradient(1200px 600px at 75% 0%, rgba(144, 217, 135, 0.18) 0%, rgba(144, 217, 135, 0) 60%),
+      radial-gradient(1000px 520px at 20% 100%, rgba(123, 201, 122, 0.14) 0%, rgba(123, 201, 122, 0) 70%);
+  }
+
+  .signal-grid-overlay {
+    background-image:
+      linear-gradient(rgba(108, 135, 116, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108, 135, 116, 0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .signal-glass {
+    background: linear-gradient(165deg, rgba(18, 29, 22, 0.95) 0%, rgba(10, 16, 12, 0.92) 100%);
+    border: 1px solid rgba(58, 84, 66, 0.9);
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(177, 236, 173, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .signal-chip {
+    border: 1px solid rgba(56, 84, 64, 0.95);
+    background: rgba(20, 33, 25, 0.75);
+    color: #c7d0ca;
+    border-radius: 999px;
+  }
+
+  .signal-input {
+    border: 1px solid rgba(52, 76, 60, 0.95);
+    background: rgba(23, 35, 28, 0.85);
+    color: #e6ece8;
+  }
+
+  .signal-input::placeholder {
+    color: #8ea197;
+  }
+
+  .signal-input:focus {
+    outline: none;
+    border-color: rgba(153, 226, 147, 0.9);
+    box-shadow: 0 0 0 3px rgba(167, 232, 154, 0.15);
+  }
+
+  .signal-cta {
+    background: linear-gradient(135deg, #a7e89a 0%, #7bc97a 100%);
+    color: #0e1410;
+  }
 }
 
 main {

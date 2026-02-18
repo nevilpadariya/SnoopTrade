@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import LoginHeader from '../components/Header';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 import { authFetch } from '../utils/authFetch';
@@ -28,13 +25,13 @@ const CreatePassword = () => {
     }
     if (!requiresPassword) {
       navigate('/dashboard', { replace: true });
-      return;
     }
-  }, [token, requiresPassword, navigate]);
+  }, [navigate, requiresPassword, token]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setError('');
+
     if (!password || !confirmPassword) {
       setError('Please fill in both password fields.');
       return;
@@ -47,15 +44,19 @@ const CreatePassword = () => {
       setError('Passwords do not match.');
       return;
     }
+
     setIsLoading(true);
     try {
-      const response = await authFetch(API_ENDPOINTS.updateUserProfile, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await authFetch(
+        API_ENDPOINTS.updateUserProfile,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
         },
-        body: JSON.stringify({ password }),
-      }, token ?? undefined);
+        token ?? undefined,
+      );
+
       if (response.ok) {
         setRequiresPassword(false);
         navigate('/dashboard', { replace: true });
@@ -78,99 +79,116 @@ const CreatePassword = () => {
   }
 
   return (
-    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
+    <div className="signal-surface min-h-screen text-[#E6ECE8]">
       <Helmet>
         <title>Create Password - SnoopTrade</title>
       </Helmet>
 
-      <LoginHeader />
+      <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
+            SnoopTrade
+          </Link>
+          <Button
+            asChild
+            variant="outline"
+            className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+          >
+            <Link to="/dashboard">Dashboard</Link>
+          </Button>
+        </div>
+      </header>
 
-      <div className="animate-in fade-in duration-1000 flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-6 lg:py-4 w-[92%] sm:w-[85%] lg:w-[50%] max-w-[500px] mb-8 sm:mb-12 lg:mb-0">
-        <Card className="p-5 sm:p-8 bg-card border-border shadow-2xl rounded-xl sm:rounded-2xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-card-foreground mb-2 font-display">
-            Create a password for your account
-          </h2>
-          <p className="text-sm text-center text-muted-foreground mb-6">
-            You signed in with Google. Set a password so you can also sign in with email and password.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-card-foreground">
-                Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="h-11 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary-strong transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+      <main className="signal-grid-overlay">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-16">
+          <section className="signal-glass hidden rounded-3xl p-10 lg:block">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">Account Security</p>
+            <h1 className="mt-4 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Create a password</h1>
+            <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
+              You signed in with Google. Set a password so you can also sign in with email and password.
+            </p>
+            <div className="mt-10 rounded-2xl border border-[#35503E] bg-[#122019] p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Security tip</p>
+              <p className="mt-3 text-sm leading-relaxed text-[#C6D7CB]">
+                Use a unique password with at least 8 characters, numbers, and symbols to improve account security.
+              </p>
             </div>
+          </section>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-card-foreground">
-                Confirm password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="h-11 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary-strong transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
+          <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">Account Security</p>
+            <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Create Password</h2>
+            <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Add a password to complete your account setup.</p>
 
-            {error && (
-              <div
-                role="alert"
-                className="login-error-message bg-destructive/30 border border-destructive text-destructive-foreground text-sm p-3 rounded-md text-center font-medium"
-              >
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-12 text-base font-semibold"
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  <span>Creating...</span>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-semibold text-[#A7B7AC]">
+                  Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="signal-input h-12 rounded-2xl border pr-10"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((state) => !state)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93A89A] hover:text-[#D4E2D6]"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
-              ) : (
-                'Create password'
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-semibold text-[#A7B7AC]">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    className="signal-input h-12 rounded-2xl border pr-10"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((state) => !state)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93A89A] hover:text-[#D4E2D6]"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <p className="rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm font-medium text-[#F7D1D1]">
+                  {error}
+                </p>
               )}
-            </Button>
-          </form>
-        </Card>
-      </div>
+
+              <Button type="submit" disabled={isLoading} className="signal-cta h-12 w-full rounded-2xl text-base font-bold">
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating...
+                  </span>
+                ) : (
+                  'Create Password'
+                )}
+              </Button>
+            </form>
+          </section>
+        </div>
+      </main>
     </div>
   );
 };

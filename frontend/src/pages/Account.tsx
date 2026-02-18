@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle, LogOut } from 'lucide-react';
-import Navbar from '../components/Navbar';
+import { Link, useNavigate } from 'react-router-dom';
+import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, LogOut } from 'lucide-react';
 import MobileBottomNav from '../components/MobileBottomNav';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Card, CardContent } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 import { authFetch } from '../utils/authFetch';
@@ -32,36 +29,32 @@ function getInitials(name?: string): string {
 const Account = () => {
   const { token, setToken } = useAuth();
   const navigate = useNavigate();
+
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Password form states
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  // Form submission states
+
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [formError, setFormError] = useState('');
 
-  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const authToken = token;
-        if (!authToken) {
+        if (!token) {
           setError('Not authenticated. Please log in.');
           setLoading(false);
           return;
         }
 
-        const response = await authFetch(API_ENDPOINTS.getUserDetails, undefined, authToken);
-
+        const response = await authFetch(API_ENDPOINTS.getUserDetails, undefined, token);
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
@@ -73,14 +66,14 @@ const Account = () => {
           const errorData = await response.json().catch(() => ({}));
           setError(errorData.detail || 'Failed to fetch user data.');
         }
-      } catch (err) {
+      } catch {
         setError('Something went wrong. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    void fetchUserData();
   }, [navigate, setToken, token]);
 
   const isGoogleOnlyUser = userData?.login_type === 'google';
@@ -89,66 +82,58 @@ const Account = () => {
     setFormError('');
     setSuccessMessage('');
 
-    // Validation
     if (!newPassword || !confirmPassword) {
       setFormError('Please fill in all password fields.');
       return;
     }
-
     if (newPassword.length < 6) {
       setFormError('Password must be at least 6 characters long.');
       return;
     }
-
     if (newPassword !== confirmPassword) {
       setFormError('Passwords do not match.');
       return;
     }
-
-    // For users who already have a password, require current password
     if (!isGoogleOnlyUser && !currentPassword) {
       setFormError('Please enter your current password.');
       return;
     }
 
     setSubmitting(true);
-
     try {
-      const authToken = token;
-      const response = await authFetch(API_ENDPOINTS.updateUserProfile, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await authFetch(
+        API_ENDPOINTS.updateUserProfile,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: newPassword,
+            current_password: currentPassword,
+          }),
         },
-        body: JSON.stringify({
-          password: newPassword,
-          current_password: currentPassword,
-        }),
-      }, authToken ?? undefined);
+        token ?? undefined,
+      );
 
       if (response.ok) {
         setSuccessMessage(
           isGoogleOnlyUser
             ? 'Password created successfully! You can now log in with email and password.'
-            : 'Password updated successfully!'
+            : 'Password updated successfully!',
         );
-        // Clear form
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
-        // Update user data to reflect new login_type
         if (isGoogleOnlyUser) {
-          setUserData(prev => prev ? { ...prev, login_type: 'both' } : null);
+          setUserData((prev) => (prev ? { ...prev, login_type: 'both' } : null));
         }
       } else if (response.status === 401) {
         setToken(null);
         navigate('/login', { replace: true });
-        return;
       } else {
         const errorData = await response.json().catch(() => ({}));
         setFormError(errorData.detail || 'Failed to update password.');
       }
-    } catch (err) {
+    } catch {
       setFormError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
@@ -160,398 +145,195 @@ const Account = () => {
     navigate('/login');
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="hidden md:block"><Navbar /></div>
-        <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="hidden md:block"><Navbar /></div>
-        <div className="flex items-center justify-center pt-24 sm:pt-32 md:pt-40 px-4">
-          <div className="text-center">
-            <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-4" />
-            <p className="text-destructive text-sm sm:text-base">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const initials = getInitials(userData?.name);
-  const loginBadge = userData?.login_type === 'google' ? 'Google' :
-                     userData?.login_type === 'both' ? 'Google + Email' : 'Email';
+  const loginBadge = userData?.login_type === 'google' ? 'Google' : userData?.login_type === 'both' ? 'Google + Email' : 'Email';
 
-  /* ═══ MOBILE ACCOUNT (< 768px) ═══ */
-  const mobileAccount = (
-    <div className="md:hidden has-bottom-nav" style={{ backgroundColor: '#0E1410', minHeight: '100vh' }}>
+  return (
+    <div className="signal-surface min-h-screen text-[#E6ECE8]">
       <Helmet>
-        <title>Account Settings | SnoopTrade</title>
+        <title>Account Settings - SnoopTrade</title>
       </Helmet>
 
-      <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <h1 style={{ color: '#EAF5EC', fontSize: 28, fontWeight: 700 }}>Account</h1>
-
-        {/* Avatar profile card */}
-        <div className="mobile-card mobile-card-shadow" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div className="mobile-avatar mobile-avatar-lg">{initials}</div>
-          <div>
-            <p style={{ color: '#EAF5EC', fontSize: 20, fontWeight: 700 }}>{userData?.name || ''}</p>
-            <p style={{ color: '#A7B7AC', fontSize: 13, marginTop: 2 }}>{userData?.email || ''}</p>
-            <span style={{
-              display: 'inline-block', marginTop: 8, padding: '4px 12px',
-              borderRadius: 999, fontSize: 11, fontWeight: 700,
-              backgroundColor: userData?.login_type === 'google' ? 'rgba(59,130,246,0.2)' : 'rgba(183,227,137,0.2)',
-              color: userData?.login_type === 'google' ? '#60A5FA' : '#B7E389',
-            }}>
-              {loginBadge}
-            </span>
-          </div>
+      <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
+            SnoopTrade
+          </Link>
+          <Button
+            asChild
+            variant="outline"
+            className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+          >
+            <Link to="/dashboard">Back to Dashboard</Link>
+          </Button>
         </div>
+      </header>
 
-        {/* Account info card */}
-        <div className="mobile-card mobile-card-shadow">
-          <h2 style={{ color: '#EAF5EC', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-            Account Information
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div>
-              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Email</label>
-              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', opacity: 0.7 }}>
-                {userData?.email || ''}
-              </div>
+      <main className="signal-grid-overlay">
+        <div className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+          {loading ? (
+            <div className="signal-glass flex h-64 items-center justify-center rounded-3xl">
+              <Loader2 className="h-8 w-8 animate-spin text-[#A7E89A]" />
             </div>
-            <div>
-              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Name</label>
-              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center', opacity: 0.7 }}>
-                {userData?.name || ''}
-              </div>
+          ) : error ? (
+            <div className="signal-glass rounded-3xl p-8 text-center">
+              <AlertCircle className="mx-auto h-10 w-10 text-[#F26D6D]" />
+              <p className="mt-4 text-base font-medium text-[#F2C9C9]">{error}</p>
             </div>
-          </div>
-        </div>
-
-        {/* Password card */}
-        <div className="mobile-card mobile-card-shadow">
-          <h2 style={{ color: '#EAF5EC', fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
-            {isGoogleOnlyUser ? 'Create Password' : 'Change Password'}
-          </h2>
-          {isGoogleOnlyUser && (
-            <p style={{ color: '#A7B7AC', fontSize: 13, marginBottom: 16 }}>
-              Create a password to also log in with email.
-            </p>
-          )}
-
-          {successMessage && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: 12,
-              borderRadius: 12, backgroundColor: 'rgba(104,208,142,0.2)',
-              color: '#68D08E', marginBottom: 12, fontSize: 13,
-            }}>
-              <CheckCircle size={16} />
-              <span>{successMessage}</span>
-            </div>
-          )}
-
-          {formError && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: 12,
-              borderRadius: 12, backgroundColor: 'rgba(229,106,106,0.2)',
-              color: '#E56A6A', marginBottom: 12, fontSize: 13,
-            }}>
-              <AlertCircle size={16} />
-              <span>{formError}</span>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {!isGoogleOnlyUser && (
-              <div>
-                <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Current Password</label>
-                <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    placeholder="Current password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
-                  />
-                  <button onClick={() => setShowCurrentPassword(!showCurrentPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
-                    {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div>
-              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>
-                {isGoogleOnlyUser ? 'Password' : 'New Password'}
-              </label>
-              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type={showNewPassword ? 'text' : 'password'}
-                  placeholder={isGoogleOnlyUser ? 'Enter password' : 'New password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
-                />
-                <button onClick={() => setShowNewPassword(!showNewPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
-                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label style={{ color: '#A7B7AC', fontSize: 12, display: 'block', marginBottom: 6 }}>Confirm Password</label>
-              <div className="mobile-input" style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#EAF5EC', fontSize: 15 }}
-                />
-                <button onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A7B7AC' }}>
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              className="mobile-btn-primary"
-              onClick={handlePasswordSubmit}
-              disabled={submitting}
-              style={{ marginTop: 8 }}
-            >
-              {submitting
-                ? (isGoogleOnlyUser ? 'Creating...' : 'Updating...')
-                : (isGoogleOnlyUser ? 'Create Password' : 'Change Password')
-              }
-            </button>
-          </div>
-        </div>
-
-        {/* Logout button */}
-        <button className="mobile-btn-danger" onClick={handleLogout} style={{ marginTop: 8 }}>
-          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <LogOut size={18} /> Logout
-          </span>
-        </button>
-      </div>
-
-      <MobileBottomNav />
-    </div>
-  );
-
-  /* ═══ DESKTOP ACCOUNT (≥ 768px) — unchanged ═══ */
-  const desktopAccount = (
-    <div className="min-h-screen bg-background hidden md:block">
-      <Helmet>
-        <title>Account Settings | SnoopTrade</title>
-      </Helmet>
-
-      <Navbar />
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
-        <div className="max-w-3xl mx-auto pt-6 sm:pt-8 md:pt-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground mb-2 font-display">
-            Account <span className="text-primary-strong">Settings</span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 md:mb-12">
-            Manage your account information and security settings.
-          </p>
-
-          {/* User Info Card */}
-          <Card className="mb-6 sm:mb-8 bg-card border-border">
-            <CardContent className="p-4 sm:p-6 md:p-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-4 sm:mb-6 font-display">
-                Account Information
-              </h2>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-card-foreground">Email Address</Label>
-                  <Input
-                    type="email"
-                    value={userData?.email || ''}
-                    disabled
-                    className="h-11 bg-muted/50"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Email cannot be changed.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-card-foreground">Name</Label>
-                  <Input
-                    type="text"
-                    value={userData?.name || ''}
-                    disabled
-                    className="h-11 bg-muted/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-card-foreground">Login Method</Label>
-                  <div className="flex items-center gap-2">
-                    {userData?.login_type === 'google' && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-400">
-                        Google Only
-                      </span>
-                    )}
-                    {userData?.login_type === 'normal' && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/20 text-primary">
-                        Email & Password
-                      </span>
-                    )}
-                    {userData?.login_type === 'both' && (
-                      <>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-400">
-                          Google
-                        </span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/20 text-primary">
-                          Email & Password
-                        </span>
-                      </>
-                    )}
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-12">
+              <section className="signal-glass rounded-3xl p-6 lg:col-span-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#3D5A45] bg-[#213329] text-xl font-bold text-[#DCEADA]">
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xl font-bold text-[#EAF5EC]">{userData?.name || ''}</p>
+                    <p className="truncate text-sm text-[#A8BAAD]">{userData?.email || ''}</p>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Password Settings */}
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 sm:p-6 md:p-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-2 font-display">
-                {isGoogleOnlyUser ? 'Create Password' : 'Change Password'}
-              </h2>
-              {isGoogleOnlyUser && (
-                <p className="text-muted-foreground mb-6">
-                  Create a password to enable login with email and password in addition to Google.
-                </p>
-              )}
-              
-              {/* Success Message */}
-              {successMessage && (
-                <div className="flex items-center gap-2 p-4 mb-6 rounded-lg bg-green-500/20 text-green-400">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>{successMessage}</span>
+                <div className="mt-4 inline-flex rounded-full border border-[#35503D] bg-[#18241D] px-3 py-1 text-xs font-semibold text-[#C9D8CB]">
+                  {loginBadge}
                 </div>
-              )}
-              
-              {/* Error Message */}
-              {formError && (
-                <div className="flex items-center gap-2 p-4 mb-6 rounded-lg bg-destructive/20 text-destructive-foreground">
-                  <AlertCircle className="h-5 w-5" />
-                  <span>{formError}</span>
-                </div>
-              )}
 
-              <div className="space-y-4">
-                {/* Current Password - only show for users who already have a password */}
-                {!isGoogleOnlyUser && (
+                <div className="mt-6 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Account Information</p>
                   <div className="space-y-2">
-                    <Label htmlFor="currentPassword" className="text-card-foreground">
-                      Current Password
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="currentPassword"
-                        type={showCurrentPassword ? 'text' : 'password'}
-                        placeholder="Enter current password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="h-11 pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    </div>
+                    <label className="text-xs font-semibold text-[#8EA197]">Email</label>
+                    <Input disabled value={userData?.email || ''} className="signal-input h-11 rounded-xl border opacity-80" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#8EA197]">Name</label>
+                    <Input disabled value={userData?.name || ''} className="signal-input h-11 rounded-xl border opacity-80" />
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleLogout}
+                  className="mt-6 h-11 w-full rounded-xl border border-[#603333] bg-[#2B1717] text-sm font-bold text-[#F6D8D8] hover:bg-[#341D1D]"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </section>
+
+              <section className="signal-glass rounded-3xl p-6 lg:col-span-8">
+                <h1 className="text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Security</h1>
+                <p className="mt-2 text-sm text-[#9BAEA1] sm:text-base">
+                  {isGoogleOnlyUser
+                    ? 'Create a password to enable email login in addition to Google.'
+                    : 'Update your password to keep your account secure.'}
+                </p>
+
+                {successMessage && (
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#35503D] bg-[#18291F] px-4 py-3 text-sm text-[#BEE6BE]">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>{successMessage}</span>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-card-foreground">
-                    {isGoogleOnlyUser ? 'Password' : 'New Password'}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="newPassword"
-                      type={showNewPassword ? 'text' : 'password'}
-                      placeholder={isGoogleOnlyUser ? 'Enter password' : 'Enter new password'}
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="h-11 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+                {formError && (
+                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm text-[#F5CACA]">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{formError}</span>
                   </div>
-                </div>
+                )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-card-foreground">
-                    Confirm Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirm password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="h-11 pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </div>
-
-                <Button 
-                  onClick={handlePasswordSubmit} 
-                  className="px-8"
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {isGoogleOnlyUser ? 'Creating...' : 'Updating...'}
-                    </>
-                  ) : (
-                    isGoogleOnlyUser ? 'Create Password' : 'Change Password'
+                <div className="mt-6 space-y-4">
+                  {!isGoogleOnlyUser && (
+                    <div className="space-y-2">
+                      <label htmlFor="currentPassword" className="text-sm font-semibold text-[#A7B7AC]">
+                        Current Password
+                      </label>
+                      <div className="relative">
+                        <Input
+                          id="currentPassword"
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          value={currentPassword}
+                          onChange={(event) => setCurrentPassword(event.target.value)}
+                          placeholder="Enter current password"
+                          className="signal-input h-12 rounded-xl border pr-11"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPassword((state) => !state)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93A89A] hover:text-[#D4E2D6]"
+                        >
+                          {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
                   )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
+                  <div className="space-y-2">
+                    <label htmlFor="newPassword" className="text-sm font-semibold text-[#A7B7AC]">
+                      {isGoogleOnlyUser ? 'Password' : 'New Password'}
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="newPassword"
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(event) => setNewPassword(event.target.value)}
+                        placeholder={isGoogleOnlyUser ? 'Create password' : 'Enter new password'}
+                        className="signal-input h-12 rounded-xl border pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword((state) => !state)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93A89A] hover:text-[#D4E2D6]"
+                      >
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="confirmPassword" className="text-sm font-semibold text-[#A7B7AC]">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(event) => setConfirmPassword(event.target.value)}
+                        placeholder="Confirm password"
+                        className="signal-input h-12 rounded-xl border pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((state) => !state)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93A89A] hover:text-[#D4E2D6]"
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button onClick={handlePasswordSubmit} disabled={submitting} className="signal-cta h-12 rounded-xl px-6 text-sm font-bold">
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {isGoogleOnlyUser ? 'Creating...' : 'Updating...'}
+                      </span>
+                    ) : isGoogleOnlyUser ? (
+                      'Create Password'
+                    ) : (
+                      'Change Password'
+                    )}
+                  </Button>
+                </div>
+              </section>
+            </div>
+          )}
         </div>
+      </main>
+
+      <div className="md:hidden">
+        <MobileBottomNav />
       </div>
     </div>
-  );
-
-  return (
-    <>
-      {mobileAccount}
-      {desktopAccount}
-    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -14,24 +14,12 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const About = React.lazy(() => import('./pages/About'));
 const Features = React.lazy(() => import('./pages/Features'));
 const Account = React.lazy(() => import('./pages/Account'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 // Minimal loading spinner shown while code chunks load
 const PageSpinner = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    background: 'hsl(var(--background))',
-  }}>
-    <div style={{
-      width: 36,
-      height: 36,
-      border: '3px solid hsl(var(--muted))',
-      borderTopColor: 'hsl(var(--primary))',
-      borderRadius: '50%',
-      animation: 'spin 0.6s linear infinite',
-    }} />
+  <div className="signal-surface flex min-h-screen items-center justify-center">
+    <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#2F4538] border-t-[#A7E89A]" />
   </div>
 );
 
@@ -50,6 +38,11 @@ const CreatePasswordRoute = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    // Force dark mode so shadcn semantic tokens match the new Signal Glass theme.
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <HelmetProvider>
       <AuthProvider>
@@ -78,6 +71,7 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </Router>

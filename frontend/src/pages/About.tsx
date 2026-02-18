@@ -1,57 +1,86 @@
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Navbar from '../components/Navbar';
-import Section from '../components/about/Section';
-import FeatureList from '../components/about/FeatureList';
-import ArchitectureDiagram from '../components/about/ArchitectureDiagram';
-import TeamMembers from '../components/about/TeamMembers';
+import { Link } from 'react-router-dom';
+import { Building2, Cpu, ShieldCheck, Users2 } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
-const About: React.FC = () => {
+const sections = [
+  {
+    icon: <Building2 className="h-6 w-6 text-[#A7E89A]" />,
+    title: 'Our Mission',
+    body: 'SnoopTrade exists to make insider trading intelligence accessible and understandable for every investor. We focus on clarity, speed, and actionable context.',
+  },
+  {
+    icon: <Cpu className="h-6 w-6 text-[#A7E89A]" />,
+    title: 'What We Build',
+    body: 'We combine SEC filing ingestion, normalized transaction data, and lightweight forecasting so users can evaluate behavior signals without data wrangling.',
+  },
+  {
+    icon: <ShieldCheck className="h-6 w-6 text-[#A7E89A]" />,
+    title: 'Reliability Principles',
+    body: 'Security defaults, route-level protection, token rotation, and operational monitoring guide our engineering decisions from day one.',
+  },
+  {
+    icon: <Users2 className="h-6 w-6 text-[#A7E89A]" />,
+    title: 'Who It Serves',
+    body: 'SnoopTrade is designed for students, retail investors, and builders who want an efficient signal workflow without terminal complexity.',
+  },
+];
+
+const About = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <>
       <Helmet>
-        <title>About Us | SnoopTrade</title>
+        <title>About - SnoopTrade</title>
+        <meta
+          name="description"
+          content="Learn about SnoopTrade's mission, technology approach, and our commitment to transparent insider trading intelligence."
+        />
       </Helmet>
 
-      <Navbar />
+      <div className="signal-surface min-h-screen text-[#E6ECE8]">
+        <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
+              SnoopTrade
+            </Link>
+            <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+              >
+                <Link to="/features">Features</Link>
+              </Button>
+              <Button asChild className="signal-cta h-10 rounded-xl px-4 text-sm font-bold">
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </div>
+          </div>
+        </header>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
-        <div className="text-center pt-6 sm:pt-8 md:pt-12 mb-10 sm:mb-12 md:mb-16">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4 sm:mb-6 font-display">
-            About <span className="text-primary-strong">SnoopTrade</span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
-            Empowering investors with real-time insider trading intelligence and advanced analytics.
-          </p>
-        </div>
+        <main className="signal-grid-overlay">
+          <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+            <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">About SnoopTrade</p>
+              <h1 className="mt-2 text-4xl font-extrabold text-[#EAF5EC] sm:text-5xl">Engineering Signal Clarity</h1>
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-[#B9C9BD] sm:text-lg">
+                We are building a pragmatic platform that turns SEC insider activity into clear market context for everyday users.
+              </p>
+            </section>
 
-        <Section
-          title="Our Mission"
-          content="SnoopTrade is dedicated to democratizing access to insider trading information. We believe that all investors deserve transparent, real-time insights into market-moving insider activities. Our platform leverages cutting-edge technology to track, analyze, and present SEC filings in an intuitive, actionable format."
-        />
-
-        <Section
-          title="What We Offer"
-          content="Our platform provides comprehensive insider trading data, advanced analytics, and predictive insights. Whether you're a retail investor or institutional trader, SnoopTrade gives you the tools to make informed decisions based on real-time insider activities."
-        />
-
-        <FeatureList />
-
-        <Section
-          title="Technology & Architecture"
-          content="Built with modern cloud-native technologies, SnoopTrade delivers reliable, scalable performance. Our system architecture ensures real-time data processing and seamless user experience."
-        />
-
-        <ArchitectureDiagram />
-
-        <Section
-          title="Meet Our Team"
-          content="We're a team of passionate developers, data scientists, and financial experts committed to bringing transparency to the markets."
-        />
-
-        <TeamMembers />
+            <section className="mt-6 grid gap-4 md:grid-cols-2">
+              {sections.map((section) => (
+                <article key={section.title} className="signal-glass rounded-2xl p-6">
+                  <div className="inline-flex rounded-xl border border-[#34503E] bg-[#122019] p-2.5">{section.icon}</div>
+                  <h2 className="mt-4 text-2xl font-bold text-[#EAF5EC]">{section.title}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-[#B3C4B8] sm:text-base">{section.body}</p>
+                </article>
+              ))}
+            </section>
+          </div>
+        </main>
       </div>
-    </div>
+    </>
   );
 };
 

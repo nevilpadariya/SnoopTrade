@@ -1,116 +1,109 @@
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Navbar from '../components/Navbar';
-import { 
-  LineChart, 
-  Bell, 
-  Shield, 
-  TrendingUp, 
-  BarChart2, 
-  Search,
-  Zap,
-  Database,
-  Lock
-} from 'lucide-react';
-import { Card, CardContent } from '../components/ui/card';
+import { Link } from 'react-router-dom';
+import { BarChart2, Bell, Database, LineChart, Lock, Search, Shield, TrendingUp, Zap } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 const featuresData = [
   {
-    icon: <LineChart size={40} aria-hidden="true" />,
-    title: 'Real-Time Tracking',
-    description: 'Monitor insider trading activities as they happen with our advanced tracking system and instant data updates.',
+    icon: <LineChart size={30} aria-hidden="true" />,
+    title: 'Realtime Tracking',
+    description: 'Monitor insider trading activity as filings arrive with fast synchronized updates.',
   },
   {
-    icon: <Bell size={40} aria-hidden="true" />,
+    icon: <Bell size={30} aria-hidden="true" />,
     title: 'Smart Alerts',
-    description: 'Get instant notifications about significant insider trading movements that matter to your portfolio.',
+    description: 'Get focused signal updates for movements that matter to your watchlist.',
   },
   {
-    icon: <Shield size={40} aria-hidden="true" />,
+    icon: <Shield size={30} aria-hidden="true" />,
     title: 'Secure Platform',
-    description: 'Your data is protected with enterprise-grade security measures and encryption protocols.',
+    description: 'Protected account and API flows with robust access controls and safe defaults.',
   },
   {
-    icon: <TrendingUp size={40} aria-hidden="true" />,
+    icon: <TrendingUp size={30} aria-hidden="true" />,
     title: 'Market Analysis',
-    description: 'Access comprehensive market analysis, trading patterns, and predictive insights for better decisions.',
+    description: 'Inspect trends, transaction behavior, and directional signal summaries in one place.',
   },
   {
-    icon: <BarChart2 size={40} aria-hidden="true" />,
+    icon: <BarChart2 size={30} aria-hidden="true" />,
     title: 'Advanced Analytics',
-    description: 'Leverage powerful analytics tools including ML-powered forecasting and trend analysis.',
+    description: 'Use forecast confidence bands and activity distributions to evaluate momentum.',
   },
   {
-    icon: <Search size={40} aria-hidden="true" />,
-    title: 'Deep Insights',
-    description: 'Gain valuable insights from our extensive database of trading activities spanning years of data.',
+    icon: <Search size={30} aria-hidden="true" />,
+    title: 'Deep Search',
+    description: 'Find tickers and company context quickly across insider transactions and filings.',
   },
   {
-    icon: <Zap size={40} aria-hidden="true" />,
-    title: 'Lightning Fast',
-    description: 'Experience blazing fast performance with our optimized infrastructure and real-time data processing.',
+    icon: <Zap size={30} aria-hidden="true" />,
+    title: 'Fast Experience',
+    description: 'Optimized charts, caching, and compact screens built for daily decision workflows.',
   },
   {
-    icon: <Database size={40} aria-hidden="true" />,
-    title: 'Extensive Database',
-    description: 'Access millions of historical trades and SEC filings with advanced search and filtering capabilities.',
+    icon: <Database size={30} aria-hidden="true" />,
+    title: 'Historical Coverage',
+    description: 'Access extensive filing history and transaction patterns for better context.',
   },
   {
-    icon: <Lock size={40} aria-hidden="true" />,
+    icon: <Lock size={30} aria-hidden="true" />,
     title: 'Privacy First',
-    description: 'We never share your data. Your trading strategies and watchlists remain completely private.',
+    description: 'Your account data stays yours. SnoopTrade does not sell user strategy data.',
   },
 ];
 
-const Features: React.FC = () => {
+const Features = () => {
   return (
     <>
       <Helmet>
-        <title>Features | SnoopTrade - Insider Trading Analytics Platform</title>
+        <title>Features - SnoopTrade</title>
         <meta
           name="description"
-          content="Explore SnoopTrade's powerful features: real-time tracking, smart alerts, advanced analytics, and comprehensive insider trading insights."
+          content="Explore SnoopTrade features: realtime tracking, smart alerts, advanced analytics, and insider trading insights."
         />
-        <link rel="canonical" href="https://snooptrade.com/features" />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <div className="signal-surface min-h-screen text-[#E6ECE8]">
+        <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
+              SnoopTrade
+            </Link>
+            <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+              >
+                <Link to="/about">About</Link>
+              </Button>
+              <Button asChild className="signal-cta h-10 rounded-xl px-4 text-sm font-bold">
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </div>
+          </div>
+        </header>
 
-        <main id="main-content">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
-            <div className="text-center mb-10 sm:mb-12 md:mb-16 pt-6 sm:pt-8 md:pt-12">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4 sm:mb-6 font-display">
-                Powerful Features for <span className="text-primary-strong">Smart Trading</span>
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
-                Everything you need to track insider trading activities and make informed investment decisions.
+        <main className="signal-grid-overlay">
+          <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+            <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">Capabilities</p>
+              <h1 className="mt-2 text-4xl font-extrabold text-[#EAF5EC] sm:text-5xl">Built for Signal-First Analysis</h1>
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-[#B9C9BD] sm:text-lg">
+                SnoopTrade combines insider activity tracking, chart intelligence, and forecast tooling in one focused workflow.
               </p>
-            </div>
+            </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12">
-              {featuresData.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="relative overflow-hidden group p-4 sm:p-6 md:p-8 h-full bg-card hover:-translate-y-2 transition-all duration-300 border-border hover:shadow-xl"
-                >
-                  {/* Top overline reveal on hover */}
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" aria-hidden="true" />
-                  
-                  <CardContent className="p-0 flex flex-col h-full">
-                    <div className="inline-flex p-3 sm:p-4 rounded-lg sm:rounded-xl bg-primary/20 text-primary-strong mb-4 sm:mb-6 w-fit">
-                      {feature.icon}
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-card-foreground mb-3 sm:mb-4 font-display">
-                      {feature.title}
-                    </h2>
-                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+            <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {featuresData.map((feature) => (
+                <article key={feature.title} className="signal-glass rounded-2xl p-6">
+                  <div className="inline-flex rounded-xl border border-[#34503E] bg-[#122019] p-3 text-[#A7E89A]">
+                    {feature.icon}
+                  </div>
+                  <h2 className="mt-4 text-xl font-bold text-[#EAF5EC]">{feature.title}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-[#B3C4B8]">{feature.description}</p>
+                </article>
               ))}
-            </div>
+            </section>
           </div>
         </main>
       </div>

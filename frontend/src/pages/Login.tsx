@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { CredentialResponse, GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import LoginHeader from '../components/Header';
-import WelcomePanel from '../components/login/WelcomePanel';
-import LoginForm from '../components/login/LoginForm';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import GoogleLoginButton from '../components/login/GoogleLoginButton';
-import { Card } from '../components/ui/card';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,14 +15,24 @@ const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 const Login = () => {
   const [loginError, setLoginError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { token, setToken, setRefreshToken, requiresPassword, setRequiresPassword } = useAuth();
 
-  const handleFormSubmit = async (email: string, password: string) => {
+  const loginWithCredentials = async (emailInput: string, passwordInput: string) => {
+    if (!emailInput || !passwordInput) {
+      setLoginError('Please enter both email and password.');
+      return;
+    }
+
+    setSubmitting(true);
+    setLoginError('');
     try {
       const formData = new URLSearchParams();
-      formData.append('username', email);
-      formData.append('password', password);
+      formData.append('username', emailInput);
+      formData.append('password', passwordInput);
 
       const response = await fetch(API_ENDPOINTS.login, {
         method: 'POST',
@@ -41,19 +50,26 @@ const Login = () => {
         toast.success('Welcome back!', { description: 'You have been logged in successfully.' });
         navigate('/dashboard');
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         const errMsg = errorData.detail || 'Login failed. Please try again.';
         setLoginError(errMsg);
         toast.error('Login failed', { description: errMsg });
       }
-    } catch (error) {
+    } catch {
       const errMsg = 'Something went wrong. Please try again.';
       setLoginError(errMsg);
       toast.error('Connection error', { description: errMsg });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleGoogleSuccess = async (response: any) => {
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await loginWithCredentials(email.trim(), password);
+  };
+
+  const handleGoogleSuccess = async (response: CredentialResponse) => {
     try {
       const googleCredential = response.credential;
       if (!googleCredential) {
@@ -62,7 +78,6 @@ const Login = () => {
       }
 
       const decodedToken: { email?: string } = jwtDecode(googleCredential);
-
       if (!decodedToken.email) {
         setLoginError('Google token does not contain email information.');
         return;
@@ -94,7 +109,7 @@ const Login = () => {
           navigate('/dashboard');
         }
       } else {
-        const errorData = await tokenResponse.json();
+        const errorData = await tokenResponse.json().catch(() => ({}));
         const errMsg = errorData.detail || 'Google login failed.';
         setLoginError(errMsg);
         toast.error('Google login failed', { description: errMsg });
@@ -108,8 +123,8 @@ const Login = () => {
   };
 
   const handleGoogleFailure = () => {
-    setLoginError('Google Login failed.');
-    toast.error('Google Login failed', { description: 'Please try again or use email login.' });
+    setLoginError('Google login failed.');
+    toast.error('Google login failed', { description: 'Please try again or use email login.' });
   };
 
   if (token && !requiresPassword) {
@@ -119,165 +134,115 @@ const Login = () => {
     return <Navigate to="/create-password" replace />;
   }
 
-  /* ─── Mobile Login (< 768px) — matches native app ─── */
-  const mobileLogin = (
-    <div className="min-h-screen flex flex-col px-5 pt-12 pb-8 md:hidden" style={{ backgroundColor: '#0E1410' }}>
-      <Helmet>
-        <title>Login - SnoopTrade</title>
-      </Helmet>
+  return (
+    <GoogleOAuthProvider clientId={CLIENT_ID}>
+      <div className="signal-surface min-h-screen text-[#E6ECE8]">
+        <Helmet>
+          <title>Login - SnoopTrade</title>
+        </Helmet>
 
-      {/* Header block */}
-      <div className="mb-8" style={{ gap: 8 }}>
-        <p style={{ color: '#A7B7AC', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>SnoopTrade</p>
-        <h1 style={{ color: '#EAF5EC', fontSize: 28, fontWeight: 700, marginBottom: 8 }}>Welcome back</h1>
-        <p style={{ color: '#A7B7AC', fontSize: 15 }}>Sign in to track insider activity.</p>
-      </div>
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <section className="signal-glass hidden rounded-3xl p-10 lg:block">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">SnoopTrade</p>
+              <h1 className="mt-5 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Welcome back</h1>
+              <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
+                Sign in to monitor insider behavior, confidence signals, and market-moving activity.
+              </p>
 
-      {/* Form block */}
-      <GoogleOAuthProvider clientId={CLIENT_ID}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {/* Email input */}
-          <div className="mobile-input">
-            <input
-              type="email"
-              placeholder="Email"
-              style={{
-                width: '100%', background: 'transparent', border: 'none', outline: 'none',
-                color: '#EAF5EC', fontSize: 15,
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const pwInput = document.getElementById('mobile-password');
-                  if (pwInput) pwInput.focus();
-                }
-              }}
-              id="mobile-email"
-            />
-          </div>
+              <div className="mt-10 grid grid-cols-2 gap-4">
+                <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Daily filings tracked</p>
+                  <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">14,832</p>
+                </article>
+                <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg signal latency</p>
+                  <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">3.2m</p>
+                </article>
+              </div>
 
-          {/* Password input */}
-          <div className="mobile-input">
-            <input
-              type="password"
-              placeholder="Password"
-              style={{
-                width: '100%', background: 'transparent', border: 'none', outline: 'none',
-                color: '#EAF5EC', fontSize: 15,
-              }}
-              id="mobile-password"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const emailEl = document.getElementById('mobile-email') as HTMLInputElement;
-                  const pwEl = document.getElementById('mobile-password') as HTMLInputElement;
-                  if (emailEl?.value && pwEl?.value) {
-                    handleFormSubmit(emailEl.value, pwEl.value);
-                  }
-                }
-              }}
-            />
-          </div>
+              <div className="mt-8 rounded-2xl border border-[#2B4134] bg-[#101A14] p-6">
+                <h2 className="text-lg font-bold text-[#EAF5EC]">Why analysts choose SnoopTrade</h2>
+                <ul className="mt-4 space-y-2 text-sm text-[#BDCDC0]">
+                  <li>- Fast SEC event detection</li>
+                  <li>- Explainable transaction signals</li>
+                  <li>- Clean workflows for daily monitoring</li>
+                </ul>
+              </div>
+            </section>
 
-          {loginError && (
-            <p style={{ color: '#E56A6A', fontSize: 12, marginTop: 4 }}>{loginError}</p>
-          )}
+            <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">SnoopTrade</p>
+              <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Login</h2>
+              <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Use your email and password to continue.</p>
 
-          {/* Login button */}
-          <button
-            className="mobile-btn-primary"
-            style={{ marginTop: 12 }}
-            onClick={() => {
-              const emailEl = document.getElementById('mobile-email') as HTMLInputElement;
-              const pwEl = document.getElementById('mobile-password') as HTMLInputElement;
-              handleFormSubmit(emailEl?.value || '', pwEl?.value || '');
-            }}
-          >
-            Login
-          </button>
-
-          {/* OR divider */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24, marginBottom: 24 }}>
-            <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
-            <span style={{ color: '#A7B7AC', fontSize: 12 }}>OR</span>
-            <div style={{ flex: 1, height: 1, backgroundColor: '#314036' }} />
-          </div>
-
-          {/* Google button */}
-          <div style={{ width: '100%' }}>
-            <GoogleLoginButton
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleFailure}
-            />
-          </div>
-
-          {/* Sign up link */}
-          <p style={{ textAlign: 'center', marginTop: 24, color: '#A7B7AC', fontSize: 15 }}>
-            No account yet?{' '}
-            <Link to="/signup" style={{ color: '#B7E389', fontWeight: 700, textDecoration: 'none' }}>
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </GoogleOAuthProvider>
-    </div>
-  );
-
-  /* ─── Desktop Login (≥ 768px) — unchanged ─── */
-  const desktopLogin = (
-    <div className="min-h-screen lg:fixed lg:inset-0 lg:h-screen lg:overflow-hidden hidden md:flex flex-col items-center bg-background pt-24 sm:pt-28 md:pt-32 lg:pt-24">
-      <Helmet>
-        <title>Login - SnoopTrade</title>
-      </Helmet>
-
-      <LoginHeader />
-
-      <GoogleOAuthProvider clientId={CLIENT_ID}>
-        <div className="animate-in fade-in duration-1000 flex-1 flex flex-col min-h-0 items-center justify-center px-4 py-6 lg:py-4 w-[92%] sm:w-[85%] lg:w-[75%] max-w-[1200px] mb-8 sm:mb-12 lg:mb-0">
-          <Card className="flex flex-col md:flex-row overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-card border-border max-h-[calc(100vh-8rem)] lg:max-h-[calc(100vh-6rem)]">
-            <WelcomePanel />
-
-            <div className="flex-1 flex items-center justify-center p-5 sm:p-8 md:p-12 bg-card min-h-0 overflow-y-auto">
-              <div className="w-full max-w-md space-y-4 sm:space-y-6">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-center text-card-foreground font-display">
-                  Login to Your Account
-                </h2>
-
-                <LoginForm onSubmit={handleFormSubmit} error={loginError} />
-
-                <div className="flex items-center my-4 sm:my-6">
-                  <div className="flex-1 border-b border-border" />
-                  <span className="px-4 text-sm text-muted-foreground">OR</span>
-                  <div className="flex-1 border-b border-border" />
+              <form onSubmit={handleFormSubmit} className="mt-8 space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-semibold text-[#A7B7AC]">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="signal-input h-12 rounded-2xl border px-4 text-base"
+                    placeholder="you@example.com"
+                  />
                 </div>
-
-                <div className="w-full">
-                  <GoogleLoginButton
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleFailure}
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-semibold text-[#A7B7AC]">
+                    Password
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="signal-input h-12 rounded-2xl border px-4 text-base"
+                    placeholder="Enter your password"
                   />
                 </div>
 
-                <p className="text-sm text-center text-muted-foreground mt-4 sm:mt-6">
-                  Don't have an account?{' '}
-                  <Link
-                    to="/signup"
-                    className="text-primary-strong font-semibold hover:underline transition-all"
-                  >
-                    Sign Up
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </GoogleOAuthProvider>
-    </div>
-  );
+                {loginError && (
+                  <p className="rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm font-medium text-[#F7D1D1]">
+                    {loginError}
+                  </p>
+                )}
 
-  return (
-    <>
-      {mobileLogin}
-      {desktopLogin}
-    </>
+                <Button type="submit" disabled={submitting} className="signal-cta h-12 w-full rounded-2xl text-base font-bold">
+                  {submitting ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Logging in...
+                    </span>
+                  ) : (
+                    'Login'
+                  )}
+                </Button>
+              </form>
+
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#2E4337]" />
+                <span className="text-xs font-semibold tracking-[0.14em] text-[#8EA197]">OR</span>
+                <div className="h-px flex-1 bg-[#2E4337]" />
+              </div>
+
+              <GoogleLoginButton onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
+
+              <p className="mt-7 text-center text-sm text-[#9AA99F]">
+                No account yet?{' '}
+                <Link to="/signup" className="font-bold text-[#B9EDAF] hover:underline">
+                  Sign up
+                </Link>
+              </p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 

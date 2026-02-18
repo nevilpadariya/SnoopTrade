@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from './components/ui/sonner';
-import { syncThemeWithPreference } from './utils/theme';
+import ThemeFloatingToggle from './components/ThemeFloatingToggle';
+import { hasThemePreference, syncThemeWithPreference } from './utils/theme';
 import './App.css';
 
 // ─── Lazy-loaded pages (code-split into separate chunks) ───
@@ -48,6 +49,14 @@ const HomeRoute = () => {
 const App = () => {
   useEffect(() => {
     syncThemeWithPreference();
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const onMediaChange = () => {
+      if (!hasThemePreference()) {
+        syncThemeWithPreference();
+      }
+    };
+    media.addEventListener('change', onMediaChange);
+    return () => media.removeEventListener('change', onMediaChange);
   }, []);
 
   return (
@@ -81,6 +90,7 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <ThemeFloatingToggle />
         </Router>
         <Toaster position="top-right" richColors closeButton />
       </AuthProvider>

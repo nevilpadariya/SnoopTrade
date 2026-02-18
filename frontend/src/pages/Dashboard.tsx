@@ -530,7 +530,7 @@ const Dashboard = () => {
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <BookmarkCheck className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Watchlist</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Watchlist</p>
                 </div>
                 {watchlist.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -541,8 +541,8 @@ const Dashboard = () => {
                         onClick={() => handleCompanySelect(ticker)}
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
-                            ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            ? 'border-[#91D88C] bg-[#1F3325] text-[#173025] dark:text-[#DFF0DF]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#31483C] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -550,14 +550,14 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#8EA197]">No saved tickers yet.</p>
+                  <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No saved tickers yet.</p>
                 )}
               </div>
 
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <History className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Recent</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Recent</p>
                 </div>
                 {recentTickers.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -568,8 +568,8 @@ const Dashboard = () => {
                         onClick={() => handleCompanySelect(ticker)}
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
-                            ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            ? 'border-[#91D88C] bg-[#1F3325] text-[#173025] dark:text-[#DFF0DF]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#31483C] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -577,7 +577,7 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#8EA197]">No recent selections.</p>
+                  <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No recent selections.</p>
                 )}
               </div>
             </div>

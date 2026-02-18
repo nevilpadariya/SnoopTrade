@@ -9,29 +9,44 @@ function getSystemTheme(): ThemeMode {
   return window.matchMedia(SYSTEM_DARK_QUERY).matches ? 'dark' : 'light';
 }
 
-export function getThemePreference(): ThemeMode {
-  if (typeof window === 'undefined') return 'dark';
+export function hasThemePreference(): boolean {
+  if (typeof window === 'undefined') return false;
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') {
-    return stored;
+  return stored === 'light' || stored === 'dark';
+}
+
+export function getThemePreference(): ThemeMode {
+  if (hasThemePreference()) {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null;
+    if (stored === 'light' || stored === 'dark') {
+      return stored;
+    }
   }
   return getSystemTheme();
 }
 
-export function applyTheme(theme: ThemeMode): void {
+export function applyTheme(theme: ThemeMode, persist = false): void {
   if (typeof document === 'undefined') return;
   document.documentElement.classList.toggle(DARK_CLASS, theme === 'dark');
-  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  if (persist && typeof window !== 'undefined') {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }
+}
+
+export function clearThemePreference(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(THEME_STORAGE_KEY);
+  applyTheme(getSystemTheme(), false);
 }
 
 export function toggleThemePreference(): ThemeMode {
   const nextTheme: ThemeMode = getThemePreference() === 'dark' ? 'light' : 'dark';
-  applyTheme(nextTheme);
+  applyTheme(nextTheme, true);
   return nextTheme;
 }
 
 export function syncThemeWithPreference(): ThemeMode {
   const initialTheme = getThemePreference();
-  applyTheme(initialTheme);
+  applyTheme(initialTheme, false);
   return initialTheme;
 }

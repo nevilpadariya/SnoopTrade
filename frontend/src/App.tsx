@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from './components/ui/sonner';
+import { syncThemeWithPreference } from './utils/theme';
 import './App.css';
 
 // ─── Lazy-loaded pages (code-split into separate chunks) ───
@@ -46,8 +47,7 @@ const HomeRoute = () => {
 
 const App = () => {
   useEffect(() => {
-    // Force dark mode so shadcn semantic tokens match the new Signal Glass theme.
-    document.documentElement.classList.add('dark');
+    syncThemeWithPreference();
   }, []);
 
   return (

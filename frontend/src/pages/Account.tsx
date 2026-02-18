@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, LogOut } from 'lucide-react';
+import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, LogOut, Moon, Sun } from 'lucide-react';
 import MobileBottomNav from '../components/MobileBottomNav';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
 import { authFetch } from '../utils/authFetch';
+import { getThemePreference, toggleThemePreference, type ThemeMode } from '../utils/theme';
 
 interface UserData {
   email: string;
@@ -44,6 +45,11 @@ const Account = () => {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [formError, setFormError] = useState('');
+  const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
+
+  useEffect(() => {
+    setThemeMode(getThemePreference());
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -145,6 +151,10 @@ const Account = () => {
     navigate('/login');
   };
 
+  const handleThemeToggle = () => {
+    setThemeMode(toggleThemePreference());
+  };
+
   const initials = getInitials(userData?.name);
   const loginBadge = userData?.login_type === 'google' ? 'Google' : userData?.login_type === 'both' ? 'Google + Email' : 'Email';
 
@@ -159,13 +169,24 @@ const Account = () => {
           <Link to="/" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
             SnoopTrade
           </Link>
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
-          >
-            <Link to="/dashboard">Back to Dashboard</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleThemeToggle}
+              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-3 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+            >
+              {themeMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+            >
+              <Link to="/dashboard">Back to Dashboard</Link>
+            </Button>
+          </div>
         </div>
       </header>
 

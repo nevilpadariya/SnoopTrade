@@ -1,8 +1,155 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import API_ENDPOINTS from '../utils/apiEndpoints';
+
+interface InsiderNewsItem {
+  title: string;
+  link: string;
+  source: string;
+  source_url?: string | null;
+  published_at?: string | null;
+}
+
+const NEWS_SESSION_STORAGE_KEY = 'snooptrade.news_session_id';
+
+function getNewsSessionId(): string {
+  if (typeof window === 'undefined') return 'server';
+  const existing = localStorage.getItem(NEWS_SESSION_STORAGE_KEY);
+  if (existing) return existing;
+  const generated =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `news-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  localStorage.setItem(NEWS_SESSION_STORAGE_KEY, generated);
+  return generated;
+}
+
+function formatRelativeTime(dateValue?: string | null): string {
+  if (!dateValue) return 'Recent';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return 'Recent';
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+  if (diffMinutes < 1) return 'Just now';
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+}
 
 const Landing = () => {
+  const [newsItems, setNewsItems] = useState<InsiderNewsItem[]>([]);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [newsError, setNewsError] = useState('');
+  const [activeNewsIndex, setActiveNewsIndex] = useState(0);
+  const [lastNewsRefreshAt, setLastNewsRefreshAt] = useState<Date | null>(null);
+  const [newsSessionId] = useState<string>(() => getNewsSessionId());
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadNews = async (initial = false) => {
+      if (initial) setLoadingNews(true);
+      try {
+        const response = await fetch(API_ENDPOINTS.getInsiderNews(8));
+        if (!response.ok) {
+          throw new Error(`News endpoint returned ${response.status}`);
+        }
+        const payload = (await response.json()) as InsiderNewsItem[];
+        if (cancelled) return;
+        setNewsItems(payload);
+        setNewsError('');
+        setLastNewsRefreshAt(new Date());
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Failed to load insider news', error);
+        setNewsError('Live feed is temporarily unavailable.');
+      } finally {
+        if (!cancelled) {
+          setLoadingNews(false);
+        }
+      }
+    };
+
+    void loadNews(true);
+    const refreshTimer = window.setInterval(() => {
+      void loadNews(false);
+    }, 5 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(refreshTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (newsItems.length < 2) return;
+    const autoplay = window.setInterval(() => {
+      setActiveNewsIndex((prev) => (prev + 1) % newsItems.length);
+    }, 5200);
+    return () => window.clearInterval(autoplay);
+  }, [newsItems.length]);
+
+  useEffect(() => {
+    if (activeNewsIndex >= newsItems.length) {
+      setActiveNewsIndex(0);
+    }
+  }, [activeNewsIndex, newsItems.length]);
+
+  const hasNews = newsItems.length > 0;
+  const activeNews = hasNews ? newsItems[activeNewsIndex] : null;
+  const refreshLabel = useMemo(() => formatRelativeTime(lastNewsRefreshAt?.toISOString()), [lastNewsRefreshAt]);
+
+  const goPrev = () => {
+    if (!newsItems.length) return;
+    setActiveNewsIndex((prev) => (prev - 1 + newsItems.length) % newsItems.length);
+  };
+
+  const goNext = () => {
+    if (!newsItems.length) return;
+    setActiveNewsIndex((prev) => (prev + 1) % newsItems.length);
+  };
+
+  const trackNewsClick = useCallback(
+    (item: InsiderNewsItem, clickTarget: 'story' | 'source') => {
+      const payload = {
+        title: item.title,
+        link: item.link,
+        source: item.source,
+        source_url: item.source_url ?? null,
+        published_at: item.published_at ?? null,
+        click_target: clickTarget,
+        position: activeNewsIndex,
+        total_items: newsItems.length,
+        page: 'landing',
+        session_id: newsSessionId,
+        referrer: typeof window !== 'undefined' ? window.location.href : '',
+      };
+      const body = JSON.stringify(payload);
+
+      if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+        const accepted = navigator.sendBeacon(
+          API_ENDPOINTS.trackInsiderNewsClick,
+          new Blob([body], { type: 'application/json' }),
+        );
+        if (accepted) return;
+      }
+
+      void fetch(API_ENDPOINTS.trackInsiderNewsClick, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch((error) => {
+        console.warn('Failed to track insider-news click', error);
+      });
+    },
+    [activeNewsIndex, newsItems.length, newsSessionId],
+  );
+
   return (
     <>
       <Helmet>
@@ -96,6 +243,102 @@ const Landing = () => {
                   <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">3.2m</p>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 lg:pb-16">
+            <div className="signal-glass rounded-3xl p-5 sm:p-7">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">Live Insider Pulse</p>
+                  <h2 className="mt-1 text-2xl font-extrabold text-[#EAF5EC] sm:text-3xl">Realtime Insider Trade News</h2>
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Updated {refreshLabel}</p>
+              </div>
+
+              {loadingNews ? (
+                <div className="mt-5 h-44 animate-pulse rounded-2xl border border-[#35503D] bg-[#111A15]" />
+              ) : newsError && !hasNews ? (
+                <div className="mt-5 rounded-2xl border border-[#603333] bg-[#2B1717] p-4 text-sm font-semibold text-[#F6CCCC]">
+                  {newsError}
+                </div>
+              ) : activeNews ? (
+                <div className="mt-5 rounded-2xl border border-[#35503D] bg-[#111A15] p-5 sm:p-6">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-[#8EA197]">
+                    <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#8FE78E]" />
+                    <span>{activeNews.source}</span>
+                    <span aria-hidden>•</span>
+                    <span>{formatRelativeTime(activeNews.published_at)}</span>
+                  </div>
+
+                  <h3 className="mt-3 text-xl font-bold leading-tight text-[#EAF5EC] sm:text-2xl">{activeNews.title}</h3>
+
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={goPrev}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#35503D] bg-[#18241D] text-[#D6E2D8] transition hover:bg-[#203027]"
+                        aria-label="Previous headline"
+                      >
+                        <ChevronLeft size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={goNext}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#35503D] bg-[#18241D] text-[#D6E2D8] transition hover:bg-[#203027]"
+                        aria-label="Next headline"
+                      >
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      {activeNews.source_url && (
+                        <a
+                          href={activeNews.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => trackNewsClick(activeNews, 'source')}
+                          className="inline-flex h-10 items-center rounded-xl border border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D6E2D8] transition hover:bg-[#203027]"
+                        >
+                          Source Site
+                        </a>
+                      )}
+                      <a
+                        href={activeNews.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackNewsClick(activeNews, 'story')}
+                        className="signal-cta inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold"
+                      >
+                        Read Full Story
+                        <ExternalLink size={15} />
+                      </a>
+                    </div>
+                  </div>
+
+                  {newsItems.length > 1 && (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {newsItems.map((item, index) => (
+                        <button
+                          key={`${item.link}-${index}`}
+                          type="button"
+                          onClick={() => setActiveNewsIndex(index)}
+                          className={`h-1.5 rounded-full transition ${
+                            index === activeNewsIndex ? 'w-8 bg-[#9BEA95]' : 'w-3 bg-[#35503D] hover:bg-[#4A6853]'
+                          }`}
+                          aria-label={`Open headline ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-5 rounded-2xl border border-[#35503D] bg-[#111A15] p-4 text-sm text-[#B8C8BC]">
+                  No headlines found right now. Please check again shortly.
+                </div>
+              )}
             </div>
           </section>
 

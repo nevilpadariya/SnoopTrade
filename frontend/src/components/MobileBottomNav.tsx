@@ -38,8 +38,8 @@ export default function MobileBottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       style={{
-        backgroundColor: '#1A231C',
-        borderTop: '1px solid #314036',
+        backgroundColor: 'hsl(var(--card))',
+        borderTop: '1px solid hsl(var(--border))',
         height: 70,
         paddingTop: 8,
         paddingBottom: 10,
@@ -54,7 +54,7 @@ export default function MobileBottomNav() {
               key={tab.label}
               onClick={() => handleTabPress(tab)}
               className="flex flex-col items-center justify-center gap-1 flex-1"
-              style={{ color: active ? '#B7E389' : '#A7B7AC' }}
+              style={{ color: active ? 'hsl(var(--primary-strong))' : 'hsl(var(--muted-foreground))' }}
             >
               <Icon size={22} />
               <span style={{ fontSize: 11, fontWeight: active ? 700 : 400 }}>

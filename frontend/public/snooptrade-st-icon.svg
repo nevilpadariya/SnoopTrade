@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SnoopTrade market signal icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A1310"/>
+      <stop offset="100%" stop-color="#11231A"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#63CC79"/>
+      <stop offset="100%" stop-color="#D2FFC0"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="78%" cy="18%" r="70%">
+      <stop offset="0%" stop-color="#9BEA97" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#9BEA97" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="6" height="6" patternUnits="userSpaceOnUse">
+      <path d="M6 0H0V6" fill="none" stroke="#8DD78D" stroke-opacity="0.22" stroke-width="0.6"/>
+    </pattern>
+    <clipPath id="tile">
+      <rect x="4" y="4" width="56" height="56" rx="13"/>
+    </clipPath>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bg)" stroke="#2D473B" stroke-width="2"/>
+  <rect x="4" y="4" width="56" height="56" rx="13" fill="url(#aura)"/>
+
+  <g clip-path="url(#tile)">
+    <rect x="4" y="34" width="56" height="26" fill="url(#grid)" opacity="0.55"/>
+  </g>
+
+  <circle cx="32" cy="30" r="13.5" fill="none" stroke="#6FBC79" stroke-opacity="0.28" stroke-width="1.7"/>
+  <circle cx="32" cy="30" r="9.5" fill="none" stroke="#7CCF83" stroke-opacity="0.35" stroke-width="1.2"/>
+
+  <path d="M22 39V30" stroke="url(#signal)" stroke-width="2.4" stroke-linecap="round"/>
+  <rect x="20.2" y="31.2" width="3.6" height="5.8" rx="1.1" fill="url(#signal)"/>
+  <path d="M30 37V24" stroke="url(#signal)" stroke-width="2.4" stroke-linecap="round"/>
+  <rect x="28.2" y="26.2" width="3.6" height="7.8" rx="1.1" fill="url(#signal)"/>
+  <path d="M38 34V21" stroke="url(#signal)" stroke-width="2.4" stroke-linecap="round"/>
+  <rect x="36.2" y="22.8" width="3.6" height="8.4" rx="1.1" fill="url(#signal)"/>
+
+  <path d="M17 44L25 38L31 40L40 31L46 33L52 24" fill="none" stroke="url(#signal)" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"/>
+  <circle cx="52" cy="24" r="2.1" fill="#D9FFC8"/>
+</svg>

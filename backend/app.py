@@ -17,6 +17,7 @@ from routers.stock_router import stock_router
 from routers.forecast_router import forecast_router
 from routers.admin_router import admin_router
 from routers.prefetch_router import prefetch_router
+from routers.news_router import news_router
 from scheduler import start_scheduler, shutdown_scheduler
 from services.stock_service import ensure_indexes
 from database.database import client as mongo_client
@@ -140,6 +141,7 @@ app.include_router(stock_router, tags=["Stocks"])
 app.include_router(forecast_router, tags=["Forecasts"])
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(prefetch_router, tags=["Prefetch"])
+app.include_router(news_router, tags=["News"])
 
 
 @app.get("/")

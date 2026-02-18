@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookmarkCheck, BookmarkPlus, History, Loader2, LogOut, Search, Sparkles, User as UserIcon } from 'lucide-react';
+import { BookmarkCheck, BookmarkPlus, History, Loader2, LogOut, Moon, Search, Sparkles, Sun, User as UserIcon } from 'lucide-react';
 import { COMPANIES, COMPANY_NAMES } from '../data/companies';
 import { useAuth } from '../context/AuthContext';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { authFetch } from '../utils/authFetch';
+import { getThemePreference, toggleThemePreference, type ThemeMode } from '../utils/theme';
 
 const TIME_PERIODS: Record<string, string> = {
   '1M': '1m',
@@ -77,6 +78,7 @@ const Dashboard = () => {
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [recentTickers, setRecentTickers] = useState<string[]>([]);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
 
   useEffect(() => {
     if (location.state?.company && COMPANIES.includes(location.state.company)) {
@@ -108,6 +110,10 @@ const Dashboard = () => {
     setShowWelcomeAnimation(true);
     const timer = window.setTimeout(() => setShowWelcomeAnimation(false), 2600);
     return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    setThemeMode(getThemePreference());
   }, []);
 
   useEffect(() => {
@@ -347,6 +353,10 @@ const Dashboard = () => {
     navigate('/login', { replace: true });
   }, [navigate, setToken]);
 
+  const handleThemeToggle = useCallback(() => {
+    setThemeMode(toggleThemePreference());
+  }, []);
+
   return (
     <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
@@ -415,6 +425,13 @@ const Dashboard = () => {
                 >
                   <UserIcon className="mr-2 h-4 w-4" />
                   Account
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={handleThemeToggle}
+                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-[#203027] focus:text-[#EAF5EC]"
+                >
+                  {themeMode === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+                  {themeMode === 'dark' ? 'Light mode' : 'Dark mode'}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#2F4438]" />
                 <DropdownMenuItem

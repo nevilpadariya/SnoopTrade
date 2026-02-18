@@ -31,6 +31,24 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
     }
     return acc;
   }, []);
+  const totalTransactions = tradeData.length;
+
+  const groupedTransactionTypeData = transactionTypeData
+    .reduce((acc: any[], item: any) => {
+      const ratio = totalTransactions > 0 ? item.value / totalTransactions : 0;
+      if (ratio < 0.04) {
+        const others = acc.find((entry) => entry.name === 'Others');
+        if (others) {
+          others.value += item.value;
+        } else {
+          acc.push({ name: 'Others', value: item.value });
+        }
+      } else {
+        acc.push(item);
+      }
+      return acc;
+    }, [])
+    .sort((a: any, b: any) => b.value - a.value);
 
   const totalShares = tradeData.reduce((sum, trade) => sum + trade.shares, 0);
   
@@ -46,8 +64,8 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
 
   // Group small values into "Others" to match the cleaner look of the left chart
   const sharesData = rawSharesData.reduce((acc: any[], item: any) => {
-    // If value is less than 2% of total, group it
-    if (item.value / totalShares < 0.02) {
+    // If value is less than 3% of total, group it
+    if (totalShares > 0 && item.value / totalShares < 0.03) {
       const others = acc.find(i => i.name === 'Others');
       if (others) {
         others.value += item.value;
@@ -64,7 +82,7 @@ const InsiderTradingChats: React.FC<InsiderTradingChatsProps> = ({ tradeData }) 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
       <PieChartContainer
         title="Transaction Types Distribution"
-        data={transactionTypeData}
+        data={groupedTransactionTypeData}
         dataKey="value"
         nameKey="name"
         colors={COLORS}

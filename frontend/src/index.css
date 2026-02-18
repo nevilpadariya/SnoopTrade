@@ -26,6 +26,29 @@
     --input: 110 18% 82%;
     --ring: 95 45% 82%;
     --radius: 0.5rem;
+
+    /* Signal theme tokens (light mode) */
+    --signal-surface-bg: #f1f6f2;
+    --signal-surface-radial-top: rgba(123, 190, 128, 0.16);
+    --signal-surface-radial-bottom: rgba(103, 170, 115, 0.1);
+    --signal-grid-line: rgba(95, 134, 104, 0.12);
+    --signal-glass-start: rgba(255, 255, 255, 0.94);
+    --signal-glass-end: rgba(243, 248, 245, 0.92);
+    --signal-glass-border: rgba(154, 185, 163, 0.8);
+    --signal-glass-shadow: rgba(12, 24, 18, 0.12);
+    --signal-glass-inset: rgba(120, 167, 132, 0.2);
+    --signal-chip-border: rgba(144, 174, 153, 0.85);
+    --signal-chip-bg: rgba(232, 240, 235, 0.92);
+    --signal-chip-text: #2d473a;
+    --signal-input-border: rgba(147, 179, 157, 0.88);
+    --signal-input-bg: rgba(248, 251, 249, 0.96);
+    --signal-input-text: #1e3127;
+    --signal-input-placeholder: #5b7668;
+    --signal-input-focus-border: rgba(104, 173, 113, 0.88);
+    --signal-input-focus-shadow: rgba(120, 192, 128, 0.2);
+    --signal-cta-start: #79d87e;
+    --signal-cta-end: #5fc970;
+    --signal-cta-text: #0f1b14;
   }
 
   .dark {
@@ -50,6 +73,29 @@
     --border: 120 8% 25%;
     --input: 120 8% 25%;
     --ring: 95 35% 70%;
+
+    /* Signal theme tokens (dark mode) */
+    --signal-surface-bg: #080b09;
+    --signal-surface-radial-top: rgba(144, 217, 135, 0.18);
+    --signal-surface-radial-bottom: rgba(123, 201, 122, 0.14);
+    --signal-grid-line: rgba(108, 135, 116, 0.08);
+    --signal-glass-start: rgba(18, 29, 22, 0.95);
+    --signal-glass-end: rgba(10, 16, 12, 0.92);
+    --signal-glass-border: rgba(58, 84, 66, 0.9);
+    --signal-glass-shadow: rgba(0, 0, 0, 0.35);
+    --signal-glass-inset: rgba(177, 236, 173, 0.08);
+    --signal-chip-border: rgba(56, 84, 64, 0.95);
+    --signal-chip-bg: rgba(20, 33, 25, 0.75);
+    --signal-chip-text: #c7d0ca;
+    --signal-input-border: rgba(52, 76, 60, 0.95);
+    --signal-input-bg: rgba(23, 35, 28, 0.85);
+    --signal-input-text: #e6ece8;
+    --signal-input-placeholder: #8ea197;
+    --signal-input-focus-border: rgba(153, 226, 147, 0.9);
+    --signal-input-focus-shadow: rgba(167, 232, 154, 0.15);
+    --signal-cta-start: #a7e89a;
+    --signal-cta-end: #7bc97a;
+    --signal-cta-text: #0e1410;
   }
 }
 
@@ -165,10 +211,10 @@
   }
 
   .signal-surface {
-    background-color: #080b09;
+    background-color: var(--signal-surface-bg);
     background-image:
-      radial-gradient(1200px 600px at 75% 0%, rgba(144, 217, 135, 0.18) 0%, rgba(144, 217, 135, 0) 60%),
-      radial-gradient(1000px 520px at 20% 100%, rgba(123, 201, 122, 0.14) 0%, rgba(123, 201, 122, 0) 70%);
+      radial-gradient(1200px 600px at 75% 0%, var(--signal-surface-radial-top) 0%, rgba(144, 217, 135, 0) 60%),
+      radial-gradient(1000px 520px at 20% 100%, var(--signal-surface-radial-bottom) 0%, rgba(123, 201, 122, 0) 70%);
   }
 
   .signal-page {
@@ -178,47 +224,115 @@
 
   .signal-grid-overlay {
     background-image:
-      linear-gradient(rgba(108, 135, 116, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(108, 135, 116, 0.08) 1px, transparent 1px);
+      linear-gradient(var(--signal-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--signal-grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
   .signal-glass {
-    background: linear-gradient(165deg, rgba(18, 29, 22, 0.95) 0%, rgba(10, 16, 12, 0.92) 100%);
-    border: 1px solid rgba(58, 84, 66, 0.9);
+    background: linear-gradient(165deg, var(--signal-glass-start) 0%, var(--signal-glass-end) 100%);
+    border: 1px solid var(--signal-glass-border);
     box-shadow:
-      0 20px 45px rgba(0, 0, 0, 0.35),
-      inset 0 1px 0 rgba(177, 236, 173, 0.08);
+      0 20px 45px var(--signal-glass-shadow),
+      inset 0 1px 0 var(--signal-glass-inset);
     backdrop-filter: blur(12px);
   }
 
   .signal-chip {
-    border: 1px solid rgba(56, 84, 64, 0.95);
-    background: rgba(20, 33, 25, 0.75);
-    color: #c7d0ca;
+    border: 1px solid var(--signal-chip-border);
+    background: var(--signal-chip-bg);
+    color: var(--signal-chip-text);
     border-radius: 999px;
   }
 
   .signal-input {
-    border: 1px solid rgba(52, 76, 60, 0.95);
-    background: rgba(23, 35, 28, 0.85);
-    color: #e6ece8;
+    border: 1px solid var(--signal-input-border);
+    background: var(--signal-input-bg);
+    color: var(--signal-input-text);
   }
 
   .signal-input::placeholder {
-    color: #8ea197;
+    color: var(--signal-input-placeholder);
   }
 
   .signal-input:focus {
     outline: none;
-    border-color: rgba(153, 226, 147, 0.9);
-    box-shadow: 0 0 0 3px rgba(167, 232, 154, 0.15);
+    border-color: var(--signal-input-focus-border);
+    box-shadow: 0 0 0 3px var(--signal-input-focus-shadow);
   }
 
   .signal-cta {
-    background: linear-gradient(135deg, #a7e89a 0%, #7bc97a 100%);
-    color: #0e1410;
+    background: linear-gradient(135deg, var(--signal-cta-start) 0%, var(--signal-cta-end) 100%);
+    color: var(--signal-cta-text);
   }
+}
+
+html:not(.dark) .text-\[\#E6ECE8\],
+html:not(.dark) .text-\[\#EAF5EC\],
+html:not(.dark) .text-\[\#D4E2D6\],
+html:not(.dark) .text-\[\#D6E2D8\],
+html:not(.dark) .text-\[\#D7E8D8\],
+html:not(.dark) .text-\[\#D5E9D6\],
+html:not(.dark) .text-\[\#DDEADF\],
+html:not(.dark) .text-\[\#DCEADA\] {
+  color: #1f3228 !important;
+}
+
+html:not(.dark) .text-\[\#BED0C2\],
+html:not(.dark) .text-\[\#BDCDC0\],
+html:not(.dark) .text-\[\#B9C9BD\],
+html:not(.dark) .text-\[\#B8C8BC\],
+html:not(.dark) .text-\[\#B7C8BC\],
+html:not(.dark) .text-\[\#B6C8BB\],
+html:not(.dark) .text-\[\#B3C4B8\],
+html:not(.dark) .text-\[\#A8BAAD\],
+html:not(.dark) .text-\[\#9BAEA1\],
+html:not(.dark) .text-\[\#9AA99F\],
+html:not(.dark) .text-\[\#98AB9E\] {
+  color: #4b6658 !important;
+}
+
+html:not(.dark) .text-\[\#A7B7AC\],
+html:not(.dark) .text-\[\#93A89A\],
+html:not(.dark) .text-\[\#8EA197\],
+html:not(.dark) .text-\[\#9FB1A5\],
+html:not(.dark) .text-\[\#C9D8CB\] {
+  color: #5b7568 !important;
+}
+
+html:not(.dark) .text-\[\#A7E89A\],
+html:not(.dark) .text-\[\#B9EDAF\],
+html:not(.dark) .text-\[\#CFF1C7\] {
+  color: #2f8f4c !important;
+}
+
+html:not(.dark) .bg-\[\#101813\]\/90 {
+  background-color: rgba(240, 247, 243, 0.92) !important;
+}
+
+html:not(.dark) .bg-\[\#18241D\],
+html:not(.dark) .bg-\[\#122019\],
+html:not(.dark) .bg-\[\#111A15\],
+html:not(.dark) .bg-\[\#101A14\],
+html:not(.dark) .bg-\[\#142119\],
+html:not(.dark) .bg-\[\#1A2B21\],
+html:not(.dark) .bg-\[\#213329\] {
+  background-color: #f1f7f3 !important;
+}
+
+html:not(.dark) .border-\[\#2D4035\],
+html:not(.dark) .border-\[\#35503D\],
+html:not(.dark) .border-\[\#35503E\],
+html:not(.dark) .border-\[\#34503E\],
+html:not(.dark) .border-\[\#3D5A45\] {
+  border-color: #b8ccbf !important;
+}
+
+html:not(.dark) .hover\:bg-\[\#203027\]:hover,
+html:not(.dark) .hover\:bg-\[\#1E2C24\]:hover,
+html:not(.dark) .hover\:bg-\[\#1F2F25\]:hover,
+html:not(.dark) .hover\:bg-\[\#22372B\]:hover {
+  background-color: #dbe9df !important;
 }
 
 main {

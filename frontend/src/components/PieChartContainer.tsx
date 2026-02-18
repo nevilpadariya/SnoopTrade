@@ -70,13 +70,18 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
     return TRANSACTION_NAMES[value] || value;
   };
 
+  const safeData = data.filter((item) => Number(item?.[dataKey]) > 0);
+  const isSingleSlice = safeData.length === 1;
+  const chartData = safeData.length > 0 ? safeData : [{ name: 'No data', value: 1 }];
+  const showLegend = safeData.length > 0;
+
   return (
     <Card className="p-3 md:p-6 bg-card/80 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardContent className="p-0">
         <h3 className="text-sm md:text-xl font-semibold mb-2 md:mb-4 text-card-foreground font-display">
           {title}
         </h3>
-        <ResponsiveContainer width="100%" height={isMobile ? 320 : 400}>
+        <ResponsiveContainer width="100%" height={isMobile ? 300 : 360}>
           <PieChart>
             <defs>
               {colors.map((color, index) => (
@@ -94,29 +99,35 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
               ))}
             </defs>
             <Pie
-              data={data}
+              data={chartData}
               dataKey={dataKey}
               nameKey={nameKey}
               cx="50%"
-              cy="50%"
+              cy={isMobile ? '45%' : '43%'}
               innerRadius={isMobile ? 40 : 60}
-              outerRadius={isMobile ? 70 : 100}
-              paddingAngle={3}
-              label={isMobile ? false : renderCustomLabel}
-              labelLine={isMobile ? false : {
-                stroke: 'hsl(var(--muted-foreground))',
-                strokeWidth: 1,
-              } as any}
+              outerRadius={isMobile ? 78 : 112}
+              startAngle={90}
+              endAngle={-270}
+              paddingAngle={isSingleSlice ? 0 : 3}
+              label={!isMobile && !isSingleSlice && safeData.length > 0 ? renderCustomLabel : false}
+              labelLine={
+                !isMobile && !isSingleSlice && safeData.length > 0
+                  ? ({
+                      stroke: 'hsl(var(--muted-foreground))',
+                      strokeWidth: 1,
+                    } as any)
+                  : false
+              }
               animationBegin={0}
               animationDuration={800}
               animationEasing="ease-out"
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={`url(#gradient-${index % colors.length})`}
-                  stroke="hsl(var(--card))"
-                  strokeWidth={2}
+                  fill={safeData.length > 0 ? `url(#gradient-${index % colors.length})` : 'hsl(var(--muted))'}
+                  stroke={isSingleSlice ? 'transparent' : 'hsl(var(--card))'}
+                  strokeWidth={isSingleSlice ? 0 : 2}
                   style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
                 />
               ))}
@@ -133,26 +144,28 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
               itemStyle={{
                 color: 'hsl(var(--card-foreground))',
               }}
-              formatter={(value: number, name: string) => [
-                value.toLocaleString(),
-                TRANSACTION_NAMES[name] || name,
-              ]}
+              formatter={(value: number, name: string) => [Number(value).toLocaleString(), TRANSACTION_NAMES[name] || name]}
               labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
             />
+            {showLegend ? (
               <Legend
                 verticalAlign="bottom"
-                height={84}
+                height={64}
                 formatter={formatLegendValue}
                 wrapperStyle={{
                   color: 'hsl(var(--card-foreground))',
-                  paddingTop: '20px',
-                  paddingBottom: '10px',
+                  paddingTop: '12px',
+                  paddingBottom: '6px',
                 }}
-              iconType="circle"
-              iconSize={10}
-            />
+                iconType="circle"
+                iconSize={10}
+              />
+            ) : undefined}
           </PieChart>
         </ResponsiveContainer>
+        {!showLegend && (
+          <p className="mt-2 text-xs text-muted-foreground">No distribution data available for this selection.</p>
+        )}
       </CardContent>
     </Card>
   );

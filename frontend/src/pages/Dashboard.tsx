@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookmarkCheck, BookmarkPlus, History, Loader2, Search, Sparkles } from 'lucide-react';
+import { BookmarkCheck, BookmarkPlus, History, Loader2, LogOut, Search, Sparkles, User as UserIcon } from 'lucide-react';
 import { COMPANIES, COMPANY_NAMES } from '../data/companies';
 import { useAuth } from '../context/AuthContext';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -13,6 +13,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Skeleton } from '../components/ui/skeleton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { fetchData } from '../utils/fetchData';
 import API_ENDPOINTS from '../utils/apiEndpoints';
 import { authFetch } from '../utils/authFetch';
@@ -337,6 +338,15 @@ const Dashboard = () => {
     { label: 'Low', value: latestStock ? `$${Number(latestStock.low).toFixed(2)}` : '--' },
   ];
 
+  const handleAccountOpen = useCallback(() => {
+    navigate('/account');
+  }, [navigate]);
+
+  const handleLogout = useCallback(() => {
+    setToken(null);
+    navigate('/login', { replace: true });
+  }, [navigate, setToken]);
+
   return (
     <div className="signal-surface signal-page text-[#E6ECE8]">
       <Helmet>
@@ -385,16 +395,37 @@ const Dashboard = () => {
               <p className="text-xs text-[#8EA197]">{getGreeting()}</p>
               <p className="text-sm font-semibold text-[#D4E2D6]">{user?.name || user?.first_name || 'Trader'}</p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#35503D] bg-[#1A2B21] text-sm font-bold text-[#DDEADF]">
-              {initials}
-            </div>
-            <Button
-              asChild
-              variant="outline"
-              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
-            >
-              <Link to="/account">Account</Link>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#35503D] bg-[#1A2B21] text-sm font-bold text-[#DDEADF] transition hover:bg-[#22372B] focus:outline-none focus:ring-2 focus:ring-[#8BCF86] focus:ring-offset-2 focus:ring-offset-[#101813]"
+                  aria-label="Open user menu"
+                >
+                  {initials}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-48 rounded-xl border-[#35503D] bg-[#15221B] p-1 text-[#DDEADF] shadow-2xl"
+              >
+                <DropdownMenuItem
+                  onSelect={handleAccountOpen}
+                  className="cursor-pointer rounded-lg px-3 py-2 focus:bg-[#203027] focus:text-[#EAF5EC]"
+                >
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Account
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-[#2F4438]" />
+                <DropdownMenuItem
+                  onSelect={handleLogout}
+                  className="cursor-pointer rounded-lg px-3 py-2 text-[#F1C8C8] focus:bg-[#3A2020] focus:text-[#FFDADA]"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

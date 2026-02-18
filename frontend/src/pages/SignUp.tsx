@@ -74,7 +74,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="signal-surface signal-page text-[#E6ECE8]">
+    <div className="signal-surface signal-page overflow-x-hidden text-[#E6ECE8] lg:overflow-hidden">
       <Helmet>
         <title>Sign Up - SnoopTrade</title>
       </Helmet>
@@ -94,9 +94,9 @@ const SignUp = () => {
         </div>
       </header>
 
-      <main className="signal-grid-overlay">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-16">
-          <section className="signal-glass hidden rounded-3xl p-10 lg:block">
+      <main className="signal-grid-overlay lg:h-[calc(100dvh-4rem)]">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:h-full lg:grid-cols-2 lg:px-8 lg:py-6">
+          <section className="signal-glass hidden rounded-3xl p-8 lg:block lg:h-full">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">SnoopTrade</p>
             <h1 className="mt-4 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Create your account</h1>
             <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
@@ -119,12 +119,12 @@ const SignUp = () => {
             </div>
           </section>
 
-          <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+          <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:flex lg:h-full lg:flex-col lg:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">SnoopTrade</p>
             <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Sign Up</h2>
             <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Create your account and start exploring insider signals.</p>
 
-            <form onSubmit={handleFormSubmit} className="mt-8 space-y-4">
+            <form onSubmit={handleFormSubmit} className="mt-6 space-y-4 lg:flex-1 lg:overflow-y-auto lg:pr-1">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-semibold text-[#A7B7AC]">Full Name</label>
                 <Input

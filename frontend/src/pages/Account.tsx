@@ -16,6 +16,7 @@ interface UserData {
   login_type: 'normal' | 'google' | 'both';
   first_name?: string;
   last_name?: string;
+  is_admin?: boolean;
 }
 
 interface NotificationPreferences {
@@ -33,6 +34,35 @@ interface NotificationPreferences {
   updated_at: string;
 }
 
+interface NotificationDispatchItem {
+  id: string;
+  channel: 'email' | 'webhook' | 'push' | string;
+  kind: 'realtime' | 'digest' | string;
+  success: boolean;
+  reason: string;
+  created_at: string;
+}
+
+interface PersonalizationSettings {
+  user_email: string;
+  enabled: boolean;
+  strength: number;
+  lookback_days: number;
+  created_at: string;
+  updated_at: string;
+}
+
+function formatDispatchTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Unknown';
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 function getInitials(name?: string): string {
   if (!name) return '?';
   return name
@@ -43,7 +73,7 @@ function getInitials(name?: string): string {
 }
 
 const Account = () => {
-  const { token, setToken } = useAuth();
+  const { token, setToken, user } = useAuth();
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -65,6 +95,17 @@ const Account = () => {
   const [notificationSaving, setNotificationSaving] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [notificationError, setNotificationError] = useState('');
+  const [dispatchLog, setDispatchLog] = useState<NotificationDispatchItem[]>([]);
+  const [dispatchLoading, setDispatchLoading] = useState(false);
+  const [dispatchError, setDispatchError] = useState('');
+  const [pushTokenInput, setPushTokenInput] = useState('');
+  const [pushPlatform, setPushPlatform] = useState('expo');
+  const [pushActionLoading, setPushActionLoading] = useState(false);
+  const [personalizationSettings, setPersonalizationSettings] = useState<PersonalizationSettings | null>(null);
+  const [personalizationLoading, setPersonalizationLoading] = useState(false);
+  const [personalizationSaving, setPersonalizationSaving] = useState(false);
+  const [personalizationMessage, setPersonalizationMessage] = useState('');
+  const [personalizationError, setPersonalizationError] = useState('');
   const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
 
   useEffect(() => {
@@ -125,9 +166,57 @@ const Account = () => {
     }
   };
 
+  const fetchDispatchLog = async () => {
+    if (!token) return;
+    setDispatchLoading(true);
+    setDispatchError('');
+    try {
+      const response = await authFetch(API_ENDPOINTS.getNotificationDispatchLog(30), undefined, token);
+      if (response.ok) {
+        const data = (await response.json()) as NotificationDispatchItem[];
+        setDispatchLog(data);
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setDispatchError(errorData.detail || 'Failed to load notification delivery log.');
+      }
+    } catch {
+      setDispatchError('Failed to load notification delivery log.');
+    } finally {
+      setDispatchLoading(false);
+    }
+  };
+
+  const fetchPersonalizationSettings = async () => {
+    if (!token) return;
+    setPersonalizationLoading(true);
+    setPersonalizationError('');
+    try {
+      const response = await authFetch(API_ENDPOINTS.getPersonalizationSettings, undefined, token);
+      if (response.ok) {
+        const data = (await response.json()) as PersonalizationSettings;
+        setPersonalizationSettings(data);
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setPersonalizationError(errorData.detail || 'Failed to load personalization settings.');
+      }
+    } catch {
+      setPersonalizationError('Failed to load personalization settings.');
+    } finally {
+      setPersonalizationLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!token) return;
     void fetchNotificationPreferences();
+    void fetchDispatchLog();
+    void fetchPersonalizationSettings();
   }, [token]);
 
   const updateNotificationPreferences = async (patch: Partial<NotificationPreferences>) => {
@@ -177,6 +266,7 @@ const Account = () => {
       if (response.ok) {
         const data = await response.json();
         setNotificationMessage(`Test dispatch complete. Attempted ${data.attempted ?? 0}, sent ${data.sent ?? 0}.`);
+        await fetchDispatchLog();
       } else if (response.status === 401) {
         setToken(null);
         navigate('/login', { replace: true });
@@ -202,6 +292,7 @@ const Account = () => {
       if (response.ok) {
         const data = await response.json();
         setNotificationMessage(`Digest dispatch complete. Attempted ${data.attempted ?? 0}, sent ${data.sent ?? 0}.`);
+        await fetchDispatchLog();
       } else if (response.status === 401) {
         setToken(null);
         navigate('/login', { replace: true });
@@ -214,9 +305,112 @@ const Account = () => {
     }
   };
 
+  const registerPushToken = async () => {
+    if (!token) return;
+    const cleanedToken = pushTokenInput.trim();
+    if (!cleanedToken) {
+      setNotificationError('Enter a push token before registering.');
+      return;
+    }
+
+    setPushActionLoading(true);
+    setNotificationMessage('');
+    setNotificationError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.registerPushToken,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: cleanedToken, platform: pushPlatform }),
+        },
+        token,
+      );
+      if (response.ok) {
+        setNotificationMessage('Push token registered successfully.');
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setNotificationError(errorData.detail || 'Failed to register push token.');
+      }
+    } catch {
+      setNotificationError('Failed to register push token.');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
+  const removePushToken = async () => {
+    if (!token) return;
+    const cleanedToken = pushTokenInput.trim();
+    if (!cleanedToken) {
+      setNotificationError('Enter a push token before removing.');
+      return;
+    }
+
+    setPushActionLoading(true);
+    setNotificationMessage('');
+    setNotificationError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.removePushToken(cleanedToken),
+        { method: 'DELETE' },
+        token,
+      );
+      if (response.ok) {
+        setNotificationMessage('Push token removed successfully.');
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setNotificationError(errorData.detail || 'Failed to remove push token.');
+      }
+    } catch {
+      setNotificationError('Failed to remove push token.');
+    } finally {
+      setPushActionLoading(false);
+    }
+  };
+
   const toggleNotificationFlag = (key: 'email_enabled' | 'webhook_enabled' | 'push_enabled' | 'daily_digest_enabled') => {
     if (!notificationPrefs) return;
     void updateNotificationPreferences({ [key]: !notificationPrefs[key] } as Partial<NotificationPreferences>);
+  };
+
+  const updatePersonalizationSettings = async (patch: Partial<PersonalizationSettings>) => {
+    if (!token || !personalizationSettings) return;
+    setPersonalizationSaving(true);
+    setPersonalizationMessage('');
+    setPersonalizationError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.updatePersonalizationSettings,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patch),
+        },
+        token,
+      );
+      if (response.ok) {
+        const data = (await response.json()) as PersonalizationSettings;
+        setPersonalizationSettings(data);
+        setPersonalizationMessage('Feed personalization settings updated.');
+      } else if (response.status === 401) {
+        setToken(null);
+        navigate('/login', { replace: true });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setPersonalizationError(errorData.detail || 'Failed to update personalization settings.');
+      }
+    } catch {
+      setPersonalizationError('Failed to update personalization settings.');
+    } finally {
+      setPersonalizationSaving(false);
+    }
   };
 
   const isGoogleOnlyUser = userData?.login_type === 'google';
@@ -323,6 +517,15 @@ const Account = () => {
             >
               <Link to="/dashboard">Back to Dashboard</Link>
             </Button>
+            {(user?.is_admin || userData?.is_admin) && (
+              <Button
+                asChild
+                variant="outline"
+                className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+              >
+                <Link to="/admin-ops">Admin Ops</Link>
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -484,6 +687,123 @@ const Account = () => {
                 </div>
 
                 <div className="mt-10 border-t border-[#2D4035] pt-6">
+                  <h2 className="text-2xl font-bold text-[#EAF5EC]">Feed Personalization</h2>
+                  <p className="mt-2 text-sm text-[#9BAEA1]">
+                    Tune how strongly your past outcomes affect Today Feed ranking.
+                  </p>
+
+                  {personalizationMessage && (
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#35503D] bg-[#18291F] px-4 py-3 text-sm text-[#BEE6BE]">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>{personalizationMessage}</span>
+                    </div>
+                  )}
+
+                  {personalizationError && (
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm text-[#F5CACA]">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>{personalizationError}</span>
+                    </div>
+                  )}
+
+                  {personalizationLoading ? (
+                    <div className="mt-5 flex items-center gap-2 text-sm text-[#9BAEA1]">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading personalization settings...
+                    </div>
+                  ) : personalizationSettings ? (
+                    <div className="mt-5 space-y-4">
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <button
+                          type="button"
+                          onClick={() => void updatePersonalizationSettings({ enabled: !personalizationSettings.enabled })}
+                          disabled={personalizationSaving}
+                          className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
+                            personalizationSettings.enabled
+                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
+                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                          }`}
+                        >
+                          Personalization: {personalizationSettings.enabled ? 'On' : 'Off'}
+                        </button>
+                        <div className="rounded-xl border border-[#35503D] bg-[#18241D] px-4 py-3 text-sm text-[#D4E2D6]">
+                          Effective lookback: {personalizationSettings.lookback_days}d
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <label htmlFor="personalizationStrength" className="text-sm font-semibold text-[#A7B7AC]">
+                            Strength (0.0 - 3.0)
+                          </label>
+                          <Input
+                            id="personalizationStrength"
+                            type="number"
+                            min={0}
+                            max={3}
+                            step={0.1}
+                            value={personalizationSettings.strength}
+                            onChange={(event) =>
+                              setPersonalizationSettings((prev) =>
+                                prev
+                                  ? { ...prev, strength: Math.max(0, Math.min(3, Number(event.target.value) || 0)) }
+                                  : prev,
+                              )
+                            }
+                            className="signal-input h-12 rounded-xl border"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label htmlFor="personalizationLookback" className="text-sm font-semibold text-[#A7B7AC]">
+                            Lookback Days (30 - 365)
+                          </label>
+                          <Input
+                            id="personalizationLookback"
+                            type="number"
+                            min={30}
+                            max={365}
+                            step={1}
+                            value={personalizationSettings.lookback_days}
+                            onChange={(event) =>
+                              setPersonalizationSettings((prev) =>
+                                prev
+                                  ? { ...prev, lookback_days: Math.max(30, Math.min(365, Number(event.target.value) || 30)) }
+                                  : prev,
+                              )
+                            }
+                            className="signal-input h-12 rounded-xl border"
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          void updatePersonalizationSettings({
+                            enabled: personalizationSettings.enabled,
+                            strength: personalizationSettings.strength,
+                            lookback_days: personalizationSettings.lookback_days,
+                          })
+                        }
+                        disabled={personalizationSaving}
+                        className="signal-cta h-11 rounded-xl px-4 text-sm font-bold"
+                      >
+                        {personalizationSaving ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Saving...
+                          </span>
+                        ) : (
+                          'Save Personalization Settings'
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-sm text-[#9BAEA1]">Personalization settings unavailable.</p>
+                  )}
+                </div>
+
+                <div className="mt-8 border-t border-[#2D4035] pt-6">
                   <h2 className="text-2xl font-bold text-[#EAF5EC]">Alerts & Notifications</h2>
                   <p className="mt-2 text-sm text-[#9BAEA1]">
                     Configure realtime delivery channels and daily digest behavior.
@@ -510,6 +830,16 @@ const Account = () => {
                     </div>
                   ) : notificationPrefs ? (
                     <div className="mt-5 space-y-4">
+                      <div className="rounded-xl border border-[#35503D] bg-[#111A15] px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Digest Mode</p>
+                        <p className="mt-1 text-sm text-[#D4E2D6]">
+                          Scheduled at {notificationPrefs.digest_hour_local.toString().padStart(2, '0')}:00 ({notificationPrefs.timezone})
+                        </p>
+                        <p className="mt-1 text-xs text-[#9BAEA1]">
+                          Last sent local date: {notificationPrefs.last_digest_local_date || 'Not sent yet'}
+                        </p>
+                      </div>
+
                       <div className="grid gap-3 sm:grid-cols-2">
                         <button
                           type="button"
@@ -630,6 +960,59 @@ const Account = () => {
                         </div>
                       </div>
 
+                      <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Push Token Management</p>
+                        <p className="mt-1 text-xs text-[#9BAEA1]">
+                          Register your Expo push token to receive mobile push alerts and digests.
+                        </p>
+                        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                          <div className="sm:col-span-2">
+                            <label htmlFor="pushToken" className="text-sm font-semibold text-[#A7B7AC]">
+                              Push Token
+                            </label>
+                            <Input
+                              id="pushToken"
+                              value={pushTokenInput}
+                              onChange={(event) => setPushTokenInput(event.target.value)}
+                              placeholder="ExponentPushToken[...]"
+                              className="signal-input mt-2 h-12 rounded-xl border"
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="pushPlatform" className="text-sm font-semibold text-[#A7B7AC]">
+                              Platform
+                            </label>
+                            <Input
+                              id="pushPlatform"
+                              value={pushPlatform}
+                              onChange={(event) => setPushPlatform(event.target.value)}
+                              placeholder="expo"
+                              className="signal-input mt-2 h-12 rounded-xl border"
+                            />
+                          </div>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-3">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => void registerPushToken()}
+                            disabled={pushActionLoading}
+                            className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                          >
+                            {pushActionLoading ? 'Saving...' : 'Register Token'}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => void removePushToken()}
+                            disabled={pushActionLoading}
+                            className="h-11 rounded-xl border-[#513434] bg-[#2B1717] px-4 text-sm font-semibold text-[#F6D8D8] hover:bg-[#341D1D]"
+                          >
+                            {pushActionLoading ? 'Updating...' : 'Remove Token'}
+                          </Button>
+                        </div>
+                      </div>
+
                       <div className="flex flex-wrap gap-3">
                         <Button
                           type="button"
@@ -657,7 +1040,7 @@ const Account = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={sendNotificationTest}
+                          onClick={() => void sendNotificationTest()}
                           className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
                         >
                           Send Test Notification
@@ -666,11 +1049,62 @@ const Account = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={sendDigestNow}
+                          onClick={() => void sendDigestNow()}
                           className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
                         >
                           Send Digest Now
                         </Button>
+                      </div>
+
+                      <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-4">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Delivery Log</p>
+                            <p className="mt-0.5 text-[11px] text-[#7F978A]">Recent channel dispatch attempts for your account.</p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => void fetchDispatchLog()}
+                            className="h-9 rounded-lg border-[#35503D] bg-[#18241D] px-3 text-xs font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                          >
+                            Refresh
+                          </Button>
+                        </div>
+
+                        {dispatchLoading ? (
+                          <div className="flex items-center gap-2 text-sm text-[#9BAEA1]">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Loading delivery log...
+                          </div>
+                        ) : dispatchError ? (
+                          <p className="rounded-lg border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F5CACA]">
+                            {dispatchError}
+                          </p>
+                        ) : dispatchLog.length > 0 ? (
+                          <div className="space-y-2">
+                            {dispatchLog.map((item) => (
+                              <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#2E4638] bg-[#142119] px-3 py-2">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-[#EAF5EC]">
+                                    {item.channel.toUpperCase()} • {item.kind}
+                                  </p>
+                                  <p className="truncate text-xs text-[#9FB1A5]">
+                                    {item.reason || 'No reason provided'}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className={`text-xs font-semibold ${item.success ? 'text-[#BEE6BE]' : 'text-[#F5CACA]'}`}>
+                                    {item.success ? 'Sent' : 'Failed'}
+                                  </p>
+                                  <p className="text-[11px] text-[#8EA197]">{formatDispatchTimestamp(item.created_at)}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[#9BAEA1]">No delivery attempts logged yet.</p>
+                        )}
                       </div>
                     </div>
                   ) : (

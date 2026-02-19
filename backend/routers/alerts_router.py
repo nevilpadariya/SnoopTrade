@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
@@ -16,6 +17,7 @@ from pymongo.errors import DuplicateKeyError
 from database.database import user_db
 from models.users import MessageResponse
 from services.auth_services import decode_access_token
+from services.event_bus import TOPIC_ALERTS_NOTIFICATION_DISPATCH, publish_event
 from services.sec_service import get_all_transactions
 from utils.limiter import limiter
 
@@ -44,6 +46,7 @@ SEVERITY_RANK = {
 
 _FLOAT_SHARES_TTL_SECONDS = 6 * 3600
 _float_shares_cache: dict[str, tuple[float, float]] = {}
+ENABLE_ALERT_NOTIFICATION_EVENT_BUS = os.getenv("ENABLE_ALERT_NOTIFICATION_EVENT_BUS", "true").strip().lower() == "true"
 
 RULE_LABELS: dict[RuleType, str] = {
     "large_buy": "Large Buy",
@@ -604,6 +607,46 @@ def _scan_rule(
     return generated
 
 
+def _recent_events_for_dispatch(
+    *,
+    user_email: str,
+    scan_started_at: datetime,
+    limit: int = 40,
+) -> list[dict[str, Any]]:
+    return list(
+        ALERT_EVENTS_COLLECTION.find(
+            {"user_email": user_email, "created_at": {"$gte": scan_started_at}}
+        ).sort("created_at", -1).limit(max(1, min(200, limit)))
+    )
+
+
+def _publish_realtime_dispatch_event(
+    *,
+    user_email: str,
+    scan_started_at: datetime,
+    generated: int,
+) -> bool:
+    payload = {
+        "user_email": user_email,
+        "scan_started_at": scan_started_at.isoformat(),
+        "generated_count": int(generated),
+        "limit": 40,
+        "source": "alerts.scan",
+    }
+    return publish_event(
+        TOPIC_ALERTS_NOTIFICATION_DISPATCH,
+        payload,
+        key=user_email,
+    )
+
+
+def _dispatch_realtime_notifications_fallback(*, user_email: str, scan_started_at: datetime) -> None:
+    from services.notifications_service import dispatch_realtime_notifications_for_user
+
+    new_events = _recent_events_for_dispatch(user_email=user_email, scan_started_at=scan_started_at, limit=40)
+    dispatch_realtime_notifications_for_user(user_email, events=new_events)
+
+
 def run_alert_scan_for_user(
     user_email: str,
     *,
@@ -630,14 +673,19 @@ def run_alert_scan_for_user(
 
     if generated > 0:
         try:
-            from services.notifications_service import dispatch_realtime_notifications_for_user
+            published = False
+            if ENABLE_ALERT_NOTIFICATION_EVENT_BUS:
+                published = _publish_realtime_dispatch_event(
+                    user_email=user_email,
+                    scan_started_at=scan_started_at,
+                    generated=generated,
+                )
 
-            new_events = list(
-                ALERT_EVENTS_COLLECTION.find(
-                    {"user_email": user_email, "created_at": {"$gte": scan_started_at}}
-                ).sort("created_at", -1).limit(40)
-            )
-            dispatch_realtime_notifications_for_user(user_email, events=new_events)
+            if not published:
+                _dispatch_realtime_notifications_fallback(
+                    user_email=user_email,
+                    scan_started_at=scan_started_at,
+                )
         except Exception as exc:
             logger.warning("Realtime notification dispatch failed for %s: %s", user_email, exc, exc_info=True)
 

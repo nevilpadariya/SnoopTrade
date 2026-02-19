@@ -16,6 +16,7 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const About = React.lazy(() => import('./pages/About'));
 const Features = React.lazy(() => import('./pages/Features'));
 const Account = React.lazy(() => import('./pages/Account'));
+const AdminEventBus = React.lazy(() => import('./pages/AdminEventBus'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 // Minimal loading spinner shown while code chunks load
@@ -29,6 +30,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { token, requiresPassword } = useAuth();
   if (!token) return <Navigate to="/login" replace />;
   if (requiresPassword) return <Navigate to="/create-password" replace />;
+  return <>{children}</>;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { token, requiresPassword, user, isUserLoaded } = useAuth();
+  if (!token) return <Navigate to="/login" replace />;
+  if (requiresPassword) return <Navigate to="/create-password" replace />;
+  if (!isUserLoaded) return <PageSpinner />;
+  if (!user?.is_admin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
 
@@ -85,6 +95,14 @@ const App = () => {
                   <ProtectedRoute>
                     <Account />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-ops"
+                element={
+                  <AdminRoute>
+                    <AdminEventBus />
+                  </AdminRoute>
                 }
               />
               <Route path="*" element={<NotFound />} />

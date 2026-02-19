@@ -26,7 +26,7 @@ interface AlertRule {
   updated_at: string;
 }
 
-interface AlertEvent {
+interface AlertFeedItem {
   id: string;
   rule_id: string;
   ticker: string;
@@ -38,6 +38,7 @@ interface AlertEvent {
   created_at: string;
   is_read: boolean;
   details: Record<string, unknown>;
+  priority_score: number;
 }
 
 interface AlertsPanelProps {
@@ -102,7 +103,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
   }, [selectedCompany, watchlist]);
 
   const [rules, setRules] = useState<AlertRule[]>([]);
-  const [events, setEvents] = useState<AlertEvent[]>([]);
+  const [events, setEvents] = useState<AlertFeedItem[]>([]);
   const [ruleType, setRuleType] = useState<RuleType>('large_buy');
   const [ticker, setTicker] = useState<string>('AAPL');
   const [metricType, setMetricType] = useState<MetricType>('shares');
@@ -114,6 +115,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [isCreatingRule, setIsCreatingRule] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [scanMessage, setScanMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -144,14 +146,14 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
   const loadEvents = async () => {
     setIsLoadingEvents(true);
     try {
-      const response = await authFetch(API_ENDPOINTS.getAlertEvents(20, unreadOnly));
+      const response = await authFetch(API_ENDPOINTS.getAlertFeed(20, unreadOnly));
       if (!response.ok) {
-        throw new Error(`Unable to load events (${response.status})`);
+        throw new Error(`Unable to load feed (${response.status})`);
       }
-      const payload = (await response.json()) as AlertEvent[];
+      const payload = (await response.json()) as AlertFeedItem[];
       setEvents(payload);
     } catch (error) {
-      console.error('Failed to load alert events', error);
+      console.error('Failed to load alert feed', error);
     } finally {
       setIsLoadingEvents(false);
     }
@@ -287,6 +289,25 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
     }
   };
 
+  const handleMarkAllRead = async () => {
+    setIsMarkingAllRead(true);
+    try {
+      const response = await authFetch(API_ENDPOINTS.markAllAlertsRead, {
+        method: 'PATCH',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to mark all alerts as read (${response.status})`);
+      }
+      await loadEvents();
+      onAlertsChanged?.();
+    } catch (error) {
+      console.error('Failed to mark all alerts as read', error);
+      setErrorMessage('Could not mark all alerts as read.');
+    } finally {
+      setIsMarkingAllRead(false);
+    }
+  };
+
   const thresholdStep = ruleType === 'large_buy' && metricType !== 'shares' ? '0.01' : '1';
   const thresholdMin = thresholdStep === '0.01' ? '0.01' : '1';
 
@@ -295,7 +316,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Alerts Engine</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-[#EAF5EC]">Realtime Alerts</h2>
+          <h2 className="mt-1 text-2xl font-extrabold text-[#1F3327] dark:text-[#EAF5EC]">Realtime Alerts</h2>
         </div>
         <Button
           type="button"
@@ -317,8 +338,8 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
         </Button>
       </div>
 
-      <form onSubmit={handleCreateRule} className="mt-5 grid gap-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-4 sm:grid-cols-2 lg:grid-cols-8">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+      <form onSubmit={handleCreateRule} className="mt-5 grid gap-3 rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15] sm:grid-cols-2 lg:grid-cols-8">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Ticker
           <select
             value={ticker}
@@ -333,7 +354,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Rule
           <select
             value={ruleType}
@@ -348,7 +369,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Metric
           <select
             value={metricType}
@@ -364,7 +385,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Comparator
           <select
             value={comparator}
@@ -377,7 +398,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Window
           <select
             value={windowMode}
@@ -390,7 +411,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           {RULE_META[ruleType].thresholdLabel}
           <Input
             value={threshold}
@@ -402,7 +423,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
           Lookback (days)
           <Input
             value={lookbackDays}
@@ -429,7 +450,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       </form>
 
       {ruleType === 'large_buy' && (
-        <p className="mt-2 text-xs text-[#8EA197]">
+        <p className="mt-2 text-xs text-[#5A7265] dark:text-[#8EA197]">
           Metric detail: {METRIC_META[metricType].helper}
         </p>
       )}
@@ -437,29 +458,29 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       {(scanMessage || errorMessage) && (
         <div className="mt-3 space-y-2">
           {scanMessage && (
-            <p className="rounded-xl border border-[#35503D] bg-[#18291F] px-3 py-2 text-sm font-medium text-[#BEE6BE]">{scanMessage}</p>
+            <p className="rounded-xl border border-[#88B391] bg-[#EAF5EE] px-3 py-2 text-sm font-medium text-[#2E5B3D] dark:border-[#35503D] dark:bg-[#18291F] dark:text-[#BEE6BE]">{scanMessage}</p>
           )}
           {errorMessage && (
-            <p className="rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm font-medium text-[#F7D1D1]">{errorMessage}</p>
+            <p className="rounded-xl border border-[#D5A7A7] bg-[#FBEFEF] px-3 py-2 text-sm font-medium text-[#7A3434] dark:border-[#603333] dark:bg-[#2B1717] dark:text-[#F7D1D1]">{errorMessage}</p>
           )}
         </div>
       )}
 
       <div className="mt-5 grid gap-4 xl:grid-cols-2">
-        <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-4">
+        <div className="rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15]">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Rules</p>
-            {isLoadingRules && <Loader2 className="h-4 w-4 animate-spin text-[#8EA197]" />}
+            <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">Rules</p>
+            {isLoadingRules && <Loader2 className="h-4 w-4 animate-spin text-[#5A7265] dark:text-[#8EA197]" />}
           </div>
           {rules.length === 0 ? (
-            <p className="text-sm text-[#8EA197]">No rules yet. Create your first alert rule above.</p>
+            <p className="text-sm text-[#5A7265] dark:text-[#8EA197]">No rules yet. Create your first alert rule above.</p>
           ) : (
             <div className="space-y-2">
               {rules.map((rule) => (
-                <article key={rule.id} className="flex items-start justify-between gap-3 rounded-xl border border-[#2E4638] bg-[#142119] p-3">
+                <article key={rule.id} className="flex items-start justify-between gap-3 rounded-xl border border-[#A8C3AE] bg-[#EAF3ED] p-3 dark:border-[#2E4638] dark:bg-[#142119]">
                   <div>
-                    <p className="text-sm font-bold text-[#EAF5EC]">{rule.name}</p>
-                    <p className="mt-1 text-xs text-[#9FB1A5]">
+                    <p className="text-sm font-bold text-[#1F3327] dark:text-[#EAF5EC]">{rule.name}</p>
+                    <p className="mt-1 text-xs text-[#5D7669] dark:text-[#9FB1A5]">
                       {rule.ticker} • {RULE_META[rule.rule_type].label} • {RULE_META[rule.rule_type].thresholdLabel}: {rule.threshold}
                       {' '}
                       {(rule.threshold_unit ?? 'shares') === 'percent' ? '%' : 'shares'}
@@ -474,7 +495,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
                   <button
                     type="button"
                     onClick={() => handleDeleteRule(rule.id)}
-                    className="rounded-lg border border-[#603333] bg-[#2B1717] p-2 text-[#F6CCCC] transition hover:bg-[#341D1D]"
+                    className="rounded-lg border border-[#D5A7A7] bg-[#FBEFEF] p-2 text-[#8A3A3A] transition hover:bg-[#F5E2E2] dark:border-[#603333] dark:bg-[#2B1717] dark:text-[#F6CCCC] dark:hover:bg-[#341D1D]"
                     aria-label="Delete alert rule"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -485,54 +506,69 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           )}
         </div>
 
-        <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-4">
+        <div className="rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15]">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Recent Alerts</p>
-            <button
-              type="button"
-              onClick={() => setUnreadOnly((value) => !value)}
-              className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition ${
-                unreadOnly
-                  ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                  : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
-              }`}
-            >
-              {unreadOnly ? 'Unread only' : 'All alerts'}
-            </button>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">Prioritized Feed</p>
+              <p className="mt-0.5 text-[11px] text-[#6A8375] dark:text-[#7F978A]">Sorted by unread state, severity, and recency.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setUnreadOnly((value) => !value)}
+                className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition ${
+                  unreadOnly
+                    ? 'border-[#77B286] bg-[#DDF1E2] text-[#24533A] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
+                    : 'border-[#9FB9A6] bg-[#EFF6F1] text-[#3B584A] hover:bg-[#E5F1E9] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#AFC0B3] dark:hover:bg-[#1E2D23]'
+                }`}
+              >
+                {unreadOnly ? 'Unread only' : 'All alerts'}
+              </button>
+              <button
+                type="button"
+                onClick={handleMarkAllRead}
+                disabled={isMarkingAllRead || events.length === 0}
+                className="rounded-lg border border-[#9FB9A6] bg-[#EFF6F1] px-2.5 py-1 text-xs font-semibold text-[#2A553C] transition hover:bg-[#E5F1E9] disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#BEE6BE] dark:hover:bg-[#1E2D23]"
+              >
+                {isMarkingAllRead ? 'Marking...' : 'Mark all read'}
+              </button>
+            </div>
           </div>
 
           {isLoadingEvents ? (
-            <div className="flex items-center gap-2 text-sm text-[#8EA197]">
+            <div className="flex items-center gap-2 text-sm text-[#5A7265] dark:text-[#8EA197]">
               <Loader2 className="h-4 w-4 animate-spin" />
               Loading alerts...
             </div>
           ) : events.length === 0 ? (
-            <p className="text-sm text-[#8EA197]">No alerts yet. Run a scan after creating rules.</p>
+            <p className="text-sm text-[#5A7265] dark:text-[#8EA197]">No alerts yet. Run a scan after creating rules.</p>
           ) : (
             <div className="space-y-2">
               {events.map((item) => (
                 <article
                   key={item.id}
                   className={`rounded-xl border p-3 ${
-                    item.is_read ? 'border-[#2E4638] bg-[#132019]/70' : 'border-[#3E5C49] bg-[#16261D]'
+                    item.is_read
+                      ? 'border-[#A8C3AE] bg-[#EDF4EF] dark:border-[#2E4638] dark:bg-[#132019]/70'
+                      : 'border-[#8FB29A] bg-[#E4F0E8] dark:border-[#3E5C49] dark:bg-[#16261D]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <BellRing className={`h-4 w-4 ${item.is_read ? 'text-[#8EA197]' : 'text-[#A7E89A]'}`} />
-                        <p className="text-sm font-bold text-[#EAF5EC]">{item.title}</p>
+                        <BellRing className={`h-4 w-4 ${item.is_read ? 'text-[#5D7669] dark:text-[#8EA197]' : 'text-[#3E7B53] dark:text-[#A7E89A]'}`} />
+                        <p className="text-sm font-bold text-[#1F3327] dark:text-[#EAF5EC]">{item.title}</p>
                       </div>
-                      <p className="mt-1 text-sm text-[#C7D0CA]">{item.message}</p>
-                      <p className="mt-1 text-xs text-[#9FB1A5]">
-                        {item.ticker} • {formatRelativeDate(item.created_at)} • {item.severity}
+                      <p className="mt-1 text-sm text-[#435B4E] dark:text-[#C7D0CA]">{item.message}</p>
+                      <p className="mt-1 text-xs text-[#5D7669] dark:text-[#9FB1A5]">
+                        {item.ticker} • {formatRelativeDate(item.created_at)} • {item.severity} • priority {item.priority_score.toFixed(1)}
                       </p>
                     </div>
                     {!item.is_read && (
                       <button
                         type="button"
                         onClick={() => handleMarkRead(item.id)}
-                        className="rounded-lg border border-[#35503D] bg-[#18241D] p-2 text-[#BEE6BE] transition hover:bg-[#1E2D23]"
+                        className="rounded-lg border border-[#9FB9A6] bg-[#EFF6F1] p-2 text-[#2A553C] transition hover:bg-[#E5F1E9] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#BEE6BE] dark:hover:bg-[#1E2D23]"
                         aria-label="Mark alert as read"
                       >
                         <CheckCircle2 className="h-4 w-4" />

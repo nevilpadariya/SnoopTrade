@@ -20,6 +20,7 @@ class TokenResponse(BaseModel):
     token_type: str
     email: str
     requires_password: bool = False
+    is_admin: bool = False
 
 
 class MessageResponse(BaseModel):

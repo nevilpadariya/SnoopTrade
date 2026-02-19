@@ -20,5 +20,6 @@ google-auth-httplib2>=0.2.0
 yfinance>=0.2.36
 pytz>=2024.1
 slowapi>=0.1.9
+kafka-python>=2.0.2
 pytest>=8.2.0
 httpx>=0.27.0,<1.0.0

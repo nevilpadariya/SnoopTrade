@@ -63,6 +63,48 @@ We have used the Swagger UI for API documentation and testing. The Swagger UI ca
 
 ---
 
+## P2 Event Bus (Kafka-Ready)
+
+The alert notification path now supports asynchronous event dispatch:
+
+* Alert scans publish `alerts.notification_dispatch.v1` events.
+* Notification workers consume those events and send email/webhook/push.
+* If async publish fails, the API falls back to direct dispatch to preserve reliability.
+
+### Environment Variables
+
+* `EVENT_BUS_BACKEND`: `memory` (default) or `kafka`
+* `ENABLE_ALERT_NOTIFICATION_EVENT_BUS`: `true` (default) or `false`
+* `EVENT_BUS_MEMORY_QUEUE_MAX`: in-memory queue size (default `5000`)
+* `KAFKA_BOOTSTRAP_SERVERS`: required when `EVENT_BUS_BACKEND=kafka`
+* `EVENT_BUS_KAFKA_GROUP_ID`: consumer group id (default `snooptrade-events`)
+* `EVENT_BUS_KAFKA_CLIENT_ID`: Kafka client id (default `snooptrade-api`)
+* `EVENT_BUS_KAFKA_POLL_TIMEOUT_MS`: consumer poll timeout (default `1000`)
+* `EVENT_BUS_KAFKA_PUBLISH_TIMEOUT_S`: producer send timeout (default `5`)
+* `EVENT_BUS_HANDLER_MAX_RETRIES`: handler retry count before dead-letter (default `2`)
+* `EVENT_BUS_HANDLER_RETRY_BACKOFF_MS`: base retry backoff in ms (default `200`)
+* `EVENT_BUS_AUDIT_ENABLED`: persist successful/dead-letter audit events (`false` default)
+* `ENABLE_DATA_REFRESH_EVENTS`: emit stock/SEC refresh lifecycle events (`true` default)
+* `ENABLE_EVENT_BUS_DLQ_RETRY`: scheduler-based dead-letter batch retry (`true` default)
+* `EVENT_BUS_DLQ_RETRY_CRON_MINUTE`: DLQ retry schedule minute cron (default `*/10`)
+* `EVENT_BUS_DLQ_RETRY_BATCH`: DLQ retry batch size per run (default `20`)
+* `ADMIN_API_KEY`: API key for cron/infrastructure admin access via `X-API-Key`
+* `ADMIN_EMAILS`: comma-separated admin emails for bearer-token admin access
+* `ALLOW_INSECURE_ADMIN`: development-only open admin mode when no `ADMIN_API_KEY` exists
+
+Admin routes accept either a valid `X-API-Key` header or a bearer token from an admin user.
+
+Admin runtime status endpoint:
+
+* `GET /admin/event-bus`
+* `GET /admin/event-bus/dead-letters`
+* `POST /admin/event-bus/dead-letters/{dead_letter_id}/retry`
+* `POST /admin/event-bus/dead-letters/retry-failed`
+* `GET /admin/event-bus/ops-events`
+* `POST /admin/trigger/event-bus-dlq-retry`
+
+---
+
 ## Frontend Overview
 
 This frontend provides a user-friendly interface for visualizing insider trading patterns and stock trends.

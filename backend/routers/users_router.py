@@ -15,9 +15,16 @@ users_router = APIRouter(prefix="/users")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 USER_OUTCOMES_COLLECTION = user_db["user_outcomes"]
+USER_PREFERENCES_COLLECTION = user_db["user_preferences"]
 _indexes_initialized = False
+_preferences_indexes_initialized = False
 
 OutcomeType = Literal["followed", "ignored", "entered", "exited"]
+DEFAULT_PERSONALIZATION_SETTINGS = {
+    "enabled": True,
+    "strength": 1.0,
+    "lookback_days": 120,
+}
 
 
 class UserOutcomeCreate(BaseModel):
@@ -52,6 +59,21 @@ class UserOutcomeOut(BaseModel):
     created_at: str
 
 
+class PersonalizationSettingsOut(BaseModel):
+    user_email: str
+    enabled: bool
+    strength: float = Field(ge=0.0, le=3.0)
+    lookback_days: int = Field(ge=30, le=365)
+    created_at: str
+    updated_at: str
+
+
+class PersonalizationSettingsUpdate(BaseModel):
+    enabled: bool | None = None
+    strength: float | None = Field(default=None, ge=0.0, le=3.0)
+    lookback_days: int | None = Field(default=None, ge=30, le=365)
+
+
 def _to_iso(value: Any) -> str:
     if isinstance(value, datetime):
         if value.tzinfo is None:
@@ -81,6 +103,14 @@ def _ensure_indexes() -> None:
     USER_OUTCOMES_COLLECTION.create_index([("user_email", 1), ("ticker", 1), ("created_at", -1)])
     USER_OUTCOMES_COLLECTION.create_index([("user_email", 1), ("signal_id", 1), ("created_at", -1)])
     _indexes_initialized = True
+
+
+def _ensure_preferences_indexes() -> None:
+    global _preferences_indexes_initialized
+    if _preferences_indexes_initialized:
+        return
+    USER_PREFERENCES_COLLECTION.create_index([("user_email", 1)], unique=True)
+    _preferences_indexes_initialized = True
 
 
 def _parse_timestamp(value: str | None) -> datetime:
@@ -114,6 +144,90 @@ def _serialize_outcome(doc: dict[str, Any]) -> UserOutcomeOut:
         notes=doc.get("notes"),
         created_at=_to_iso(doc.get("created_at")),
     )
+
+
+def _normalize_personalization_doc(user_email: str, doc: dict[str, Any] | None = None) -> dict[str, Any]:
+    source = doc or {}
+    enabled = source.get("enabled")
+    strength = source.get("strength")
+    lookback_days = source.get("lookback_days")
+
+    if not isinstance(enabled, bool):
+        enabled = bool(DEFAULT_PERSONALIZATION_SETTINGS["enabled"])
+    try:
+        strength = float(strength)
+    except (TypeError, ValueError):
+        strength = float(DEFAULT_PERSONALIZATION_SETTINGS["strength"])
+    strength = max(0.0, min(3.0, strength))
+
+    try:
+        lookback_days = int(lookback_days)
+    except (TypeError, ValueError):
+        lookback_days = int(DEFAULT_PERSONALIZATION_SETTINGS["lookback_days"])
+    lookback_days = max(30, min(365, lookback_days))
+
+    return {
+        "user_email": user_email,
+        "enabled": enabled,
+        "strength": round(strength, 3),
+        "lookback_days": lookback_days,
+        "created_at": _to_iso(source.get("created_at")),
+        "updated_at": _to_iso(source.get("updated_at")),
+    }
+
+
+def _get_personalization_settings(user_email: str) -> dict[str, Any]:
+    _ensure_preferences_indexes()
+    existing = USER_PREFERENCES_COLLECTION.find_one({"user_email": user_email})
+    if existing:
+        return _normalize_personalization_doc(user_email, existing)
+
+    now = datetime.now(timezone.utc)
+    new_doc = {
+        "user_email": user_email,
+        **DEFAULT_PERSONALIZATION_SETTINGS,
+        "created_at": now,
+        "updated_at": now,
+    }
+    USER_PREFERENCES_COLLECTION.insert_one(new_doc)
+    return _normalize_personalization_doc(user_email, new_doc)
+
+
+def _update_personalization_settings(user_email: str, payload: dict[str, Any]) -> dict[str, Any]:
+    _ensure_preferences_indexes()
+    current = _get_personalization_settings(user_email)
+
+    enabled = current["enabled"] if payload.get("enabled") is None else bool(payload.get("enabled"))
+    strength = payload.get("strength", current["strength"])
+    lookback_days = payload.get("lookback_days", current["lookback_days"])
+    normalized = _normalize_personalization_doc(
+        user_email,
+        {
+            "enabled": enabled,
+            "strength": strength,
+            "lookback_days": lookback_days,
+            "created_at": current["created_at"],
+            "updated_at": datetime.now(timezone.utc),
+        },
+    )
+
+    now = datetime.now(timezone.utc)
+    USER_PREFERENCES_COLLECTION.update_one(
+        {"user_email": user_email},
+        {
+            "$set": {
+                "enabled": normalized["enabled"],
+                "strength": normalized["strength"],
+                "lookback_days": normalized["lookback_days"],
+                "updated_at": now,
+            },
+            "$setOnInsert": {
+                "created_at": now,
+            },
+        },
+        upsert=True,
+    )
+    return _get_personalization_settings(user_email)
 
 
 @users_router.post("/outcomes", response_model=UserOutcomeOut, status_code=status.HTTP_201_CREATED)
@@ -162,3 +276,24 @@ def list_user_outcomes(
 
     docs = USER_OUTCOMES_COLLECTION.find(query).sort("created_at", -1).limit(limit)
     return [_serialize_outcome(doc) for doc in docs]
+
+
+@users_router.get("/personalization-settings", response_model=PersonalizationSettingsOut)
+@limiter.limit("120/minute")
+def get_personalization_settings(
+    request: Request,
+    user_email: str = Depends(_get_user_email),
+) -> PersonalizationSettingsOut:
+    settings = _get_personalization_settings(user_email)
+    return PersonalizationSettingsOut(**settings)
+
+
+@users_router.put("/personalization-settings", response_model=PersonalizationSettingsOut)
+@limiter.limit("60/minute")
+def update_personalization_settings(
+    request: Request,
+    payload: PersonalizationSettingsUpdate,
+    user_email: str = Depends(_get_user_email),
+) -> PersonalizationSettingsOut:
+    updated = _update_personalization_settings(user_email, payload.model_dump(exclude_none=True))
+    return PersonalizationSettingsOut(**updated)

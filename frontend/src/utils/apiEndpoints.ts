@@ -28,8 +28,15 @@ const API_ENDPOINTS = {
   markAlertRead: (eventId: string) => `${BASE_URL}/alerts/events/${eventId}/read`,
   markAllAlertsRead: `${BASE_URL}/alerts/events/read-all`,
   getConvictionScore: (ticker: string, lookbackDays = 30) => `${BASE_URL}/signals/conviction/${ticker}?lookback_days=${lookbackDays}`,
-  getTodaySignals: (watchlistOnly = true, limit = 5, lookbackDays = 30) =>
-    `${BASE_URL}/signals/today?watchlist_only=${watchlistOnly}&limit=${limit}&lookback_days=${lookbackDays}`,
+  getTodaySignals: (
+    watchlistOnly = true,
+    limit = 5,
+    lookbackDays = 30,
+    watchlistGroup?: string,
+  ) =>
+    `${BASE_URL}/signals/today?watchlist_only=${watchlistOnly}&limit=${limit}&lookback_days=${lookbackDays}${
+      watchlistGroup ? `&watchlist_group=${encodeURIComponent(watchlistGroup)}` : ''
+    }`,
   getSignalDelta: (ticker: string, lookbackDays = 30) =>
     `${BASE_URL}/signals/delta/${ticker}?lookback_days=${lookbackDays}`,
   getSignalExplain: (ticker: string, lookbackDays = 30) =>
@@ -49,6 +56,8 @@ const API_ENDPOINTS = {
     ticker
       ? `${BASE_URL}/users/outcomes?limit=${limit}&ticker=${encodeURIComponent(ticker)}`
       : `${BASE_URL}/users/outcomes?limit=${limit}`,
+  getPersonalizationSettings: `${BASE_URL}/users/personalization-settings`,
+  updatePersonalizationSettings: `${BASE_URL}/users/personalization-settings`,
   getNotificationPreferences: `${BASE_URL}/notifications/preferences`,
   updateNotificationPreferences: `${BASE_URL}/notifications/preferences`,
   registerPushToken: `${BASE_URL}/notifications/push-token`,
@@ -56,6 +65,22 @@ const API_ENDPOINTS = {
   sendNotificationTest: `${BASE_URL}/notifications/test`,
   sendDailyDigestNow: `${BASE_URL}/notifications/digest/send`,
   getNotificationDispatchLog: (limit = 20) => `${BASE_URL}/notifications/dispatch-log?limit=${limit}`,
+  adminEventBusStatus: `${BASE_URL}/admin/event-bus`,
+  adminEventBusDeadLetters: (limit = 25, status?: string) =>
+    `${BASE_URL}/admin/event-bus/dead-letters?limit=${limit}${status ? `&status=${encodeURIComponent(status)}` : ''}`,
+  adminRetryDeadLetter: (deadLetterId: string) => `${BASE_URL}/admin/event-bus/dead-letters/${encodeURIComponent(deadLetterId)}/retry`,
+  adminRetryFailedDeadLetters: (limit = 20, includeRetryFailed = true) =>
+    `${BASE_URL}/admin/event-bus/dead-letters/retry-failed?limit=${limit}&include_retry_failed=${includeRetryFailed}`,
+  adminEventBusOpsEvents: (
+    limit = 50,
+    dataset?: string,
+    ticker?: string,
+    status?: string,
+  ) =>
+    `${BASE_URL}/admin/event-bus/ops-events?limit=${limit}${
+      dataset ? `&dataset=${encodeURIComponent(dataset)}` : ''
+    }${ticker ? `&ticker=${encodeURIComponent(ticker)}` : ''}${status ? `&status=${encodeURIComponent(status)}` : ''}`,
+  adminTriggerEventBusDlqRetry: `${BASE_URL}/admin/trigger/event-bus-dlq-retry`,
   login: `${BASE_URL}/auth/token`,
   signUp: `${BASE_URL}/auth/signup`,
 };

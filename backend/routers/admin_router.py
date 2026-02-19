@@ -8,18 +8,30 @@ import logging
 import secrets
 from typing import Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Query, Depends, status
-from fastapi.security import APIKeyHeader
+from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
+from database.database import user_db as db
+from services.auth_services import decode_access_token
 from scheduler import (
     get_scheduled_jobs,
     trigger_stock_update_now,
     trigger_sec_update_now,
     trigger_alert_scan_now,
     trigger_daily_digest_now,
+    trigger_event_bus_dlq_retry_now,
 )
+from services.event_bus import (
+    get_event_bus_status,
+    list_event_bus_dead_letters,
+    retry_failed_event_bus_dead_letters,
+    retry_event_bus_dead_letter,
+)
+from services.ops_events_service import list_ops_events
+from services.admin_access import is_admin_user
 
 logger = logging.getLogger(__name__)
 
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
+OAUTH2_OPTIONAL = OAuth2PasswordBearer(tokenUrl="auth/token", auto_error=False)
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "").strip()
 ALLOW_INSECURE_ADMIN = os.getenv("ALLOW_INSECURE_ADMIN", "false").strip().lower() == "true"
 
@@ -52,31 +64,63 @@ TICKER_CIK_MAPPING = {
 }
 
 
-async def verify_api_key(
+async def verify_admin_access(
     api_key_header: Optional[str] = Depends(API_KEY_HEADER),
+    bearer_token: Optional[str] = Depends(OAUTH2_OPTIONAL),
 ):
     """
-    Verify API key from X-API-Key header only.
-    Admin endpoints stay locked by default even in development.
+    Allow either:
+    1) X-API-Key (for cron/infrastructure), or
+    2) Bearer token for a user with admin role/flag.
     """
-    if not ADMIN_API_KEY and not ALLOW_INSECURE_ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Admin endpoints are disabled: set ADMIN_API_KEY to enable.",
-        )
+    # Legacy/local development fallback.
+    if ALLOW_INSECURE_ADMIN and not ADMIN_API_KEY:
+        return {"auth": "insecure"}
 
-    if not ADMIN_API_KEY and ALLOW_INSECURE_ADMIN:
-        return True
+    if ADMIN_API_KEY and api_key_header and secrets.compare_digest(api_key_header, ADMIN_API_KEY):
+        return {"auth": "api_key"}
 
-    if not api_key_header or not secrets.compare_digest(api_key_header, ADMIN_API_KEY):
+    if bearer_token:
+        payload = decode_access_token(bearer_token)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid bearer token.",
+            )
+        email = str(payload.get("sub") or "").strip().lower()
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid bearer token payload.",
+            )
+
+        user = db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found.",
+            )
+
+        if not is_admin_user(user):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin access required.",
+            )
+        return {"auth": "bearer", "email": email}
+
+    if ADMIN_API_KEY:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or missing X-API-Key header.",
+            detail="Missing or invalid admin credentials.",
         )
-    return True
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Admin credentials required. Use X-API-Key or an admin bearer token.",
+    )
 
 
-admin_router = APIRouter(dependencies=[Depends(verify_api_key)])
+admin_router = APIRouter(dependencies=[Depends(verify_admin_access)])
 
 
 def validate_ticker(ticker: str) -> str:
@@ -99,6 +143,74 @@ async def list_scheduled_jobs():
     return {
         "status": "ok",
         "jobs": jobs
+    }
+
+
+@admin_router.get("/event-bus")
+async def event_bus_status():
+    """
+    Show current event bus backend and runtime status.
+    """
+    return {
+        "status": "ok",
+        "event_bus": get_event_bus_status(),
+    }
+
+
+@admin_router.get("/event-bus/dead-letters")
+async def event_bus_dead_letters(
+    limit: int = Query(25, ge=1, le=200),
+    status: str | None = Query(None, description="Filter by dead-letter status."),
+):
+    items = list_event_bus_dead_letters(limit=limit, status=status)
+    return {
+        "status": "ok",
+        "count": len(items),
+        "items": items,
+    }
+
+
+@admin_router.post("/event-bus/dead-letters/{dead_letter_id}/retry")
+async def retry_event_bus_dead_letter_item(dead_letter_id: str):
+    result = retry_event_bus_dead_letter(dead_letter_id)
+    if not result.get("ok"):
+        return {
+            "status": "error",
+            **result,
+        }
+    return {
+        "status": "ok",
+        **result,
+    }
+
+
+@admin_router.post("/event-bus/dead-letters/retry-failed")
+async def retry_failed_event_bus_dead_letters_batch(
+    limit: int = Query(20, ge=1, le=500),
+    include_retry_failed: bool = Query(True),
+):
+    stats = retry_failed_event_bus_dead_letters(
+        limit=limit,
+        include_retry_failed=include_retry_failed,
+    )
+    return {
+        "status": "ok",
+        **stats,
+    }
+
+
+@admin_router.get("/event-bus/ops-events")
+async def event_bus_ops_events(
+    limit: int = Query(50, ge=1, le=500),
+    dataset: str | None = Query(None, description="Optional dataset filter: stock|sec"),
+    ticker: str | None = Query(None, description="Optional ticker filter."),
+    status: str | None = Query(None, description="Optional status filter: success|failed"),
+):
+    items = list_ops_events(limit=limit, dataset=dataset, ticker=ticker, status=status)
+    return {
+        "status": "ok",
+        "count": len(items),
+        "items": items,
     }
 
 
@@ -166,6 +278,19 @@ async def trigger_daily_digest(background_tasks: BackgroundTasks):
     return {
         "status": "ok",
         "message": "Daily digest dispatch triggered. Running in background."
+    }
+
+
+@admin_router.post("/trigger/event-bus-dlq-retry")
+async def trigger_event_bus_dlq_retry(background_tasks: BackgroundTasks):
+    """
+    Manually trigger event bus dead-letter retry cycle.
+    Runs in background to avoid timeout.
+    """
+    background_tasks.add_task(trigger_event_bus_dlq_retry_now)
+    return {
+        "status": "ok",
+        "message": "Event bus DLQ retry triggered. Running in background."
     }
 
 

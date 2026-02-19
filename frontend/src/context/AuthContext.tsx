@@ -19,25 +19,30 @@ interface AuthContextType {
   requiresPassword: boolean;
   setRequiresPassword: (value: boolean) => void;
   user: User | null;
+  isUserLoaded: boolean;
   refreshUser: () => Promise<void>;
   refreshAccessToken: () => Promise<string | null>;
 }
 
 export interface User {
-  id: string;
+  id?: string;
   email: string;
   name?: string;
   first_name?: string;
   last_name?: string;
+  is_admin?: boolean;
+  role?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setTokenState] = useState<string | null>(localStorage.getItem(AUTH_TOKEN_KEY));
+  const storedToken = localStorage.getItem(AUTH_TOKEN_KEY);
+  const [token, setTokenState] = useState<string | null>(storedToken);
   const [refreshToken, setRefreshTokenState] = useState<string | null>(localStorage.getItem(AUTH_REFRESH_TOKEN_KEY));
   const [requiresPassword, setRequiresPasswordState] = useState<boolean>(getStoredRequiresPassword);
   const [user, setUser] = useState<User | null>(null);
+  const [isUserLoaded, setIsUserLoaded] = useState<boolean>(!storedToken);
 
   const logout = useCallback(() => {
     if (token) {
@@ -56,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTokenState(null);
     setRefreshTokenState(null);
     setUser(null);
+    setIsUserLoaded(true);
   }, [token]);
 
   const setRequiresPassword = useCallback((value: boolean) => {
@@ -147,6 +153,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
     } catch {
       setUser(null);
+    } finally {
+      setIsUserLoaded(true);
     }
   }, [refreshAccessToken]);
 
@@ -155,6 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(AUTH_TOKEN_KEY, newToken);
       localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
       setTokenState(newToken);
+      setIsUserLoaded(false);
       void fetchUserDetails(newToken);
     } else {
       logout();
@@ -170,9 +179,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (token) {
+      setIsUserLoaded(false);
       void fetchUserDetails(token);
     } else {
       setUser(null);
+      setIsUserLoaded(true);
     }
   }, [token, fetchUserDetails]);
 
@@ -211,6 +222,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         requiresPassword,
         setRequiresPassword,
         user,
+        isUserLoaded,
         refreshUser,
         refreshAccessToken,
       }}

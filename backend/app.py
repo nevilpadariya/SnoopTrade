@@ -23,6 +23,9 @@ from routers.signal_router import signal_router
 from routers.users_router import users_router
 from routers.notification_router import notification_router
 from scheduler import start_scheduler, shutdown_scheduler
+from services.event_bus import get_event_bus_status, start_event_bus, stop_event_bus
+from services.notifications_service import register_notification_event_handlers
+from services.ops_events_service import register_ops_event_handlers
 from services.stock_service import ensure_indexes
 from database.database import client as mongo_client
 from utils.limiter import limiter
@@ -97,6 +100,10 @@ async def lifespan(app: FastAPI):
     """Starts the scheduler on startup and shuts it down on shutdown."""
     logger.info("Starting application...")
     ensure_indexes()
+    register_notification_event_handlers()
+    register_ops_event_handlers()
+    start_event_bus()
+    logger.info("Event bus status: %s", get_event_bus_status())
     if ENABLE_SCHEDULER:
         start_scheduler()
         logger.info("In-process scheduler enabled")
@@ -107,6 +114,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down application...")
     if ENABLE_SCHEDULER:
         shutdown_scheduler()
+    stop_event_bus()
     logger.info("Application shut down successfully")
 
 

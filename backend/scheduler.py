@@ -3,10 +3,16 @@
 import logging
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
+
+from services.event_bus import (
+    TOPIC_DATA_REFRESH_COMPLETED,
+    publish_event,
+    retry_failed_event_bus_dead_letters,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,6 +56,14 @@ ENABLE_ALERT_SCANNER = os.getenv("ENABLE_ALERT_SCANNER", "true").strip().lower()
 ALERT_SCAN_CRON_MINUTE = os.getenv("ALERT_SCAN_CRON_MINUTE", "*/30").strip() or "*/30"
 ENABLE_DAILY_DIGEST = os.getenv("ENABLE_DAILY_DIGEST", "true").strip().lower() == "true"
 DAILY_DIGEST_CRON_MINUTE = os.getenv("DAILY_DIGEST_CRON_MINUTE", "15").strip() or "15"
+ENABLE_DATA_REFRESH_EVENTS = os.getenv("ENABLE_DATA_REFRESH_EVENTS", "true").strip().lower() == "true"
+ENABLE_EVENT_BUS_DLQ_RETRY = os.getenv("ENABLE_EVENT_BUS_DLQ_RETRY", "true").strip().lower() == "true"
+EVENT_BUS_DLQ_RETRY_CRON_MINUTE = os.getenv("EVENT_BUS_DLQ_RETRY_CRON_MINUTE", "*/10").strip() or "*/10"
+
+try:
+    EVENT_BUS_DLQ_RETRY_BATCH = max(1, min(500, int(os.getenv("EVENT_BUS_DLQ_RETRY_BATCH", "20").strip() or "20")))
+except ValueError:
+    EVENT_BUS_DLQ_RETRY_BATCH = 20
 
 try:
     _ALERT_SCAN_MAX_USERS_RAW = os.getenv("ALERT_SCAN_MAX_USERS", "0").strip()
@@ -77,6 +91,37 @@ def retry_on_failure(func, *args, max_retries=MAX_RETRIES, delay=RETRY_DELAY_SEC
                 raise
 
 
+def _emit_data_refresh_event(
+    *,
+    dataset: str,
+    ticker: str,
+    status: str,
+    started_at: datetime,
+    finished_at: datetime,
+    cik: str | None = None,
+    error: str | None = None,
+) -> None:
+    if not ENABLE_DATA_REFRESH_EVENTS:
+        return
+
+    try:
+        duration_ms = max(0, int((finished_at - started_at).total_seconds() * 1000))
+        payload = {
+            "dataset": dataset,
+            "ticker": ticker,
+            "status": status,
+            "cik": cik,
+            "error": error,
+            "duration_ms": duration_ms,
+            "started_at": started_at.isoformat(),
+            "finished_at": finished_at.isoformat(),
+            "source": "scheduler",
+        }
+        publish_event(TOPIC_DATA_REFRESH_COMPLETED, payload, key=ticker)
+    except Exception:
+        logger.warning("Failed to emit data refresh event dataset=%s ticker=%s", dataset, ticker, exc_info=True)
+
+
 def update_stock_data():
     """
     Fetch and update stock price data for all tracked tickers.
@@ -93,14 +138,30 @@ def update_stock_data():
     failed = 0
     
     for ticker in TICKERS:
+        ticker_started_at = datetime.now(timezone.utc)
         try:
             logger.info(f"Updating stock data for {ticker}...")
             retry_on_failure(save_stock_data, ticker)
             logger.info(f"[SUCCESS] Stock data updated for {ticker}")
             successful += 1
+            _emit_data_refresh_event(
+                dataset="stock",
+                ticker=ticker,
+                status="success",
+                started_at=ticker_started_at,
+                finished_at=datetime.now(timezone.utc),
+            )
         except Exception as e:
             logger.error(f"[FAILED] Stock data update for {ticker}: {e}")
             failed += 1
+            _emit_data_refresh_event(
+                dataset="stock",
+                ticker=ticker,
+                status="failed",
+                started_at=ticker_started_at,
+                finished_at=datetime.now(timezone.utc),
+                error=str(e),
+            )
     
     end_time = datetime.now()
     duration = (end_time - start_time).total_seconds()
@@ -129,15 +190,33 @@ def update_sec_data():
     failed = 0
     
     for ticker, cik in TICKER_CIK_MAPPING.items():
+        ticker_started_at = datetime.now(timezone.utc)
         try:
             logger.info(f"Updating SEC data for {ticker} (CIK: {cik})...")
             time.sleep(1)
             retry_on_failure(insert_form4_data, ticker, cik)
             logger.info(f"[SUCCESS] SEC data updated for {ticker}")
             successful += 1
+            _emit_data_refresh_event(
+                dataset="sec",
+                ticker=ticker,
+                status="success",
+                started_at=ticker_started_at,
+                finished_at=datetime.now(timezone.utc),
+                cik=cik,
+            )
         except Exception as e:
             logger.error(f"[FAILED] SEC data update for {ticker}: {e}")
             failed += 1
+            _emit_data_refresh_event(
+                dataset="sec",
+                ticker=ticker,
+                status="failed",
+                started_at=ticker_started_at,
+                finished_at=datetime.now(timezone.utc),
+                cik=cik,
+                error=str(e),
+            )
     
     end_time = datetime.now()
     duration = (end_time - start_time).total_seconds()
@@ -219,6 +298,36 @@ def run_daily_digest_dispatch():
     logger.info("=" * 50)
 
 
+def run_event_bus_dlq_retry():
+    """
+    Retry failed/retry_failed dead-letter events in bounded batches.
+    """
+    start_time = datetime.now()
+    logger.info("=" * 50)
+    logger.info("EVENT BUS DLQ RETRY - Started at %s", start_time)
+    logger.info("=" * 50)
+
+    try:
+        stats = retry_failed_event_bus_dead_letters(limit=EVENT_BUS_DLQ_RETRY_BATCH, include_retry_failed=True)
+        attempted = int(stats.get("attempted", 0))
+        republished = int(stats.get("republished", 0))
+        retry_failed = int(stats.get("retry_failed", 0))
+    except Exception as exc:
+        logger.error("EVENT BUS DLQ RETRY failed: %s", exc, exc_info=True)
+        raise
+
+    end_time = datetime.now()
+    duration = (end_time - start_time).total_seconds()
+
+    logger.info("=" * 50)
+    logger.info("EVENT BUS DLQ RETRY - Completed")
+    logger.info("  Duration: %.2f seconds", duration)
+    logger.info("  Attempted: %s", attempted)
+    logger.info("  Republished: %s", republished)
+    logger.info("  Retry failed: %s", retry_failed)
+    logger.info("=" * 50)
+
+
 def job_error_listener(event):
     """
     Listen for job execution errors and log them.
@@ -264,6 +373,15 @@ def setup_scheduled_jobs():
             replace_existing=True,
             misfire_grace_time=900,
         )
+    if ENABLE_EVENT_BUS_DLQ_RETRY:
+        scheduler.add_job(
+            run_event_bus_dlq_retry,
+            CronTrigger(minute=EVENT_BUS_DLQ_RETRY_CRON_MINUTE, timezone=TIMEZONE),
+            id="event_bus_dlq_retry",
+            name="Event Bus Dead-Letter Retry",
+            replace_existing=True,
+            misfire_grace_time=900,
+        )
 
     logger.info("Scheduled jobs configured:")
     logger.info("  - Stock data update: Daily at 6:00 AM EST")
@@ -276,6 +394,14 @@ def setup_scheduled_jobs():
         logger.info("  - Daily digest dispatch: Hourly at minute=%s EST", DAILY_DIGEST_CRON_MINUTE)
     else:
         logger.info("  - Daily digest dispatch: Disabled (set ENABLE_DAILY_DIGEST=true to enable)")
+    if ENABLE_EVENT_BUS_DLQ_RETRY:
+        logger.info(
+            "  - Event bus DLQ retry: Cron minute=%s EST (batch=%s)",
+            EVENT_BUS_DLQ_RETRY_CRON_MINUTE,
+            EVENT_BUS_DLQ_RETRY_BATCH,
+        )
+    else:
+        logger.info("  - Event bus DLQ retry: Disabled (set ENABLE_EVENT_BUS_DLQ_RETRY=true to enable)")
 
 
 def start_scheduler():
@@ -331,3 +457,9 @@ def trigger_daily_digest_now():
     """Manually trigger daily digest dispatch cycle (for testing/admin)."""
     logger.info("Manual trigger: Daily digest dispatch")
     run_daily_digest_dispatch()
+
+
+def trigger_event_bus_dlq_retry_now():
+    """Manually trigger event bus dead-letter retry cycle (for testing/admin)."""
+    logger.info("Manual trigger: Event bus DLQ retry")
+    run_event_bus_dlq_retry()

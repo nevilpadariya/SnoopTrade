@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 from bisect import bisect_left
 from datetime import date, datetime, timedelta, timezone
 from statistics import median
@@ -20,6 +21,18 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 DEFAULT_TODAY_TICKERS = ["AAPL", "MSFT", "NVDA", "AMZN", "META"]
 MAX_TODAY_TICKERS = 20
+MAX_WATCHLIST_GROUPS = 8
+MAX_GROUP_NAME_LENGTH = 24
+TODAY_PERSONALIZATION_LOOKBACK_DAYS = 120
+MAX_PERSONALIZATION_DELTA = 12.0
+MIN_PERSONALIZATION_STRENGTH = 0.0
+MAX_PERSONALIZATION_STRENGTH = 3.0
+OUTCOME_WEIGHT_BY_TYPE: dict[str, float] = {
+    "followed": 1.8,
+    "entered": 2.8,
+    "ignored": -1.2,
+    "exited": -2.2,
+}
 TICKER_SECTOR_MAP: dict[str, str] = {
     "AAPL": "Technology",
     "MSFT": "Technology",
@@ -42,6 +55,11 @@ TICKER_SECTOR_MAP: dict[str, str] = {
     "PEP": "Consumer Staples",
     "WMT": "Consumer Staples",
 }
+DEFAULT_PERSONALIZATION_SETTINGS: dict[str, Any] = {
+    "enabled": True,
+    "strength": 1.0,
+    "lookback_days": TODAY_PERSONALIZATION_LOOKBACK_DAYS,
+}
 
 
 class ConvictionScoreResponse(BaseModel):
@@ -61,9 +79,12 @@ class ConvictionScoreResponse(BaseModel):
 class TodaySignalItem(BaseModel):
     signal_id: str
     ticker: str
+    base_score: float = Field(ge=0, le=100)
     score: float = Field(ge=0, le=100)
     label: str
     urgency: Literal["high", "medium", "low"]
+    personalization_delta: float = Field(ge=-MAX_PERSONALIZATION_DELTA, le=MAX_PERSONALIZATION_DELTA)
+    personalization_samples: int = Field(ge=0)
     action: str
     reason: str
     change_24h: float
@@ -75,6 +96,7 @@ class TodaySignalItem(BaseModel):
 class TodaySignalsResponse(BaseModel):
     lookback_days: int
     watchlist_only: bool
+    watchlist_group: str | None = None
     evaluated: int
     generated_at: str
     items: list[TodaySignalItem]
@@ -312,8 +334,12 @@ def _build_market_mood(average_score: float) -> str:
     return "Defensive"
 
 
-def _build_action_and_reason(conviction: ConvictionScoreResponse) -> tuple[str, str]:
-    score = conviction.score
+def _build_action_and_reason(
+    conviction: ConvictionScoreResponse,
+    *,
+    score_override: float | None = None,
+) -> tuple[str, str]:
+    score = conviction.score if score_override is None else score_override
     latest_buy = conviction.latest_buy_days_ago
 
     if score >= 70:
@@ -353,25 +379,82 @@ def _normalize_tickers(values: list[Any], max_items: int = MAX_TODAY_TICKERS) ->
     return normalized[:max_items]
 
 
-def _resolve_today_tickers(user_email: str, watchlist_only: bool, limit: int) -> list[str]:
+def _normalize_group_name(value: Any) -> str:
+    compact = " ".join(str(value or "").strip().split())
+    cleaned = "".join(ch for ch in compact if ch.isalnum() or ch in " -&_")
+    return cleaned.strip()[:MAX_GROUP_NAME_LENGTH]
+
+
+def _normalize_watchlist_groups(groups: Any, watchlist: list[str]) -> dict[str, list[str]]:
+    if not isinstance(groups, dict):
+        return {}
+
+    allowed = set(watchlist)
+    normalized: dict[str, list[str]] = {}
+    seen_names: set[str] = set()
+
+    for raw_name, raw_tickers in groups.items():
+        name = _normalize_group_name(raw_name)
+        if not name:
+            continue
+
+        lowered = name.lower()
+        if lowered in seen_names:
+            continue
+
+        if not isinstance(raw_tickers, list):
+            continue
+        tickers = _normalize_tickers(raw_tickers, MAX_TODAY_TICKERS)
+        tickers = [ticker for ticker in tickers if ticker in allowed]
+        if not tickers:
+            continue
+
+        normalized[name] = tickers
+        seen_names.add(lowered)
+        if len(normalized) >= MAX_WATCHLIST_GROUPS:
+            break
+
+    return normalized
+
+
+def _resolve_today_tickers(
+    user_email: str,
+    watchlist_only: bool,
+    limit: int,
+    watchlist_group: str | None = None,
+) -> tuple[list[str], str | None]:
     user_doc = user_db["users"].find_one(
         {"email": user_email},
-        {"_id": 0, "watchlist": 1, "recent_tickers": 1},
+        {"_id": 0, "watchlist": 1, "recent_tickers": 1, "watchlist_groups": 1},
     )
 
     watchlist = _normalize_tickers((user_doc or {}).get("watchlist") or [], MAX_TODAY_TICKERS)
     recent_tickers = _normalize_tickers((user_doc or {}).get("recent_tickers") or [], MAX_TODAY_TICKERS)
+    watchlist_groups = _normalize_watchlist_groups((user_doc or {}).get("watchlist_groups") or {}, watchlist)
+    resolved_group: str | None = None
+
+    requested_group = _normalize_group_name(watchlist_group or "")
+    if requested_group and requested_group.lower() != "all":
+        lowered_name_map = {name.lower(): name for name in watchlist_groups}
+        matched_name = lowered_name_map.get(requested_group.lower())
+        if matched_name is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Watchlist group not found.")
+        watchlist = watchlist_groups.get(matched_name, [])
+        resolved_group = matched_name
+
+    if resolved_group:
+        return watchlist[:limit], resolved_group
 
     if watchlist_only and watchlist:
-        return watchlist[:limit]
+        return watchlist[:limit], resolved_group
 
     if watchlist_only and not watchlist:
-        return DEFAULT_TODAY_TICKERS[:limit]
+        return DEFAULT_TODAY_TICKERS[:limit], resolved_group
 
     combined = watchlist + [ticker for ticker in recent_tickers if ticker not in watchlist]
     combined.extend([ticker for ticker in DEFAULT_TODAY_TICKERS if ticker not in combined])
 
-    return combined[:limit]
+    return combined[:limit], resolved_group
 
 
 def _window_bounds(lookback_days: int, *, offset_days: int = 0) -> tuple[date, date]:
@@ -571,6 +654,107 @@ def _build_delta_summary(
     )
 
 
+def _safe_utc_datetime(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        try:
+            parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+            return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+        except ValueError:
+            return None
+    return None
+
+
+def _clamp_score(value: float, *, min_value: float = 0.0, max_value: float = 100.0) -> float:
+    return round(max(min_value, min(max_value, value)), 2)
+
+
+def _load_personalization_settings(user_email: str) -> dict[str, Any]:
+    doc = user_db["user_preferences"].find_one(
+        {"user_email": user_email},
+        {"_id": 0, "enabled": 1, "strength": 1, "lookback_days": 1},
+    ) or {}
+
+    enabled_raw = doc.get("enabled", DEFAULT_PERSONALIZATION_SETTINGS["enabled"])
+    enabled = bool(enabled_raw) if isinstance(enabled_raw, bool) else bool(DEFAULT_PERSONALIZATION_SETTINGS["enabled"])
+
+    try:
+        strength = float(doc.get("strength", DEFAULT_PERSONALIZATION_SETTINGS["strength"]))
+    except (TypeError, ValueError):
+        strength = float(DEFAULT_PERSONALIZATION_SETTINGS["strength"])
+    strength = max(MIN_PERSONALIZATION_STRENGTH, min(MAX_PERSONALIZATION_STRENGTH, strength))
+
+    try:
+        lookback_days = int(doc.get("lookback_days", DEFAULT_PERSONALIZATION_SETTINGS["lookback_days"]))
+    except (TypeError, ValueError):
+        lookback_days = int(DEFAULT_PERSONALIZATION_SETTINGS["lookback_days"])
+    lookback_days = max(30, min(365, lookback_days))
+
+    return {
+        "enabled": enabled,
+        "strength": strength,
+        "lookback_days": lookback_days,
+    }
+
+
+def _load_personalization_by_ticker(
+    *,
+    user_email: str,
+    tickers: list[str],
+    lookback_days: int = TODAY_PERSONALIZATION_LOOKBACK_DAYS,
+    strength: float = 1.0,
+) -> dict[str, dict[str, float | int]]:
+    if not tickers:
+        return {}
+
+    since = datetime.now(timezone.utc) - timedelta(days=max(1, lookback_days))
+    docs = user_db["user_outcomes"].find(
+        {
+            "user_email": user_email,
+            "ticker": {"$in": tickers},
+            "created_at": {"$gte": since},
+        },
+        {"_id": 0, "ticker": 1, "outcome_type": 1, "timestamp": 1, "created_at": 1},
+    )
+
+    now = datetime.now(timezone.utc)
+    score_by_ticker: dict[str, float] = {ticker: 0.0 for ticker in tickers}
+    samples_by_ticker: dict[str, int] = {ticker: 0 for ticker in tickers}
+
+    for doc in docs:
+        ticker = str(doc.get("ticker") or "").upper().strip()
+        if not ticker or ticker not in score_by_ticker:
+            continue
+
+        outcome_type = str(doc.get("outcome_type") or "").lower().strip()
+        outcome_weight = OUTCOME_WEIGHT_BY_TYPE.get(outcome_type, 0.0)
+        if outcome_weight == 0.0:
+            continue
+
+        reference_ts = _safe_utc_datetime(doc.get("timestamp")) or _safe_utc_datetime(doc.get("created_at")) or now
+        age_days = max(0.0, (now - reference_ts).total_seconds() / 86400.0)
+
+        # Exponential decay with half-life around 30 days.
+        recency_decay = math.exp(-age_days / 30.0)
+        score_by_ticker[ticker] += outcome_weight * recency_decay
+        samples_by_ticker[ticker] += 1
+
+    clamped_strength = max(MIN_PERSONALIZATION_STRENGTH, min(MAX_PERSONALIZATION_STRENGTH, float(strength)))
+    result: dict[str, dict[str, float | int]] = {}
+    for ticker in tickers:
+        raw_delta = score_by_ticker.get(ticker, 0.0) * clamped_strength
+        clamped_delta = max(-MAX_PERSONALIZATION_DELTA, min(MAX_PERSONALIZATION_DELTA, raw_delta))
+        result[ticker] = {
+            "delta": round(clamped_delta, 2),
+            "samples": int(samples_by_ticker.get(ticker, 0)),
+        }
+    return result
+
+
 def _sector_for_ticker(ticker: str) -> str:
     return TICKER_SECTOR_MAP.get(ticker.upper().strip(), "Other")
 
@@ -719,9 +903,25 @@ def get_today_signals(
     watchlist_only: bool = Query(True),
     lookback_days: int = Query(30, ge=7, le=365),
     limit: int = Query(10, ge=1, le=20),
+    watchlist_group: str | None = Query(None, max_length=64),
     user_email: str = Depends(_get_user_email),
 ) -> TodaySignalsResponse:
-    tickers = _resolve_today_tickers(user_email=user_email, watchlist_only=watchlist_only, limit=limit)
+    tickers, resolved_group = _resolve_today_tickers(
+        user_email=user_email,
+        watchlist_only=watchlist_only,
+        limit=limit,
+        watchlist_group=watchlist_group,
+    )
+    personalization_settings = _load_personalization_settings(user_email)
+    personalization_enabled = bool(personalization_settings.get("enabled", True))
+    personalization_strength = float(personalization_settings.get("strength", 1.0))
+    personalization_lookback = int(personalization_settings.get("lookback_days", TODAY_PERSONALIZATION_LOOKBACK_DAYS))
+    personalization = _load_personalization_by_ticker(
+        user_email=user_email,
+        tickers=tickers,
+        lookback_days=personalization_lookback,
+        strength=personalization_strength,
+    ) if personalization_enabled and personalization_strength > 0 else {ticker: {"delta": 0.0, "samples": 0} for ticker in tickers}
     items: list[TodaySignalItem] = []
 
     for ticker in tickers:
@@ -741,23 +941,36 @@ def get_today_signals(
             offset_days=1,
         )
 
-        action, reason = _build_action_and_reason(now_conviction)
         change_24h = round(now_conviction.score - prev_conviction.score, 2)
+        personalization_entry = personalization.get(ticker) or {}
+        personalization_delta = float(personalization_entry.get("delta", 0.0))
+        personalization_samples = int(personalization_entry.get("samples", 0))
+        personalized_score = _clamp_score(now_conviction.score + personalization_delta)
+        action, reason = _build_action_and_reason(now_conviction, score_override=personalized_score)
+
         confidence = _confidence_from_conviction(now_conviction)
-        urgency = _build_urgency(now_conviction.score, change_24h, confidence)
+        urgency = _build_urgency(personalized_score, change_24h, confidence)
         signal_id = hashlib.sha1(
             f"{user_email}|{ticker}|{lookback_days}|{now_conviction.updated_at[:10]}".encode("utf-8")
         ).hexdigest()[:20]
 
         one_line_explanation = now_conviction.explanation[0] if now_conviction.explanation else "No signal explanation available."
+        if personalization_samples > 0 and abs(personalization_delta) >= 0.05:
+            sign = "+" if personalization_delta >= 0 else ""
+            one_line_explanation = (
+                f"{one_line_explanation} Personalization {sign}{personalization_delta:.2f} from your recent outcomes."
+            )
 
         items.append(
             TodaySignalItem(
                 signal_id=signal_id,
                 ticker=ticker,
-                score=now_conviction.score,
-                label=now_conviction.label,
+                base_score=now_conviction.score,
+                score=personalized_score,
+                label=_build_label(personalized_score),
                 urgency=urgency,
+                personalization_delta=round(personalization_delta, 2),
+                personalization_samples=personalization_samples,
                 action=action,
                 reason=reason,
                 change_24h=change_24h,
@@ -780,6 +993,7 @@ def get_today_signals(
     return TodaySignalsResponse(
         lookback_days=lookback_days,
         watchlist_only=watchlist_only,
+        watchlist_group=resolved_group,
         evaluated=len(tickers),
         generated_at=datetime.now(timezone.utc).isoformat(),
         items=items[:limit],

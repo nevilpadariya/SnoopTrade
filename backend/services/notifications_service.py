@@ -39,6 +39,7 @@ DEFAULT_PREFS: dict[str, Any] = {
 }
 
 _indexes_initialized = False
+_notification_handlers_registered = False
 
 
 def _utc_now() -> datetime:
@@ -53,6 +54,21 @@ def _to_iso(value: Any) -> str:
     if isinstance(value, date):
         return datetime(value.year, value.month, value.day, tzinfo=timezone.utc).isoformat()
     return str(value)
+
+
+def _parse_iso_datetime(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        try:
+            parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+            return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+        except ValueError:
+            return None
+    return None
 
 
 def _ensure_indexes() -> None:
@@ -465,6 +481,51 @@ def dispatch_realtime_notifications_for_user(
         "sent": sent,
         "event_count": len(filtered),
     }
+
+
+def dispatch_notifications_from_alert_scan_event(payload: dict[str, Any]) -> None:
+    user_email = str(payload.get("user_email") or "").strip()
+    if not user_email:
+        logger.warning("Notification dispatch event missing user_email")
+        return
+
+    scan_started_at = _parse_iso_datetime(payload.get("scan_started_at"))
+    try:
+        limit = int(payload.get("limit") or 40)
+    except (TypeError, ValueError):
+        limit = 40
+    limit = max(1, min(200, limit))
+
+    query: dict[str, Any] = {"user_email": user_email}
+    if scan_started_at is not None:
+        query["created_at"] = {"$gte": scan_started_at}
+
+    events = list(
+        ALERT_EVENTS_COLLECTION.find(query).sort("created_at", -1).limit(limit)
+    )
+
+    if not events and scan_started_at is not None:
+        events = list(
+            ALERT_EVENTS_COLLECTION.find(
+                {"user_email": user_email, "is_read": False}
+            ).sort("created_at", -1).limit(limit)
+        )
+
+    if not events:
+        return
+
+    dispatch_realtime_notifications_for_user(user_email, events=events)
+
+
+def register_notification_event_handlers() -> None:
+    global _notification_handlers_registered
+    if _notification_handlers_registered:
+        return
+
+    from services.event_bus import TOPIC_ALERTS_NOTIFICATION_DISPATCH, subscribe_event
+
+    subscribe_event(TOPIC_ALERTS_NOTIFICATION_DISPATCH, dispatch_notifications_from_alert_scan_event)
+    _notification_handlers_registered = True
 
 
 def send_daily_digest_for_user(

@@ -42,6 +42,7 @@ const MAX_RECENT = 8;
 const MAX_WATCHLIST_GROUPS = 8;
 const MAX_GROUP_NAME_LENGTH = 24;
 const STARTER_WATCHLIST = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'META'];
+const ALL_WATCHLIST_SCOPE = '::all_watchlist::';
 
 const COLORS = {
   price: 'hsl(var(--primary-strong))',
@@ -149,9 +150,12 @@ type AlertSummary = {
 type TodaySignalItem = {
   signal_id: string;
   ticker: string;
+  base_score: number;
   score: number;
   label: string;
   urgency: 'high' | 'medium' | 'low';
+  personalization_delta: number;
+  personalization_samples: number;
   action: string;
   reason: string;
   change_24h: number;
@@ -163,6 +167,7 @@ type TodaySignalItem = {
 type TodaySignalsResponse = {
   lookback_days: number;
   watchlist_only: boolean;
+  watchlist_group?: string | null;
   evaluated: number;
   generated_at: string;
   items: TodaySignalItem[];
@@ -387,6 +392,7 @@ const Dashboard = () => {
   const [watchlistGroups, setWatchlistGroups] = useState<WatchlistGroups>({});
   const [groupDraftName, setGroupDraftName] = useState('');
   const [watchlistGroupMessage, setWatchlistGroupMessage] = useState('');
+  const [activeWatchlistGroup, setActiveWatchlistGroup] = useState<string>(ALL_WATCHLIST_SCOPE);
   const [hasHydratedWatchlist, setHasHydratedWatchlist] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
@@ -573,10 +579,6 @@ const Dashboard = () => {
       return ticker.toLowerCase().includes(term) || name.includes(term);
     });
   }, [searchTerm]);
-  const radarTickers = useMemo(
-    () => (watchlist.length > 0 ? watchlist : selectedCompany ? [selectedCompany] : []),
-    [selectedCompany, watchlist],
-  );
   const groupedWatchlistEntries = useMemo(
     () =>
       Object.entries(watchlistGroups).sort((left, right) => {
@@ -585,10 +587,32 @@ const Dashboard = () => {
       }),
     [watchlistGroups],
   );
+  const watchlistScopeOptions = useMemo(
+    () => groupedWatchlistEntries.map(([groupName]) => groupName),
+    [groupedWatchlistEntries],
+  );
+  const scopedWatchlistTickers = useMemo(() => {
+    if (activeWatchlistGroup === ALL_WATCHLIST_SCOPE) return watchlist;
+    const watchlistSet = new Set(watchlist);
+    return normalizeTickerList(watchlistGroups[activeWatchlistGroup] ?? [], MAX_WATCHLIST)
+      .filter((ticker) => watchlistSet.has(ticker));
+  }, [activeWatchlistGroup, watchlist, watchlistGroups]);
+  const radarTickers = useMemo(() => {
+    if (scopedWatchlistTickers.length > 0) return scopedWatchlistTickers;
+    if (activeWatchlistGroup !== ALL_WATCHLIST_SCOPE) return [];
+    return selectedCompany ? [selectedCompany] : [];
+  }, [activeWatchlistGroup, scopedWatchlistTickers, selectedCompany]);
+  const activeScopeLabel = activeWatchlistGroup === ALL_WATCHLIST_SCOPE ? 'All Watchlist' : activeWatchlistGroup;
 
   useEffect(() => {
     setShowCompanyList(searchTerm.length > 0);
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (activeWatchlistGroup === ALL_WATCHLIST_SCOPE) return;
+    if (watchlistScopeOptions.includes(activeWatchlistGroup)) return;
+    setActiveWatchlistGroup(ALL_WATCHLIST_SCOPE);
+  }, [activeWatchlistGroup, watchlistScopeOptions]);
 
   const handleCompanySelect = useCallback((company: string) => {
     setSelectedCompany(company);
@@ -617,8 +641,11 @@ const Dashboard = () => {
       if (previous.length > 0) return previous;
       return STARTER_WATCHLIST.slice(0, MAX_WATCHLIST);
     });
+    if (!selectedCompany) {
+      setSelectedCompany(STARTER_WATCHLIST[0]);
+    }
     setTodayFeedMessage('Starter watchlist added. Loading today feed...');
-  }, []);
+  }, [selectedCompany]);
 
   const handleCreateGroupFromSelected = useCallback(() => {
     if (!selectedCompany) {
@@ -926,11 +953,12 @@ const Dashboard = () => {
   const fetchTodaySignals = useCallback(async () => {
     if (!token) return;
     const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    const scopedGroup = activeWatchlistGroup === ALL_WATCHLIST_SCOPE ? undefined : activeWatchlistGroup;
     setIsLoadingTodaySignals(true);
     setTodaySignalsError('');
     try {
       const response = await authFetch(
-        API_ENDPOINTS.getTodaySignals(true, 5, lookbackDays),
+        API_ENDPOINTS.getTodaySignals(true, 5, lookbackDays, scopedGroup),
         undefined,
         token ?? undefined,
       );
@@ -939,6 +967,12 @@ const Dashboard = () => {
         if (response.status === 401) {
           setToken(null);
           navigate('/login');
+          return;
+        }
+        if (response.status === 404 && scopedGroup) {
+          setTodayFeedMessage(`Group "${scopedGroup}" no longer exists. Showing all watchlist tickers.`);
+          setTodaySignals(null);
+          setActiveWatchlistGroup(ALL_WATCHLIST_SCOPE);
           return;
         }
         throw new Error(`Today feed failed (${response.status})`);
@@ -953,7 +987,7 @@ const Dashboard = () => {
     } finally {
       setIsLoadingTodaySignals(false);
     }
-  }, [navigate, selectedTimePeriod, setToken, token]);
+  }, [activeWatchlistGroup, navigate, selectedTimePeriod, setToken, token]);
 
   const fetchSignalDelta = useCallback(async () => {
     if (!selectedCompany || !token) {
@@ -1187,7 +1221,7 @@ const Dashboard = () => {
       return;
     }
     void fetchTodaySignals();
-  }, [fetchTodaySignals, token, watchlist, selectedTimePeriod]);
+  }, [fetchTodaySignals, token, watchlist, watchlistGroups, selectedTimePeriod]);
 
   useEffect(() => {
     if (!token) {
@@ -1352,6 +1386,10 @@ const Dashboard = () => {
     void fetchAlertSummary();
   }, [fetchAlertSummary]);
 
+  const handleOpenAlertsCenter = useCallback(() => {
+    document.getElementById('alerts-center')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
   const trackWatchlistNewsClick = useCallback((item: WatchlistNewsItem) => {
     const payload = {
       title: item.title,
@@ -1384,7 +1422,7 @@ const Dashboard = () => {
   }, [watchlistNews.length]);
 
   return (
-    <div className="signal-surface signal-page text-[#E6ECE8]">
+    <div className="signal-surface signal-page text-[#1E3127] dark:text-[#E6ECE8]">
       <Helmet>
         <title>Dashboard - SnoopTrade</title>
       </Helmet>
@@ -1495,9 +1533,7 @@ const Dashboard = () => {
                 )}
                 <button
                   type="button"
-                  onClick={() => {
-                    document.getElementById('alerts-center')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
+                  onClick={handleOpenAlertsCenter}
                   className="mt-2 w-full rounded-lg border border-[#35503D] bg-[#18241D] px-2 py-2 text-xs font-semibold text-[#DFF0DF] transition hover:bg-[#1E2D23]"
                 >
                   Open Alerts Center
@@ -1551,12 +1587,12 @@ const Dashboard = () => {
       </header>
 
       <main className="signal-grid-overlay min-h-[calc(100dvh-4rem)]">
-        <div className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-8">
-          <section className="signal-glass relative rounded-3xl p-5 sm:p-6">
+        <div className="mx-auto flex max-w-7xl flex-col px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+          <section className="signal-glass relative order-1 rounded-3xl p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8EA197]">Insider Intelligence</p>
-                <h1 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">What should I look at now?</h1>
+                <h1 className="mt-2 text-3xl font-extrabold text-[#1F3327] dark:text-[#EAF5EC] sm:text-4xl">What should I look at now?</h1>
                 <p className="mt-2 text-xs text-[#8EA197]">Educational decision support only. Not financial advice.</p>
               </div>
               <div className="relative w-full max-w-2xl">
@@ -1592,14 +1628,14 @@ const Dashboard = () => {
                   <Badge className="signal-chip px-3 py-1.5 text-xs font-bold tracking-[0.08em]">
                     {selectedCompany}
                   </Badge>
-                  <p className="text-sm text-[#B7C8BC]">{selectedCompanyName}</p>
+                  <p className="text-sm text-[#4E6658] dark:text-[#B7C8BC]">{selectedCompanyName}</p>
                   <button
                     type="button"
                     onClick={toggleWatchlist}
-                    className={`ml-auto inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+                    className={`ml-auto inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 py-1.5 text-xs font-semibold leading-none transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
                       isInWatchlist
-                        ? 'border-[#4D6B53] bg-[#203127] text-[#D4E5D6] hover:bg-[#263A2E]'
-                        : 'border-[#35503D] bg-[#18241D] text-[#AEC1B4] hover:bg-[#1E2D23]'
+                        ? 'border-[#84B88F] bg-[#E3F3E7] text-[#1E4A31] hover:bg-[#D6EBDD] dark:border-[#4D6B53] dark:bg-[#203127] dark:text-[#D4E5D6] dark:hover:bg-[#263A2E]'
+                        : 'border-[#9CB9A3] bg-[#EFF6F1] text-[#2C5440] hover:bg-[#E4EFE8] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#AEC1B4] dark:hover:bg-[#1E2D23]'
                     }`}
                   >
                     {isInWatchlist ? <BookmarkCheck size={14} /> : <BookmarkPlus size={14} />}
@@ -1617,7 +1653,7 @@ const Dashboard = () => {
                         className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                           active
                             ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#2A4236] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {label}
@@ -1627,14 +1663,14 @@ const Dashboard = () => {
                 </div>
               </div>
             ) : (
-              <p className="mt-4 text-sm text-[#A8B8AD]">Search and select a company to load charts, signals, and transactions.</p>
+              <p className="mt-4 text-sm text-[#52685C] dark:text-[#A8B8AD]">Search and select a company to load charts, signals, and transactions.</p>
             )}
 
             <div className="mt-5 grid gap-3 lg:grid-cols-2">
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <BookmarkCheck className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Watchlist</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Watchlist</p>
                 </div>
                 {watchlist.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -1646,7 +1682,7 @@ const Dashboard = () => {
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
                             ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#244135] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -1655,7 +1691,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No saved tickers yet.</p>
+                    <p className="text-xs text-[#8EA197]">No saved tickers yet.</p>
                     <button
                       type="button"
                       onClick={handleUseStarterWatchlist}
@@ -1670,7 +1706,7 @@ const Dashboard = () => {
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <History className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Recent</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Recent</p>
                 </div>
                 {recentTickers.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -1682,7 +1718,7 @@ const Dashboard = () => {
                         className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                           selectedCompany === ticker
                             ? 'border-[#7DCB80] bg-[#B8F0AE] text-[#143022] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF]'
-                            : 'border-[#35503D] bg-[#18241D] text-[#244135] dark:text-[#AFC0B3] hover:bg-[#1E2D23]'
+                            : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
                         }`}
                       >
                         {ticker}
@@ -1690,14 +1726,14 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No recent selections.</p>
+                  <p className="text-xs text-[#8EA197]">No recent selections.</p>
                 )}
               </div>
             </div>
 
             <div className="mt-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Watchlist Groups</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Watchlist Groups</p>
                 <p className="text-[11px] text-[#7F978A]">
                   {groupedWatchlistEntries.length}/{MAX_WATCHLIST_GROUPS} groups
                 </p>
@@ -1771,34 +1807,82 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-[#60776A] dark:text-[#8EA197]">
+                <p className="mt-3 text-xs text-[#8EA197]">
                   No groups yet. Create one to segment your watchlist by strategy.
                 </p>
               )}
             </div>
+
+            {hasHydratedWatchlist && watchlist.length === 0 && (
+              <div className="mt-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">2-Minute Onboarding</p>
+                <ol className="mt-2 space-y-1 text-xs text-[#9EB2A5]">
+                  <li>1. Add a starter watchlist (5 tickers) to activate Today Feed.</li>
+                  <li>2. Create your first alert rule in Alerts Center.</li>
+                  <li>3. Run a scan and review prioritized alerts.</li>
+                </ol>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleUseStarterWatchlist}
+                    className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-1.5 text-xs font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23]"
+                  >
+                    Add Starter Watchlist
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenAlertsCenter}
+                    className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-1.5 text-xs font-semibold text-[#DCEADA] transition hover:bg-[#1E2D23]"
+                  >
+                    Open Alerts Center
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
 
-          <section className="mt-6" id="alerts-center">
+          <section className="mt-6 order-3" id="alerts-center">
             <AlertsPanel selectedCompany={selectedCompany} watchlist={watchlist} onAlertsChanged={handleAlertsChanged} />
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 order-4">
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-[#A7E89A]" />
-                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Today Feed</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Today Feed</p>
                   </div>
                   <p className="mt-1 text-xs text-[#8EA197]">
-                    Actionable watchlist alerts ranked by urgency and conviction.
+                    Actionable watchlist alerts ranked by urgency and conviction. Scope: {activeScopeLabel}.
                   </p>
                 </div>
-                {todaySignals && (
-                  <p className="text-[11px] text-[#8EA197]">
-                    {todaySignals.evaluated} ticker{todaySignals.evaluated === 1 ? '' : 's'} evaluated
-                  </p>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <label htmlFor="todayFeedScope" className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+                    Scope
+                  </label>
+                  <select
+                    id="todayFeedScope"
+                    value={activeWatchlistGroup}
+                    onChange={(event) => {
+                      setTodayFeedMessage('');
+                      setActiveWatchlistGroup(event.target.value);
+                    }}
+                    className="h-8 rounded-lg border border-[#35503D] bg-[#18241D] px-2 text-xs font-semibold text-[#DCEADA]"
+                  >
+                    <option value={ALL_WATCHLIST_SCOPE}>All Watchlist</option>
+                    {watchlistScopeOptions.map((groupName) => (
+                      <option key={groupName} value={groupName}>
+                        {groupName}
+                      </option>
+                    ))}
+                  </select>
+                  {todaySignals && (
+                    <p className="text-[11px] text-[#8EA197]">
+                      {todaySignals.evaluated} ticker{todaySignals.evaluated === 1 ? '' : 's'} evaluated
+                    </p>
+                  )}
+                </div>
               </div>
 
               {todayFeedMessage && (
@@ -1840,6 +1924,13 @@ const Dashboard = () => {
                       <p className="mt-2 text-xs text-[#A8BCB0]">
                         Score {item.score.toFixed(1)} • {item.label} • Delta {formatSignedDelta(item.change_24h)}
                       </p>
+                      {item.personalization_samples > 0 && Math.abs(item.personalization_delta) >= 0.05 && (
+                        <p className="mt-1 text-[11px] text-[#9AB9A1]">
+                          Personalized {item.personalization_delta >= 0 ? '+' : ''}
+                          {item.personalization_delta.toFixed(2)} • base {item.base_score.toFixed(1)} • {item.personalization_samples} outcome
+                          {item.personalization_samples === 1 ? '' : 's'}
+                        </p>
+                      )}
                       <p className="mt-1 text-[11px] text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
                       <div className="mt-2 grid grid-cols-2 gap-1.5">
                         {(['followed', 'ignored', 'entered', 'exited'] as OutcomeType[]).map((outcome) => (
@@ -1862,18 +1953,22 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#8EA197]">Add watchlist tickers to generate your today feed.</p>
+                <p className="mt-4 text-sm text-[#8EA197]">
+                  {activeWatchlistGroup === ALL_WATCHLIST_SCOPE
+                    ? 'Add watchlist tickers to generate your today feed.'
+                    : `No ranked signals for "${activeWatchlistGroup}" in this window.`}
+                </p>
               )}
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 order-5">
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Watchlist Radar</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist Radar</p>
                   <p className="mt-1 text-xs text-[#8EA197]">
-                    Ranked by insider conviction for the active {selectedTimePeriod.toUpperCase()} window.
+                    Ranked by insider conviction for the active {selectedTimePeriod.toUpperCase()} window. Scope: {activeScopeLabel}.
                   </p>
                 </div>
                 {radarData && (
@@ -1950,13 +2045,13 @@ const Dashboard = () => {
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 order-6">
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Daily Brief</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Daily Brief</p>
                   <p className="mt-1 text-xs text-[#8EA197]">
-                    Actionable summary built from live insider conviction.
+                    Actionable summary built from live insider conviction for {activeScopeLabel}.
                   </p>
                 </div>
                 {dailyBrief && (
@@ -2010,13 +2105,13 @@ const Dashboard = () => {
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 order-7">
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Watchlist News</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist News</p>
                   <p className="mt-1 text-xs text-[#8EA197]">
-                    Live insider-related headlines for your tracked tickers.
+                    Live insider-related headlines for your tracked tickers in {activeScopeLabel}.
                   </p>
                 </div>
                 <p className="text-[11px] text-[#8EA197]">{radarTickers.length} ticker{radarTickers.length === 1 ? '' : 's'} monitored</p>
@@ -2070,7 +2165,7 @@ const Dashboard = () => {
           </section>
 
           {!selectedCompany && (
-            <section className="mt-6 grid gap-4 md:grid-cols-3">
+            <section className="mt-6 order-8 grid gap-4 md:grid-cols-3">
               {['AAPL', 'MSFT', 'NVDA'].map((ticker) => (
                 <button
                   key={ticker}
@@ -2079,15 +2174,15 @@ const Dashboard = () => {
                   className="signal-glass rounded-2xl p-5 text-left transition hover:-translate-y-0.5"
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Quick Load</p>
-                  <p className="mt-2 text-2xl font-bold text-[#EAF5EC]">{ticker}</p>
-                  <p className="mt-1 text-sm text-[#AFBFB3]">{COMPANY_NAMES[ticker]}</p>
+                  <p className="mt-2 text-2xl font-bold text-[#21392D] dark:text-[#EAF5EC]">{ticker}</p>
+                  <p className="mt-1 text-sm text-[#5D7669] dark:text-[#AFBFB3]">{COMPANY_NAMES[ticker]}</p>
                 </button>
               ))}
             </section>
           )}
 
           {selectedCompany && (
-            <section className="mt-6 space-y-6">
+            <section className="mt-6 order-2 space-y-6">
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {statCards.map((card) => (
                   <article key={card.label} className="signal-glass rounded-2xl p-4">
@@ -2120,13 +2215,13 @@ const Dashboard = () => {
                   <div className="signal-glass rounded-3xl p-5">
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-[#A7E89A]" />
-                      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Signal Summary</p>
+                      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Signal Summary</p>
                     </div>
                     <div className="mt-4 space-y-3">
                       <Badge variant="purchase" className="px-3 py-1.5 text-sm">Purchases: {purchases}</Badge>
                       <Badge variant="sale" className="px-3 py-1.5 text-sm">Sales: {sales}</Badge>
                     </div>
-                    <p className="mt-4 text-xl font-bold text-[#A7E89A]">Net signal: {netSignal}</p>
+                    <p className="mt-4 text-xl font-bold text-[#2F5D43] dark:text-[#A7E89A]">Net signal: {netSignal}</p>
                     <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Conviction Score</p>

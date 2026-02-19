@@ -17,6 +17,7 @@ from services.auth_services import (
     decode_access_google_token,
     hash_refresh_token_id,
 )
+from services.admin_access import is_admin_user
 
 auth_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -139,6 +140,7 @@ def _issue_tokens_for_user(user: Dict[str, Any]) -> TokenResponse:
         token_type="bearer",
         email=user["email"],
         requires_password=not bool(user.get("hashed_password")),
+        is_admin=is_admin_user(user),
     )
 
 
@@ -311,6 +313,7 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
     user.pop("_id", None)
+    user["is_admin"] = is_admin_user(user)
     return user
 
 

@@ -6,6 +6,9 @@ import API_ENDPOINTS from '../utils/apiEndpoints';
 import { authFetch } from '../utils/authFetch';
 
 type RuleType = 'large_buy' | 'repeat_buyer' | 'cluster_buying';
+type MetricType = 'shares' | 'pct_float' | 'ownership_change_pct';
+type ComparatorType = 'gte' | 'lte';
+type WindowType = 'single' | 'rolling';
 
 interface AlertRule {
   id: string;
@@ -13,6 +16,10 @@ interface AlertRule {
   rule_type: RuleType;
   threshold: number;
   lookback_days: number;
+  metric_type?: MetricType;
+  comparator?: ComparatorType;
+  window?: WindowType;
+  threshold_unit?: 'shares' | 'percent';
   name: string;
   is_active: boolean;
   created_at: string;
@@ -57,6 +64,24 @@ const RULE_META: Record<RuleType, { label: string; thresholdLabel: string; defau
   },
 };
 
+const METRIC_META: Record<MetricType, { label: string; helper: string; thresholdUnit: 'shares' | 'percent' }> = {
+  shares: {
+    label: 'Shares',
+    helper: 'Compares raw shares in each insider buy.',
+    thresholdUnit: 'shares',
+  },
+  pct_float: {
+    label: '% Float',
+    helper: 'Compares each insider buy as a percentage of estimated float shares.',
+    thresholdUnit: 'percent',
+  },
+  ownership_change_pct: {
+    label: 'Ownership % Change',
+    helper: 'Compares buy size to the insider’s prior holdings.',
+    thresholdUnit: 'percent',
+  },
+};
+
 function formatRelativeDate(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return 'Unknown time';
@@ -80,6 +105,9 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
   const [events, setEvents] = useState<AlertEvent[]>([]);
   const [ruleType, setRuleType] = useState<RuleType>('large_buy');
   const [ticker, setTicker] = useState<string>('AAPL');
+  const [metricType, setMetricType] = useState<MetricType>('shares');
+  const [comparator, setComparator] = useState<ComparatorType>('gte');
+  const [windowMode, setWindowMode] = useState<WindowType>('single');
   const [threshold, setThreshold] = useState<string>(RULE_META.large_buy.defaultThreshold);
   const [lookbackDays, setLookbackDays] = useState<string>('30');
   const [isLoadingRules, setIsLoadingRules] = useState(false);
@@ -140,6 +168,11 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
   const handleRuleTypeChange = (nextType: RuleType) => {
     setRuleType(nextType);
     setThreshold(RULE_META[nextType].defaultThreshold);
+    if (nextType !== 'large_buy') {
+      setMetricType('shares');
+      setComparator('gte');
+      setWindowMode('single');
+    }
   };
 
   const handleCreateRule = async (event: FormEvent<HTMLFormElement>) => {
@@ -159,6 +192,11 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       return;
     }
 
+    const effectiveMetricType: MetricType = ruleType === 'large_buy' ? metricType : 'shares';
+    const effectiveComparator: ComparatorType = ruleType === 'large_buy' ? comparator : 'gte';
+    const effectiveWindow: WindowType = ruleType === 'large_buy' ? windowMode : 'single';
+    const thresholdUnit = METRIC_META[effectiveMetricType].thresholdUnit;
+
     setIsCreatingRule(true);
     try {
       const response = await authFetch(API_ENDPOINTS.createAlertRule, {
@@ -169,6 +207,10 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           rule_type: ruleType,
           threshold: thresholdValue,
           lookback_days: lookbackValue,
+          metric_type: effectiveMetricType,
+          comparator: effectiveComparator,
+          window: effectiveWindow,
+          threshold_unit: thresholdUnit,
         }),
       });
       if (!response.ok) {
@@ -245,6 +287,9 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
     }
   };
 
+  const thresholdStep = ruleType === 'large_buy' && metricType !== 'shares' ? '0.01' : '1';
+  const thresholdMin = thresholdStep === '0.01' ? '0.01' : '1';
+
   return (
     <section className="signal-glass rounded-3xl p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -272,7 +317,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
         </Button>
       </div>
 
-      <form onSubmit={handleCreateRule} className="mt-5 grid gap-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-4 sm:grid-cols-2 lg:grid-cols-5">
+      <form onSubmit={handleCreateRule} className="mt-5 grid gap-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-4 sm:grid-cols-2 lg:grid-cols-8">
         <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
           Ticker
           <select
@@ -304,13 +349,55 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
         </label>
 
         <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+          Metric
+          <select
+            value={metricType}
+            onChange={(event) => setMetricType(event.target.value as MetricType)}
+            disabled={ruleType !== 'large_buy'}
+            className="signal-input h-10 rounded-xl px-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {Object.entries(METRIC_META).map(([value, meta]) => (
+              <option key={value} value={value}>
+                {meta.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+          Comparator
+          <select
+            value={comparator}
+            onChange={(event) => setComparator(event.target.value as ComparatorType)}
+            disabled={ruleType !== 'large_buy'}
+            className="signal-input h-10 rounded-xl px-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <option value="gte">Greater or equal</option>
+            <option value="lte">Less or equal</option>
+          </select>
+        </label>
+
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+          Window
+          <select
+            value={windowMode}
+            onChange={(event) => setWindowMode(event.target.value as WindowType)}
+            disabled={ruleType !== 'large_buy'}
+            className="signal-input h-10 rounded-xl px-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <option value="single">Single transaction</option>
+            <option value="rolling">Rolling window</option>
+          </select>
+        </label>
+
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
           {RULE_META[ruleType].thresholdLabel}
           <Input
             value={threshold}
             onChange={(event) => setThreshold(event.target.value)}
             type="number"
-            min="1"
-            step="1"
+            min={thresholdMin}
+            step={thresholdStep}
             className="signal-input h-10 rounded-xl px-3 text-sm font-semibold"
           />
         </label>
@@ -341,6 +428,12 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
         </div>
       </form>
 
+      {ruleType === 'large_buy' && (
+        <p className="mt-2 text-xs text-[#8EA197]">
+          Metric detail: {METRIC_META[metricType].helper}
+        </p>
+      )}
+
       {(scanMessage || errorMessage) && (
         <div className="mt-3 space-y-2">
           {scanMessage && (
@@ -367,7 +460,15 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
                   <div>
                     <p className="text-sm font-bold text-[#EAF5EC]">{rule.name}</p>
                     <p className="mt-1 text-xs text-[#9FB1A5]">
-                      {rule.ticker} • {RULE_META[rule.rule_type].label} • {RULE_META[rule.rule_type].thresholdLabel}: {rule.threshold} • {rule.lookback_days}d
+                      {rule.ticker} • {RULE_META[rule.rule_type].label} • {RULE_META[rule.rule_type].thresholdLabel}: {rule.threshold}
+                      {' '}
+                      {(rule.threshold_unit ?? 'shares') === 'percent' ? '%' : 'shares'}
+                      {' • '}
+                      {rule.metric_type ?? 'shares'}
+                      {' • '}
+                      {rule.comparator ?? 'gte'}
+                      {' • '}
+                      {rule.lookback_days}d
                     </p>
                   </div>
                   <button

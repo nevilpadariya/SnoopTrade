@@ -9,13 +9,14 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from lxml import etree
 from io import StringIO
 from pathlib import Path
 from dotenv import load_dotenv
 import re
 import os
+import hashlib
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(env_path)
@@ -263,6 +264,14 @@ def extract_details_from_form4(form4_url: str) -> dict:
                     "//reportingOwner/rptOwnerName/text()") else None,
                 "cik": tree.xpath("//reportingOwner/rptOwnerCik/text()")[0] if tree.xpath(
                     "//reportingOwner/rptOwnerCik/text()") else None,
+                "is_director": tree.xpath("//reportingOwner/reportingOwnerRelationship/isDirector/text()")[0] if tree.xpath(
+                    "//reportingOwner/reportingOwnerRelationship/isDirector/text()") else None,
+                "is_officer": tree.xpath("//reportingOwner/reportingOwnerRelationship/isOfficer/text()")[0] if tree.xpath(
+                    "//reportingOwner/reportingOwnerRelationship/isOfficer/text()") else None,
+                "is_ten_percent_owner": tree.xpath("//reportingOwner/reportingOwnerRelationship/isTenPercentOwner/text()")[0] if tree.xpath(
+                    "//reportingOwner/reportingOwnerRelationship/isTenPercentOwner/text()") else None,
+                "officer_title": tree.xpath("//reportingOwner/reportingOwnerRelationship/officerTitle/text()")[0] if tree.xpath(
+                    "//reportingOwner/reportingOwnerRelationship/officerTitle/text()") else None,
             },
             "transactions": []
         }
@@ -277,6 +286,8 @@ def extract_details_from_form4(form4_url: str) -> dict:
                     ".//transactionCode/text()") else None,
                 "shares": transaction.xpath(".//transactionShares/value/text()")[0] if transaction.xpath(
                     ".//transactionShares/value/text()") else None,
+                "shares_owned_following_transaction": transaction.xpath(".//sharesOwnedFollowingTransaction/value/text()")[0] if transaction.xpath(
+                    ".//sharesOwnedFollowingTransaction/value/text()") else None,
                 "price_per_share": transaction.xpath(".//transactionPricePerShare/value/text()")[0] if transaction.xpath(
                     ".//transactionPricePerShare/value/text()") else None,
                 "ownership_type": transaction.xpath(".//directOrIndirectOwnership/value/text()")[0] if transaction.xpath(
@@ -313,9 +324,27 @@ def flatten_single_filing(data: dict) -> list:
             "security_title": transaction.get("security_title"),
             "transaction_code": transaction.get("transaction_code"),
             "shares": transaction.get("shares"),
+            "shares_owned_following_transaction": transaction.get("shares_owned_following_transaction"),
             "price_per_share": transaction.get("price_per_share"),
             "ownership_type": transaction.get("ownership_type"),
+            "is_director": data.get("reporting_owner", {}).get("is_director"),
+            "is_officer": data.get("reporting_owner", {}).get("is_officer"),
+            "is_ten_percent_owner": data.get("reporting_owner", {}).get("is_ten_percent_owner"),
+            "officer_title": data.get("reporting_owner", {}).get("officer_title"),
         }
+        dedupe_material = "|".join(
+            [
+                str(flat_entry.get("trading_symbol") or ""),
+                str(flat_entry.get("filing_date") or ""),
+                str(flat_entry.get("reporting_owner_cik") or ""),
+                str(flat_entry.get("transaction_date") or ""),
+                str(flat_entry.get("transaction_code") or ""),
+                str(flat_entry.get("shares") or ""),
+                str(flat_entry.get("price_per_share") or ""),
+                str(flat_entry.get("security_title") or ""),
+            ]
+        )
+        flat_entry["_dedupe_key"] = hashlib.sha256(dedupe_material.encode("utf-8")).hexdigest()
         flattened.append(flat_entry)
     
     return flattened
@@ -336,9 +365,7 @@ def insert_form4_data(ticker: str, cik: str, days_back: int = 365, batch_size: i
     
     db = get_db()
     collection = db[f"form_4_links_{ticker}"]
-    
-    # Clear existing data
-    collection.delete_many({})
+    collection.create_index([("_dedupe_key", 1)], unique=True, background=True)
     
     # Fetch links
     form_4_links = fetch_form_4_links(cik, days_back=days_back)
@@ -365,11 +392,21 @@ def insert_form4_data(ticker: str, cik: str, days_back: int = 365, batch_size: i
         if len(batch_data) >= batch_size or i == len(form_4_links) - 1:
             if batch_data:
                 try:
-                    collection.insert_many(batch_data)
-                    total_inserted += len(batch_data)
-                    logger.debug(f"Inserted batch of {len(batch_data)} records for {ticker}")
+                    operations = [
+                        UpdateOne(
+                            {"_dedupe_key": row.get("_dedupe_key")},
+                            {"$set": row},
+                            upsert=True,
+                        )
+                        for row in batch_data
+                        if row.get("_dedupe_key")
+                    ]
+                    if operations:
+                        result = collection.bulk_write(operations, ordered=False)
+                        total_inserted += int(result.upserted_count) + int(result.modified_count)
+                    logger.debug(f"Upserted batch of {len(batch_data)} records for {ticker}")
                 except Exception as e:
-                    logger.error(f"Error inserting batch for {ticker}: {e}")
+                    logger.error(f"Error upserting batch for {ticker}: {e}")
                 
                 batch_data = []
                 gc.collect()
@@ -378,7 +415,7 @@ def insert_form4_data(ticker: str, cik: str, days_back: int = 365, batch_size: i
         if (i + 1) % 50 == 0:
             logger.info(f"Processed {i + 1}/{len(form_4_links)} filings for {ticker}")
     
-    logger.info(f"Inserted {total_inserted} records for {ticker} (CIK: {cik})")
+    logger.info(f"Upserted {total_inserted} records for {ticker} (CIK: {cik})")
     
     # Clean up
     del form_4_links

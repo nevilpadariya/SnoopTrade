@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, BookmarkCheck, BookmarkPlus, ExternalLink, History, Loader2, LogOut, Moon, Search, Sparkles, Sun, User as UserIcon } from 'lucide-react';
+import { Bell, BookmarkCheck, BookmarkPlus, ExternalLink, History, Loader2, LogOut, Moon, Search, ShieldAlert, Sparkles, Sun, Target, User as UserIcon } from 'lucide-react';
 import { COMPANIES, COMPANY_NAMES } from '../data/companies';
 import { useAuth } from '../context/AuthContext';
 import MobileBottomNav from '../components/MobileBottomNav';
@@ -35,9 +35,13 @@ const LOOKBACK_DAYS_BY_PERIOD: Record<string, number> = {
 
 const WATCHLIST_STORAGE_KEY = 'snooptrade.watchlist';
 const RECENT_STORAGE_KEY = 'snooptrade.recent_tickers';
+const WATCHLIST_GROUPS_STORAGE_KEY = 'snooptrade.watchlist_groups';
 const LOGIN_WELCOME_ANIMATION_KEY = 'snooptrade.login_welcome_animation';
 const MAX_WATCHLIST = 12;
 const MAX_RECENT = 8;
+const MAX_WATCHLIST_GROUPS = 8;
+const MAX_GROUP_NAME_LENGTH = 24;
+const STARTER_WATCHLIST = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'META'];
 
 const COLORS = {
   price: 'hsl(var(--primary-strong))',
@@ -76,7 +80,27 @@ type WatchlistRadarResponse = {
   lookback_days: number;
   evaluated: number;
   items: WatchlistRadarItem[];
+  sector_rollups: SectorRollupItem[];
   updated_at: string;
+};
+
+type SectorRollupItem = {
+  sector: string;
+  ticker_count: number;
+  average_score: number;
+  top_ticker: string;
+  top_score: number;
+  high_conviction_count: number;
+  risk_off_count: number;
+};
+
+type WatchlistGroups = Record<string, string[]>;
+
+type WatchlistPreferencesResponse = {
+  watchlist?: string[];
+  recent_tickers?: string[];
+  watchlist_groups?: WatchlistGroups;
+  updated_at?: string;
 };
 
 type WatchlistNewsItem = {
@@ -122,6 +146,83 @@ type AlertSummary = {
   items: AlertSummaryItem[];
 };
 
+type TodaySignalItem = {
+  signal_id: string;
+  ticker: string;
+  score: number;
+  label: string;
+  urgency: 'high' | 'medium' | 'low';
+  action: string;
+  reason: string;
+  change_24h: number;
+  confidence: number;
+  one_line_explanation: string;
+  updated_at: string;
+};
+
+type TodaySignalsResponse = {
+  lookback_days: number;
+  watchlist_only: boolean;
+  evaluated: number;
+  generated_at: string;
+  items: TodaySignalItem[];
+};
+
+type SignalDelta = {
+  ticker: string;
+  lookback_days: number;
+  score_prev: number;
+  score_now: number;
+  buyers_prev: number;
+  buyers_now: number;
+  net_flow_prev: number;
+  net_flow_now: number;
+  summary: string;
+  generated_at: string;
+};
+
+type SignalExplain = {
+  ticker: string;
+  lookback_days: number;
+  score: number;
+  label: string;
+  action: string;
+  reason: string;
+  confidence: number;
+  change_24h: number;
+  one_line_explanation: string;
+  key_factors: string[];
+  updated_at: string;
+};
+
+type SignalBacktestPoint = {
+  signal_date: string;
+  entry_date: string | null;
+  exit_date: string | null;
+  entry_price: number | null;
+  exit_price: number | null;
+  return_pct: number | null;
+  shares: number;
+};
+
+type SignalBacktest = {
+  ticker: string;
+  lookback_days: number;
+  horizon_days: number;
+  signal_count: number;
+  sample_size: number;
+  win_rate: number | null;
+  average_return_pct: number | null;
+  median_return_pct: number | null;
+  best_return_pct: number | null;
+  worst_return_pct: number | null;
+  note: string;
+  generated_at: string;
+  points: SignalBacktestPoint[];
+};
+
+type OutcomeType = 'followed' | 'ignored' | 'entered' | 'exited';
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -144,6 +245,17 @@ function getScoreBarClass(score: number): string {
   if (score >= 45) return 'bg-amber-300';
   if (score >= 30) return 'bg-orange-300';
   return 'bg-rose-400';
+}
+
+function getUrgencyPillClass(urgency: 'high' | 'medium' | 'low'): string {
+  if (urgency === 'high') return 'border-[#824343] bg-[#3A1D1D] text-[#FFD2D2]';
+  if (urgency === 'medium') return 'border-[#6A5A2D] bg-[#2E2512] text-[#FFE8AE]';
+  return 'border-[#34513E] bg-[#17271E] text-[#BEE6BE]';
+}
+
+function formatSignedDelta(value: number): string {
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}`;
 }
 
 function formatNewsTime(dateValue?: string | null): string {
@@ -182,6 +294,46 @@ function parseStoredTickerList(raw: string | null, maxItems: number): string[] {
   }
 }
 
+function parseStoredWatchlistGroups(raw: string | null, allowedTickers: string[]): WatchlistGroups {
+  if (!raw) return {};
+  try {
+    return normalizeWatchlistGroups(JSON.parse(raw), allowedTickers);
+  } catch {
+    return {};
+  }
+}
+
+function normalizeGroupName(value: string): string {
+  return value
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[^A-Za-z0-9 &_-]/g, '')
+    .slice(0, MAX_GROUP_NAME_LENGTH);
+}
+
+function normalizeWatchlistGroups(value: unknown, allowedTickers: string[]): WatchlistGroups {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  const allowed = new Set(allowedTickers);
+  const normalized: WatchlistGroups = {};
+  const seen = new Set<string>();
+
+  for (const [rawName, rawTickers] of Object.entries(value as Record<string, unknown>)) {
+    const groupName = normalizeGroupName(rawName);
+    if (!groupName) continue;
+    const lowered = groupName.toLowerCase();
+    if (seen.has(lowered)) continue;
+
+    const tickers = normalizeTickerList(rawTickers, MAX_WATCHLIST).filter((ticker) => allowed.has(ticker));
+    if (tickers.length === 0) continue;
+
+    normalized[groupName] = tickers;
+    seen.add(lowered);
+    if (Object.keys(normalized).length >= MAX_WATCHLIST_GROUPS) break;
+  }
+
+  return normalized;
+}
+
 const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -216,11 +368,31 @@ const Dashboard = () => {
   const [isLoadingAlertSummary, setIsLoadingAlertSummary] = useState(false);
   const [alertSummary, setAlertSummary] = useState<AlertSummary | null>(null);
   const [alertSummaryError, setAlertSummaryError] = useState('');
+  const [isLoadingTodaySignals, setIsLoadingTodaySignals] = useState(false);
+  const [todaySignals, setTodaySignals] = useState<TodaySignalsResponse | null>(null);
+  const [todaySignalsError, setTodaySignalsError] = useState('');
+  const [todayFeedMessage, setTodayFeedMessage] = useState('');
+  const [isLoadingSignalDelta, setIsLoadingSignalDelta] = useState(false);
+  const [signalDelta, setSignalDelta] = useState<SignalDelta | null>(null);
+  const [signalDeltaError, setSignalDeltaError] = useState('');
+  const [isLoadingSignalExplain, setIsLoadingSignalExplain] = useState(false);
+  const [signalExplain, setSignalExplain] = useState<SignalExplain | null>(null);
+  const [signalExplainError, setSignalExplainError] = useState('');
+  const [isLoadingBacktest, setIsLoadingBacktest] = useState(false);
+  const [backtestData, setBacktestData] = useState<SignalBacktest | null>(null);
+  const [backtestError, setBacktestError] = useState('');
+  const [outcomeSavingBySignal, setOutcomeSavingBySignal] = useState<Record<string, OutcomeType | null>>({});
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [recentTickers, setRecentTickers] = useState<string[]>([]);
+  const [watchlistGroups, setWatchlistGroups] = useState<WatchlistGroups>({});
+  const [groupDraftName, setGroupDraftName] = useState('');
+  const [watchlistGroupMessage, setWatchlistGroupMessage] = useState('');
   const [hasHydratedWatchlist, setHasHydratedWatchlist] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
+  const watchlistRef = useRef<string[]>([]);
+  const recentTickersRef = useRef<string[]>([]);
+  const watchlistGroupsRef = useRef<WatchlistGroups>({});
 
   useEffect(() => {
     if (location.state?.company && COMPANIES.includes(location.state.company)) {
@@ -229,8 +401,15 @@ const Dashboard = () => {
   }, [location.state]);
 
   useEffect(() => {
-    setWatchlist(parseStoredTickerList(localStorage.getItem(WATCHLIST_STORAGE_KEY), MAX_WATCHLIST));
-    setRecentTickers(parseStoredTickerList(localStorage.getItem(RECENT_STORAGE_KEY), MAX_RECENT));
+    const storedWatchlist = parseStoredTickerList(localStorage.getItem(WATCHLIST_STORAGE_KEY), MAX_WATCHLIST);
+    const storedRecent = parseStoredTickerList(localStorage.getItem(RECENT_STORAGE_KEY), MAX_RECENT);
+    const storedGroups = parseStoredWatchlistGroups(localStorage.getItem(WATCHLIST_GROUPS_STORAGE_KEY), storedWatchlist);
+    watchlistRef.current = storedWatchlist;
+    recentTickersRef.current = storedRecent;
+    watchlistGroupsRef.current = storedGroups;
+    setWatchlist(storedWatchlist);
+    setRecentTickers(storedRecent);
+    setWatchlistGroups(storedGroups);
   }, []);
 
   useEffect(() => {
@@ -253,21 +432,52 @@ const Dashboard = () => {
     localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recentTickers));
   }, [recentTickers]);
 
+  useEffect(() => {
+    localStorage.setItem(WATCHLIST_GROUPS_STORAGE_KEY, JSON.stringify(watchlistGroups));
+  }, [watchlistGroups]);
+
+  useEffect(() => {
+    watchlistRef.current = watchlist;
+  }, [watchlist]);
+
+  useEffect(() => {
+    recentTickersRef.current = recentTickers;
+  }, [recentTickers]);
+
+  useEffect(() => {
+    watchlistGroupsRef.current = watchlistGroups;
+  }, [watchlistGroups]);
+
   const fetchWatchlistPreferences = useCallback(async () => {
     if (!token) return;
     try {
-      const data = await fetchData(API_ENDPOINTS.getUserWatchlist, token);
+      const data = (await fetchData(API_ENDPOINTS.getUserWatchlist, token)) as WatchlistPreferencesResponse;
       const serverWatchlist = normalizeTickerList(data?.watchlist, MAX_WATCHLIST);
       const serverRecent = normalizeTickerList(data?.recent_tickers, MAX_RECENT);
+      const localWatchlist = watchlistRef.current;
+      const localRecent = recentTickersRef.current;
+      const localGroups = watchlistGroupsRef.current;
 
-      setWatchlist((previous) => {
-        const localOnly = previous.filter((ticker) => !serverWatchlist.includes(ticker));
-        return [...serverWatchlist, ...localOnly].slice(0, MAX_WATCHLIST);
-      });
-      setRecentTickers((previous) => {
-        const localOnly = previous.filter((ticker) => !serverRecent.includes(ticker));
-        return [...serverRecent, ...localOnly].slice(0, MAX_RECENT);
-      });
+      const mergedWatchlist = [
+        ...serverWatchlist,
+        ...localWatchlist.filter((ticker) => !serverWatchlist.includes(ticker)),
+      ].slice(0, MAX_WATCHLIST);
+      const mergedRecent = [
+        ...serverRecent,
+        ...localRecent.filter((ticker) => !serverRecent.includes(ticker)),
+      ].slice(0, MAX_RECENT);
+
+      const serverGroups = normalizeWatchlistGroups(data?.watchlist_groups, mergedWatchlist);
+      const normalizedLocalGroups = normalizeWatchlistGroups(localGroups, mergedWatchlist);
+      const mergedGroups: WatchlistGroups = { ...serverGroups };
+      for (const [groupName, tickers] of Object.entries(normalizedLocalGroups)) {
+        const existing = mergedGroups[groupName] ?? [];
+        mergedGroups[groupName] = [...existing, ...tickers.filter((ticker) => !existing.includes(ticker))].slice(0, MAX_WATCHLIST);
+      }
+
+      setWatchlist(mergedWatchlist);
+      setRecentTickers(mergedRecent);
+      setWatchlistGroups(normalizeWatchlistGroups(mergedGroups, mergedWatchlist));
     } catch (error: any) {
       console.error('Failed to fetch watchlist preferences', error);
       if (error?.status === 401) {
@@ -290,6 +500,7 @@ const Dashboard = () => {
           body: JSON.stringify({
             watchlist,
             recent_tickers: recentTickers,
+            watchlist_groups: watchlistGroups,
           }),
         },
         token ?? undefined,
@@ -306,7 +517,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Failed to sync watchlist preferences', error);
     }
-  }, [hasHydratedWatchlist, navigate, recentTickers, setToken, token, watchlist]);
+  }, [hasHydratedWatchlist, navigate, recentTickers, setToken, token, watchlist, watchlistGroups]);
 
   useEffect(() => {
     if (!token) {
@@ -322,7 +533,16 @@ const Dashboard = () => {
       void persistWatchlistPreferences();
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [hasHydratedWatchlist, persistWatchlistPreferences, recentTickers, token, watchlist]);
+  }, [hasHydratedWatchlist, persistWatchlistPreferences, recentTickers, token, watchlist, watchlistGroups]);
+
+  useEffect(() => {
+    setWatchlistGroups((previous) => {
+      const normalized = normalizeWatchlistGroups(previous, watchlist);
+      const prevString = JSON.stringify(previous);
+      const nextString = JSON.stringify(normalized);
+      return prevString === nextString ? previous : normalized;
+    });
+  }, [watchlist]);
 
   const getCacheKey = (ticker: string, period: string) => `stock_cache_${ticker}_${period}`;
 
@@ -357,6 +577,14 @@ const Dashboard = () => {
     () => (watchlist.length > 0 ? watchlist : selectedCompany ? [selectedCompany] : []),
     [selectedCompany, watchlist],
   );
+  const groupedWatchlistEntries = useMemo(
+    () =>
+      Object.entries(watchlistGroups).sort((left, right) => {
+        if (right[1].length !== left[1].length) return right[1].length - left[1].length;
+        return left[0].localeCompare(right[0]);
+      }),
+    [watchlistGroups],
+  );
 
   useEffect(() => {
     setShowCompanyList(searchTerm.length > 0);
@@ -383,6 +611,80 @@ const Dashboard = () => {
       return [selectedCompany, ...previous].slice(0, MAX_WATCHLIST);
     });
   }, [selectedCompany]);
+
+  const handleUseStarterWatchlist = useCallback(() => {
+    setWatchlist((previous) => {
+      if (previous.length > 0) return previous;
+      return STARTER_WATCHLIST.slice(0, MAX_WATCHLIST);
+    });
+    setTodayFeedMessage('Starter watchlist added. Loading today feed...');
+  }, []);
+
+  const handleCreateGroupFromSelected = useCallback(() => {
+    if (!selectedCompany) {
+      setWatchlistGroupMessage('Select a ticker first to create a group.');
+      return;
+    }
+    if (!watchlist.includes(selectedCompany)) {
+      setWatchlistGroupMessage('Add the ticker to your watchlist before grouping it.');
+      return;
+    }
+    const normalizedName = normalizeGroupName(groupDraftName);
+    if (!normalizedName) {
+      setWatchlistGroupMessage('Enter a valid group name.');
+      return;
+    }
+
+    setWatchlistGroups((previous) => {
+      const next: WatchlistGroups = { ...previous };
+      const existing = next[normalizedName] ?? [];
+      next[normalizedName] = [selectedCompany, ...existing.filter((ticker) => ticker !== selectedCompany)].slice(0, MAX_WATCHLIST);
+      return normalizeWatchlistGroups(next, watchlist);
+    });
+
+    setGroupDraftName('');
+    setWatchlistGroupMessage(`Added ${selectedCompany} to "${normalizedName}".`);
+  }, [groupDraftName, selectedCompany, watchlist]);
+
+  const handleAddSelectedToGroup = useCallback((groupName: string) => {
+    if (!selectedCompany) return;
+    if (!watchlist.includes(selectedCompany)) {
+      setWatchlistGroupMessage('Add the ticker to your watchlist before grouping it.');
+      return;
+    }
+    setWatchlistGroups((previous) => {
+      const next: WatchlistGroups = { ...previous };
+      const existing = next[groupName] ?? [];
+      next[groupName] = [selectedCompany, ...existing.filter((ticker) => ticker !== selectedCompany)].slice(0, MAX_WATCHLIST);
+      return normalizeWatchlistGroups(next, watchlist);
+    });
+    setWatchlistGroupMessage(`Added ${selectedCompany} to "${groupName}".`);
+  }, [selectedCompany, watchlist]);
+
+  const handleRemoveTickerFromGroup = useCallback((groupName: string, ticker: string) => {
+    setWatchlistGroups((previous) => {
+      if (!previous[groupName]) return previous;
+      const next: WatchlistGroups = { ...previous };
+      const remaining = (next[groupName] ?? []).filter((item) => item !== ticker);
+      if (remaining.length === 0) {
+        delete next[groupName];
+      } else {
+        next[groupName] = remaining;
+      }
+      return normalizeWatchlistGroups(next, watchlist);
+    });
+    setWatchlistGroupMessage(`Removed ${ticker} from "${groupName}".`);
+  }, [watchlist]);
+
+  const handleDeleteGroup = useCallback((groupName: string) => {
+    setWatchlistGroups((previous) => {
+      if (!previous[groupName]) return previous;
+      const next: WatchlistGroups = { ...previous };
+      delete next[groupName];
+      return next;
+    });
+    setWatchlistGroupMessage(`Deleted group "${groupName}".`);
+  }, []);
 
   const handleTimePeriodChange = useCallback((period: string) => {
     setSelectedTimePeriod(period);
@@ -524,7 +826,7 @@ const Dashboard = () => {
           body: JSON.stringify({
             tickers: radarTickers,
             lookback_days: lookbackDays,
-            limit: 5,
+            limit: Math.min(10, Math.max(5, radarTickers.length)),
           }),
         },
         token ?? undefined,
@@ -621,6 +923,161 @@ const Dashboard = () => {
     }
   }, [navigate, setToken, token]);
 
+  const fetchTodaySignals = useCallback(async () => {
+    if (!token) return;
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingTodaySignals(true);
+    setTodaySignalsError('');
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.getTodaySignals(true, 5, lookbackDays),
+        undefined,
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Today feed failed (${response.status})`);
+      }
+
+      const payload = (await response.json()) as TodaySignalsResponse;
+      setTodaySignals(payload);
+    } catch (error) {
+      console.error('Failed to fetch today signals', error);
+      setTodaySignalsError('Could not load today feed right now.');
+      setTodaySignals(null);
+    } finally {
+      setIsLoadingTodaySignals(false);
+    }
+  }, [navigate, selectedTimePeriod, setToken, token]);
+
+  const fetchSignalDelta = useCallback(async () => {
+    if (!selectedCompany || !token) {
+      setSignalDelta(null);
+      setSignalDeltaError('');
+      return;
+    }
+
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingSignalDelta(true);
+    setSignalDeltaError('');
+    try {
+      const data = await fetchData(API_ENDPOINTS.getSignalDelta(selectedCompany, lookbackDays), token);
+      setSignalDelta(data as SignalDelta);
+    } catch (error: any) {
+      console.error('Failed to fetch signal delta', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+        return;
+      }
+      setSignalDeltaError('Could not load what changed since yesterday.');
+      setSignalDelta(null);
+    } finally {
+      setIsLoadingSignalDelta(false);
+    }
+  }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
+
+  const fetchSignalExplain = useCallback(async () => {
+    if (!selectedCompany || !token) {
+      setSignalExplain(null);
+      setSignalExplainError('');
+      return;
+    }
+
+    const lookbackDays = LOOKBACK_DAYS_BY_PERIOD[selectedTimePeriod] ?? 30;
+    setIsLoadingSignalExplain(true);
+    setSignalExplainError('');
+    try {
+      const data = await fetchData(API_ENDPOINTS.getSignalExplain(selectedCompany, lookbackDays), token);
+      setSignalExplain(data as SignalExplain);
+    } catch (error: any) {
+      console.error('Failed to fetch signal explanation', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+        return;
+      }
+      setSignalExplainError('Could not load signal explainability.');
+      setSignalExplain(null);
+    } finally {
+      setIsLoadingSignalExplain(false);
+    }
+  }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
+
+  const fetchSignalBacktest = useCallback(async () => {
+    if (!selectedCompany || !token) {
+      setBacktestData(null);
+      setBacktestError('');
+      return;
+    }
+
+    const lookbackDays = selectedTimePeriod === '1m' ? 180 : selectedTimePeriod === '3m' ? 270 : 365;
+    setIsLoadingBacktest(true);
+    setBacktestError('');
+    try {
+      const data = await fetchData(
+        API_ENDPOINTS.getSignalBacktest(selectedCompany, lookbackDays, 20, 0, 120),
+        token,
+      );
+      setBacktestData(data as SignalBacktest);
+    } catch (error: any) {
+      console.error('Failed to fetch signal backtest', error);
+      if (error?.status === 401) {
+        setToken(null);
+        navigate('/login');
+        return;
+      }
+      setBacktestError('Could not load backtest credibility.');
+      setBacktestData(null);
+    } finally {
+      setIsLoadingBacktest(false);
+    }
+  }, [navigate, selectedCompany, selectedTimePeriod, setToken, token]);
+
+  const trackOutcome = useCallback(async (item: TodaySignalItem, outcomeType: OutcomeType) => {
+    if (!token) return;
+    setTodayFeedMessage('');
+    setOutcomeSavingBySignal((prev) => ({ ...prev, [item.signal_id]: outcomeType }));
+    try {
+      const response = await authFetch(
+        API_ENDPOINTS.postUserOutcome,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ticker: item.ticker,
+            signal_id: item.signal_id,
+            outcome_type: outcomeType,
+            timestamp: new Date().toISOString(),
+            notes: `${item.action} | ${item.reason}`,
+          }),
+        },
+        token ?? undefined,
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setToken(null);
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Outcome save failed (${response.status})`);
+      }
+
+      setTodayFeedMessage(`Saved outcome: ${item.ticker} marked as ${outcomeType}.`);
+    } catch (error) {
+      console.error('Failed to save user outcome', error);
+      setTodayFeedMessage('Could not save outcome right now.');
+    } finally {
+      setOutcomeSavingBySignal((prev) => ({ ...prev, [item.signal_id]: null }));
+    }
+  }, [navigate, setToken, token]);
+
   const fetchDailyBrief = useCallback(async () => {
     if (!token) return;
     if (radarTickers.length === 0) {
@@ -672,11 +1129,29 @@ const Dashboard = () => {
       void fetchStockData();
       void fetchTradeData();
       void fetchConvictionScore();
+      void fetchSignalDelta();
+      void fetchSignalExplain();
+      void fetchSignalBacktest();
     } else {
       setConvictionData(null);
       setConvictionError('');
+      setSignalDelta(null);
+      setSignalDeltaError('');
+      setSignalExplain(null);
+      setSignalExplainError('');
+      setBacktestData(null);
+      setBacktestError('');
     }
-  }, [fetchConvictionScore, fetchStockData, fetchTradeData, selectedCompany, token]);
+  }, [
+    fetchConvictionScore,
+    fetchSignalBacktest,
+    fetchSignalDelta,
+    fetchSignalExplain,
+    fetchStockData,
+    fetchTradeData,
+    selectedCompany,
+    token,
+  ]);
 
   useEffect(() => {
     if (!token) {
@@ -704,6 +1179,15 @@ const Dashboard = () => {
     }
     void fetchDailyBrief();
   }, [fetchDailyBrief, token]);
+
+  useEffect(() => {
+    if (!token) {
+      setTodaySignals(null);
+      setTodaySignalsError('');
+      return;
+    }
+    void fetchTodaySignals();
+  }, [fetchTodaySignals, token, watchlist, selectedTimePeriod]);
 
   useEffect(() => {
     if (!token) {
@@ -1072,7 +1556,8 @@ const Dashboard = () => {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8EA197]">Insider Intelligence</p>
-                <h1 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Dashboard</h1>
+                <h1 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">What should I look at now?</h1>
+                <p className="mt-2 text-xs text-[#8EA197]">Educational decision support only. Not financial advice.</p>
               </div>
               <div className="relative w-full max-w-2xl">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8EA197]" />
@@ -1169,7 +1654,16 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No saved tickers yet.</p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-[#60776A] dark:text-[#8EA197]">No saved tickers yet.</p>
+                    <button
+                      type="button"
+                      onClick={handleUseStarterWatchlist}
+                      className="rounded-lg border border-[#35503D] bg-[#18241D] px-2.5 py-1.5 text-xs font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23]"
+                    >
+                      Add starter watchlist
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -1200,10 +1694,177 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
+
+            <div className="mt-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#5A7064] dark:text-[#A9BCB0]">Watchlist Groups</p>
+                <p className="text-[11px] text-[#7F978A]">
+                  {groupedWatchlistEntries.length}/{MAX_WATCHLIST_GROUPS} groups
+                </p>
+              </div>
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                <Input
+                  value={groupDraftName}
+                  onChange={(event) => setGroupDraftName(event.target.value)}
+                  placeholder="Create group (e.g., High Conviction)"
+                  className="h-9 rounded-lg border-[#35503D] bg-[#18241D] text-sm text-[#E6ECE8] placeholder:text-[#7F978A]"
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateGroupFromSelected}
+                  disabled={!selectedCompany || !watchlist.includes(selectedCompany)}
+                  className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-2 text-xs font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23] disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  Add selected ticker
+                </button>
+              </div>
+              {watchlistGroupMessage && (
+                <p className="mt-2 text-xs text-[#A8BCB0]">{watchlistGroupMessage}</p>
+              )}
+              {groupedWatchlistEntries.length > 0 ? (
+                <div className="mt-3 grid gap-2 lg:grid-cols-2">
+                  {groupedWatchlistEntries.map(([groupName, tickers]) => (
+                    <div key={groupName} className="rounded-xl border border-[#334A3A] bg-[#101913] p-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="truncate text-xs font-semibold text-[#D2E4D5]">{groupName}</p>
+                        <div className="flex items-center gap-1.5">
+                          {selectedCompany && watchlist.includes(selectedCompany) && !tickers.includes(selectedCompany) && (
+                            <button
+                              type="button"
+                              onClick={() => handleAddSelectedToGroup(groupName)}
+                              className="rounded-md border border-[#35503D] bg-[#18241D] px-1.5 py-0.5 text-[10px] font-semibold text-[#C7E8C9] transition hover:bg-[#1E2D23]"
+                            >
+                              + {selectedCompany}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteGroup(groupName)}
+                            className="rounded-md border border-[#513434] bg-[#271616] px-1.5 py-0.5 text-[10px] font-semibold text-[#F2C8C8] transition hover:bg-[#2F1A1A]"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {tickers.map((ticker) => (
+                          <span key={`${groupName}-${ticker}`} className="inline-flex items-center gap-1 rounded-md border border-[#35503D] bg-[#16231C] px-1.5 py-1">
+                            <button
+                              type="button"
+                              onClick={() => handleCompanySelect(ticker)}
+                              className="text-[10px] font-semibold text-[#D6E8D8]"
+                            >
+                              {ticker}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTickerFromGroup(groupName, ticker)}
+                              aria-label={`Remove ${ticker} from ${groupName}`}
+                              className="text-[10px] font-bold text-[#AFC1B4] transition hover:text-[#E4EFE6]"
+                            >
+                              x
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-xs text-[#60776A] dark:text-[#8EA197]">
+                  No groups yet. Create one to segment your watchlist by strategy.
+                </p>
+              )}
+            </div>
           </section>
 
           <section className="mt-6" id="alerts-center">
             <AlertsPanel selectedCompany={selectedCompany} watchlist={watchlist} onAlertsChanged={handleAlertsChanged} />
+          </section>
+
+          <section className="mt-6">
+            <div className="signal-glass rounded-3xl p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-[#A7E89A]" />
+                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#CFE7CE]">Today Feed</p>
+                  </div>
+                  <p className="mt-1 text-xs text-[#8EA197]">
+                    Actionable watchlist alerts ranked by urgency and conviction.
+                  </p>
+                </div>
+                {todaySignals && (
+                  <p className="text-[11px] text-[#8EA197]">
+                    {todaySignals.evaluated} ticker{todaySignals.evaluated === 1 ? '' : 's'} evaluated
+                  </p>
+                )}
+              </div>
+
+              {todayFeedMessage && (
+                <p className="mt-3 rounded-xl border border-[#35503D] bg-[#121E17] px-3 py-2 text-xs text-[#BFE3C1]">{todayFeedMessage}</p>
+              )}
+
+              {isLoadingTodaySignals ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  <Skeleton className="h-40 w-full rounded-2xl" />
+                  <Skeleton className="h-40 w-full rounded-2xl" />
+                  <Skeleton className="h-40 w-full rounded-2xl" />
+                </div>
+              ) : todaySignalsError ? (
+                <p className="mt-4 rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F7D1D1]">{todaySignalsError}</p>
+              ) : todaySignals?.items?.length ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {todaySignals.items.map((item) => (
+                    <button
+                      key={item.signal_id}
+                      type="button"
+                      onClick={() => handleCompanySelect(item.ticker)}
+                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
+                        <span className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase ${getUrgencyPillClass(item.urgency)}`}>
+                          {item.urgency}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-semibold text-[#B7C8BC]">{item.action}</p>
+                      <p className="mt-1 text-xs text-[#8EA197]">{item.reason}</p>
+                      <p className="mt-1 text-xs text-[#9FB5A7]">{item.one_line_explanation}</p>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                        <div
+                          className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
+                          style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
+                        />
+                      </div>
+                      <p className="mt-2 text-xs text-[#A8BCB0]">
+                        Score {item.score.toFixed(1)} • {item.label} • Delta {formatSignedDelta(item.change_24h)}
+                      </p>
+                      <p className="mt-1 text-[11px] text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
+                      <div className="mt-2 grid grid-cols-2 gap-1.5">
+                        {(['followed', 'ignored', 'entered', 'exited'] as OutcomeType[]).map((outcome) => (
+                          <button
+                            key={`${item.signal_id}-${outcome}`}
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              void trackOutcome(item, outcome);
+                            }}
+                            disabled={Boolean(outcomeSavingBySignal[item.signal_id])}
+                            className="rounded-md border border-[#35503D] bg-[#18241D] px-2 py-1 text-[10px] font-semibold uppercase text-[#BEE6BE] transition hover:bg-[#1E2D23] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {outcomeSavingBySignal[item.signal_id] === outcome ? 'Saving...' : outcome}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-[10px] text-[#7D9487]">Decision support only. Verify before trading.</p>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-4 text-sm text-[#8EA197]">Add watchlist tickers to generate your today feed.</p>
+              )}
+            </div>
           </section>
 
           <section className="mt-6">
@@ -1231,34 +1892,58 @@ const Dashboard = () => {
               ) : radarError ? (
                 <p className="mt-4 rounded-xl border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F7D1D1]">{radarError}</p>
               ) : radarData?.items?.length ? (
-                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {radarData.items.map((item) => (
-                    <button
-                      key={item.ticker}
-                      type="button"
-                      onClick={() => handleCompanySelect(item.ticker)}
-                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
-                    >
+                <>
+                  <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {radarData.items.map((item) => (
+                      <button
+                        key={item.ticker}
+                        type="button"
+                        onClick={() => handleCompanySelect(item.ticker)}
+                        className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
+                          <p className="text-xs font-semibold text-[#A9BCB0]">{item.label}</p>
+                        </div>
+                        <p className="mt-1 text-xs text-[#8EA197]">
+                          Buys {item.purchases} | Sales {item.sales} | Buyers {item.unique_buyers}
+                        </p>
+                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                          <div
+                            className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
+                            style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
+                          />
+                        </div>
+                        <p className="mt-2 text-xs text-[#A8BCB0]">
+                          Score {item.score.toFixed(1)}
+                          {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                  {radarData.sector_rollups?.length > 0 && (
+                    <div className="mt-4 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
-                        <p className="text-xs font-semibold text-[#A9BCB0]">{item.label}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Sector Rollups</p>
+                        <p className="text-[11px] text-[#8EA197]">{radarData.sector_rollups.length} sector{radarData.sector_rollups.length === 1 ? '' : 's'}</p>
                       </div>
-                      <p className="mt-1 text-xs text-[#8EA197]">
-                        Buys {item.purchases} | Sales {item.sales} | Buyers {item.unique_buyers}
-                      </p>
-                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
-                        <div
-                          className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
-                          style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
-                        />
+                      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        {radarData.sector_rollups.map((sector) => (
+                          <div key={sector.sector} className="rounded-xl border border-[#334A3A] bg-[#101913] p-2.5">
+                            <p className="text-sm font-semibold text-[#D6E8D8]">{sector.sector}</p>
+                            <p className="mt-1 text-xs text-[#8EA197]">
+                              {sector.ticker_count} ticker{sector.ticker_count === 1 ? '' : 's'} • Top {sector.top_ticker}
+                            </p>
+                            <p className="mt-1 text-xs text-[#A9BCB0]">
+                              Avg {sector.average_score.toFixed(1)} • High {sector.high_conviction_count} • Risk-off {sector.risk_off_count}
+                            </p>
+                            <p className="mt-1 text-[11px] text-[#7F978A]">Top score {sector.top_score.toFixed(1)}</p>
+                          </div>
+                        ))}
                       </div>
-                      <p className="mt-2 text-xs text-[#A8BCB0]">
-                        Score {item.score.toFixed(1)}
-                        {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
-                      </p>
-                    </button>
-                  ))}
-                </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <p className="mt-4 text-sm text-[#8EA197]">Add a watchlist ticker to see ranked opportunities.</p>
               )}
@@ -1468,6 +2153,66 @@ const Dashboard = () => {
                             <p className="mt-2 text-xs text-[#A8BCB0]">{convictionData.explanation[0]}</p>
                           )}
                         </>
+                      )}
+                    </div>
+
+                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-[#A7E89A]" />
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">What Changed Since Yesterday</p>
+                      </div>
+                      {isLoadingSignalDelta || isLoadingSignalExplain ? (
+                        <p className="mt-2 text-sm text-[#9EB2A5]">Loading delta intelligence...</p>
+                      ) : signalDeltaError || signalExplainError ? (
+                        <p className="mt-2 text-sm text-[#E9B5B5]">{signalDeltaError || signalExplainError}</p>
+                      ) : signalDelta ? (
+                        <>
+                          <p className="mt-2 text-sm font-semibold text-[#D7E8DA]">{signalDelta.summary}</p>
+                          <p className="mt-1 text-xs text-[#9EB2A5]">
+                            Score {signalDelta.score_prev.toFixed(1)} → {signalDelta.score_now.toFixed(1)} • Buyers {signalDelta.buyers_prev} → {signalDelta.buyers_now}
+                          </p>
+                          {signalExplain && (
+                            <>
+                              <p className="mt-2 text-xs font-semibold text-[#C6D8CB]">{signalExplain.action}</p>
+                              <p className="mt-1 text-xs text-[#8EA197]">{signalExplain.one_line_explanation}</p>
+                              {signalExplain.key_factors.length > 0 && (
+                                <p className="mt-1 text-xs text-[#8EA197]">{signalExplain.key_factors[0]}</p>
+                              )}
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <p className="mt-2 text-sm text-[#9EB2A5]">No delta insight available yet.</p>
+                      )}
+                    </div>
+
+                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Backtest Credibility</p>
+                      {isLoadingBacktest ? (
+                        <p className="mt-2 text-sm text-[#9EB2A5]">Running lightweight backtest...</p>
+                      ) : backtestError ? (
+                        <p className="mt-2 text-sm text-[#E9B5B5]">{backtestError}</p>
+                      ) : backtestData ? (
+                        <>
+                          <p className="mt-2 text-xs text-[#9EB2A5]">
+                            {backtestData.sample_size} evaluated signals over {backtestData.lookback_days}d, horizon {backtestData.horizon_days}d.
+                          </p>
+                          <p className="mt-2 text-sm font-semibold text-[#D7E8DA]">
+                            Win rate {backtestData.win_rate !== null ? `${backtestData.win_rate.toFixed(1)}%` : 'N/A'}
+                            {' • '}
+                            Avg return {backtestData.average_return_pct !== null ? `${backtestData.average_return_pct.toFixed(2)}%` : 'N/A'}
+                          </p>
+                          <p className="mt-1 text-xs text-[#8EA197]">
+                            Median {backtestData.median_return_pct !== null ? `${backtestData.median_return_pct.toFixed(2)}%` : 'N/A'}
+                            {' • '}
+                            Best {backtestData.best_return_pct !== null ? `${backtestData.best_return_pct.toFixed(2)}%` : 'N/A'}
+                            {' • '}
+                            Worst {backtestData.worst_return_pct !== null ? `${backtestData.worst_return_pct.toFixed(2)}%` : 'N/A'}
+                          </p>
+                          <p className="mt-1 text-[11px] text-[#7D9487]">{backtestData.note}</p>
+                        </>
+                      ) : (
+                        <p className="mt-2 text-sm text-[#9EB2A5]">No backtest data available.</p>
                       )}
                     </div>
 

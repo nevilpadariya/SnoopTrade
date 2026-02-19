@@ -48,6 +48,8 @@ RETRY_DELAY_SECONDS = 60
 scheduler = AsyncIOScheduler(timezone=TIMEZONE)
 ENABLE_ALERT_SCANNER = os.getenv("ENABLE_ALERT_SCANNER", "true").strip().lower() == "true"
 ALERT_SCAN_CRON_MINUTE = os.getenv("ALERT_SCAN_CRON_MINUTE", "*/30").strip() or "*/30"
+ENABLE_DAILY_DIGEST = os.getenv("ENABLE_DAILY_DIGEST", "true").strip().lower() == "true"
+DAILY_DIGEST_CRON_MINUTE = os.getenv("DAILY_DIGEST_CRON_MINUTE", "15").strip() or "15"
 
 try:
     _ALERT_SCAN_MAX_USERS_RAW = os.getenv("ALERT_SCAN_MAX_USERS", "0").strip()
@@ -183,6 +185,40 @@ def scan_alert_events():
     logger.info("=" * 50)
 
 
+def run_daily_digest_dispatch():
+    """
+    Evaluate which users are due for daily digest notifications and dispatch them.
+    """
+    from services.notifications_service import send_due_daily_digests_for_all_users
+
+    start_time = datetime.now()
+    logger.info("=" * 50)
+    logger.info("DAILY DIGEST DISPATCH - Started at %s", start_time)
+    logger.info("=" * 50)
+
+    try:
+        stats = send_due_daily_digests_for_all_users()
+        processed = int(stats.get("processed", 0))
+        sent = int(stats.get("sent", 0))
+        skipped = int(stats.get("skipped", 0))
+        failed = int(stats.get("failed", 0))
+    except Exception as exc:
+        logger.error("DAILY DIGEST DISPATCH failed: %s", exc, exc_info=True)
+        raise
+
+    end_time = datetime.now()
+    duration = (end_time - start_time).total_seconds()
+
+    logger.info("=" * 50)
+    logger.info("DAILY DIGEST DISPATCH - Completed")
+    logger.info("  Duration: %.2f seconds", duration)
+    logger.info("  Users processed: %s", processed)
+    logger.info("  Digests sent: %s", sent)
+    logger.info("  Users skipped: %s", skipped)
+    logger.info("  Failed users: %s", failed)
+    logger.info("=" * 50)
+
+
 def job_error_listener(event):
     """
     Listen for job execution errors and log them.
@@ -219,6 +255,15 @@ def setup_scheduled_jobs():
             replace_existing=True,
             misfire_grace_time=900,
         )
+    if ENABLE_DAILY_DIGEST:
+        scheduler.add_job(
+            run_daily_digest_dispatch,
+            CronTrigger(minute=DAILY_DIGEST_CRON_MINUTE, timezone=TIMEZONE),
+            id="daily_digest_dispatch",
+            name="Daily Digest Dispatch",
+            replace_existing=True,
+            misfire_grace_time=900,
+        )
 
     logger.info("Scheduled jobs configured:")
     logger.info("  - Stock data update: Daily at 6:00 AM EST")
@@ -227,6 +272,10 @@ def setup_scheduled_jobs():
         logger.info("  - Alert event scan: Cron minute=%s EST", ALERT_SCAN_CRON_MINUTE)
     else:
         logger.info("  - Alert event scan: Disabled (set ENABLE_ALERT_SCANNER=true to enable)")
+    if ENABLE_DAILY_DIGEST:
+        logger.info("  - Daily digest dispatch: Hourly at minute=%s EST", DAILY_DIGEST_CRON_MINUTE)
+    else:
+        logger.info("  - Daily digest dispatch: Disabled (set ENABLE_DAILY_DIGEST=true to enable)")
 
 
 def start_scheduler():
@@ -276,3 +325,9 @@ def trigger_alert_scan_now():
     """Manually trigger alert event scan (for testing/admin)."""
     logger.info("Manual trigger: Alert event scan")
     scan_alert_events()
+
+
+def trigger_daily_digest_now():
+    """Manually trigger daily digest dispatch cycle (for testing/admin)."""
+    logger.info("Manual trigger: Daily digest dispatch")
+    run_daily_digest_dispatch()

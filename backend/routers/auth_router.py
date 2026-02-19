@@ -23,11 +23,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 MAX_WATCHLIST_ITEMS = 20
 MAX_RECENT_ITEMS = 12
+MAX_WATCHLIST_GROUPS = 8
+MAX_GROUP_NAME_LENGTH = 24
 
 
 class WatchlistUpdateRequest(BaseModel):
     watchlist: list[str] = Field(default_factory=list, max_length=MAX_WATCHLIST_ITEMS)
     recent_tickers: list[str] = Field(default_factory=list, max_length=MAX_RECENT_ITEMS)
+    watchlist_groups: Dict[str, list[str]] | None = None
 
     @staticmethod
     def _normalize_tickers(values: list[str], max_items: int) -> list[str]:
@@ -45,6 +48,49 @@ class WatchlistUpdateRequest(BaseModel):
             normalized.append(ticker)
         return normalized[:max_items]
 
+    @staticmethod
+    def _normalize_group_name(value: str) -> str:
+        compact = " ".join(str(value or "").strip().split())
+        cleaned = "".join(ch for ch in compact if ch.isalnum() or ch in " -&_")
+        return cleaned.strip()[:MAX_GROUP_NAME_LENGTH]
+
+    @classmethod
+    def _normalize_groups(
+        cls,
+        groups: Dict[str, list[str]] | None,
+        allowed_tickers: list[str] | None = None,
+    ) -> Dict[str, list[str]]:
+        if not isinstance(groups, dict):
+            return {}
+
+        allowed = set(allowed_tickers or [])
+        normalized: Dict[str, list[str]] = {}
+        seen_names: set[str] = set()
+
+        for raw_name, raw_tickers in groups.items():
+            name = cls._normalize_group_name(raw_name)
+            if not name:
+                continue
+
+            lowered = name.lower()
+            if lowered in seen_names:
+                continue
+
+            if not isinstance(raw_tickers, list):
+                continue
+            tickers = cls._normalize_tickers(raw_tickers or [], MAX_WATCHLIST_ITEMS)
+            if allowed:
+                tickers = [ticker for ticker in tickers if ticker in allowed]
+            if not tickers:
+                continue
+
+            normalized[name] = tickers
+            seen_names.add(lowered)
+            if len(normalized) >= MAX_WATCHLIST_GROUPS:
+                break
+
+        return normalized
+
     @field_validator("watchlist")
     @classmethod
     def validate_watchlist(cls, value: list[str]) -> list[str]:
@@ -55,10 +101,18 @@ class WatchlistUpdateRequest(BaseModel):
     def validate_recent(cls, value: list[str]) -> list[str]:
         return cls._normalize_tickers(value, MAX_RECENT_ITEMS)
 
+    @field_validator("watchlist_groups")
+    @classmethod
+    def validate_groups(cls, value: Dict[str, list[str]] | None) -> Dict[str, list[str]] | None:
+        if value is None:
+            return None
+        return cls._normalize_groups(value)
+
 
 class WatchlistResponse(BaseModel):
     watchlist: list[str]
     recent_tickers: list[str]
+    watchlist_groups: Dict[str, list[str]] = Field(default_factory=dict)
     updated_at: str
 
 
@@ -309,13 +363,14 @@ async def get_watchlist(request: Request, token: str = Depends(oauth2_scheme)) -
     user_email = payload.get("sub")
     user = db.users.find_one(
         {"email": user_email},
-        {"_id": 0, "watchlist": 1, "recent_tickers": 1, "watchlist_updated_at": 1},
+        {"_id": 0, "watchlist": 1, "recent_tickers": 1, "watchlist_groups": 1, "watchlist_updated_at": 1},
     )
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     watchlist = WatchlistUpdateRequest._normalize_tickers(user.get("watchlist") or [], MAX_WATCHLIST_ITEMS)
     recent_tickers = WatchlistUpdateRequest._normalize_tickers(user.get("recent_tickers") or [], MAX_RECENT_ITEMS)
+    watchlist_groups = WatchlistUpdateRequest._normalize_groups(user.get("watchlist_groups") or {}, watchlist)
     updated_at_raw = user.get("watchlist_updated_at")
     if isinstance(updated_at_raw, datetime):
         if updated_at_raw.tzinfo is None:
@@ -324,7 +379,12 @@ async def get_watchlist(request: Request, token: str = Depends(oauth2_scheme)) -
     else:
         updated_at = datetime.now(timezone.utc).isoformat()
 
-    return WatchlistResponse(watchlist=watchlist, recent_tickers=recent_tickers, updated_at=updated_at)
+    return WatchlistResponse(
+        watchlist=watchlist,
+        recent_tickers=recent_tickers,
+        watchlist_groups=watchlist_groups,
+        updated_at=updated_at,
+    )
 
 
 @auth_router.put("/watchlist", response_model=WatchlistResponse)
@@ -339,9 +399,20 @@ async def update_watchlist(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
     user_email = payload.get("sub")
-    user = db.users.find_one({"email": user_email}, {"_id": 1})
+    user = db.users.find_one({"email": user_email}, {"_id": 1, "watchlist_groups": 1})
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if watchlist_update.watchlist_groups is None:
+        watchlist_groups = WatchlistUpdateRequest._normalize_groups(
+            user.get("watchlist_groups") or {},
+            watchlist_update.watchlist,
+        )
+    else:
+        watchlist_groups = WatchlistUpdateRequest._normalize_groups(
+            watchlist_update.watchlist_groups,
+            watchlist_update.watchlist,
+        )
 
     now = datetime.now(timezone.utc)
     db.users.update_one(
@@ -350,6 +421,7 @@ async def update_watchlist(
             "$set": {
                 "watchlist": watchlist_update.watchlist,
                 "recent_tickers": watchlist_update.recent_tickers,
+                "watchlist_groups": watchlist_groups,
                 "watchlist_updated_at": now,
                 "updated_at": now,
             }
@@ -359,5 +431,6 @@ async def update_watchlist(
     return WatchlistResponse(
         watchlist=watchlist_update.watchlist,
         recent_tickers=watchlist_update.recent_tickers,
+        watchlist_groups=watchlist_groups,
         updated_at=now.isoformat(),
     )

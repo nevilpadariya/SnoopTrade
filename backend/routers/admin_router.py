@@ -14,6 +14,7 @@ from scheduler import (
     trigger_stock_update_now,
     trigger_sec_update_now,
     trigger_alert_scan_now,
+    trigger_daily_digest_now,
 )
 
 logger = logging.getLogger(__name__)
@@ -152,6 +153,19 @@ async def trigger_alert_scan(background_tasks: BackgroundTasks):
     return {
         "status": "ok",
         "message": "Alert event scan triggered. Running in background."
+    }
+
+
+@admin_router.post("/trigger/digest")
+async def trigger_daily_digest(background_tasks: BackgroundTasks):
+    """
+    Manually trigger daily digest dispatch cycle.
+    Runs in background to avoid timeout.
+    """
+    background_tasks.add_task(trigger_daily_digest_now)
+    return {
+        "status": "ok",
+        "message": "Daily digest dispatch triggered. Running in background."
     }
 
 

@@ -298,11 +298,11 @@ const Landing = () => {
                 Insider Intelligence Platform
               </p>
               <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-                Track Insider Moves
-                <span className="block text-[#A7E89A]">Before Market Reactions</span>
+                Find Meaningful Insider Moves
+                <span className="block text-[#A7E89A]">In Minutes, Not Hours</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#C7D0CA] sm:text-xl">
-                Realtime filings, behavior signals, and confidence-weighted forecasts for focused investors.
+                Daily watchlist alerts, explainable conviction signals, and fast context from SEC Form 4 activity.
               </p>
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <Button asChild className="signal-cta h-12 rounded-2xl px-8 text-base font-bold">

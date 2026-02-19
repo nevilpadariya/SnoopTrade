@@ -24,11 +24,38 @@ const API_ENDPOINTS = {
   scanAlerts: `${BASE_URL}/alerts/scan`,
   getAlertSummary: (limit = 5) => `${BASE_URL}/alerts/summary?limit=${limit}`,
   getAlertEvents: (limit = 25, unreadOnly = false) => `${BASE_URL}/alerts/events?limit=${limit}&unread_only=${unreadOnly}`,
+  getAlertFeed: (limit = 25, unreadOnly = true) => `${BASE_URL}/alerts/feed?limit=${limit}&unread_only=${unreadOnly}`,
   markAlertRead: (eventId: string) => `${BASE_URL}/alerts/events/${eventId}/read`,
   markAllAlertsRead: `${BASE_URL}/alerts/events/read-all`,
   getConvictionScore: (ticker: string, lookbackDays = 30) => `${BASE_URL}/signals/conviction/${ticker}?lookback_days=${lookbackDays}`,
+  getTodaySignals: (watchlistOnly = true, limit = 5, lookbackDays = 30) =>
+    `${BASE_URL}/signals/today?watchlist_only=${watchlistOnly}&limit=${limit}&lookback_days=${lookbackDays}`,
+  getSignalDelta: (ticker: string, lookbackDays = 30) =>
+    `${BASE_URL}/signals/delta/${ticker}?lookback_days=${lookbackDays}`,
+  getSignalExplain: (ticker: string, lookbackDays = 30) =>
+    `${BASE_URL}/signals/explain/${ticker}?lookback_days=${lookbackDays}`,
+  getSignalBacktest: (
+    ticker: string,
+    lookbackDays = 365,
+    horizonDays = 20,
+    minShares = 0,
+    maxSignals = 120,
+  ) =>
+    `${BASE_URL}/signals/backtest/${ticker}?lookback_days=${lookbackDays}&horizon_days=${horizonDays}&min_shares=${minShares}&max_signals=${maxSignals}`,
   getWatchlistRadar: `${BASE_URL}/signals/watchlist-radar`,
   getDailyBrief: `${BASE_URL}/signals/daily-brief`,
+  postUserOutcome: `${BASE_URL}/users/outcomes`,
+  getUserOutcomes: (limit = 50, ticker?: string) =>
+    ticker
+      ? `${BASE_URL}/users/outcomes?limit=${limit}&ticker=${encodeURIComponent(ticker)}`
+      : `${BASE_URL}/users/outcomes?limit=${limit}`,
+  getNotificationPreferences: `${BASE_URL}/notifications/preferences`,
+  updateNotificationPreferences: `${BASE_URL}/notifications/preferences`,
+  registerPushToken: `${BASE_URL}/notifications/push-token`,
+  removePushToken: (token: string) => `${BASE_URL}/notifications/push-token?token=${encodeURIComponent(token)}`,
+  sendNotificationTest: `${BASE_URL}/notifications/test`,
+  sendDailyDigestNow: `${BASE_URL}/notifications/digest/send`,
+  getNotificationDispatchLog: (limit = 20) => `${BASE_URL}/notifications/dispatch-log?limit=${limit}`,
   login: `${BASE_URL}/auth/token`,
   signUp: `${BASE_URL}/auth/signup`,
 };

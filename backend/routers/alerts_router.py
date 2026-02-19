@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from typing import Any, Literal
@@ -9,7 +10,7 @@ from typing import Any, Literal
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pymongo.errors import DuplicateKeyError
 
 from database.database import user_db
@@ -30,6 +31,19 @@ _indexes_initialized = False
 
 
 RuleType = Literal["large_buy", "repeat_buyer", "cluster_buying"]
+MetricType = Literal["shares", "pct_float", "ownership_change_pct"]
+ComparatorType = Literal["gte", "lte"]
+WindowType = Literal["single", "rolling"]
+ThresholdUnit = Literal["shares", "percent"]
+
+SEVERITY_RANK = {
+    "high": 3,
+    "medium": 2,
+    "low": 1,
+}
+
+_FLOAT_SHARES_TTL_SECONDS = 6 * 3600
+_float_shares_cache: dict[str, tuple[float, float]] = {}
 
 RULE_LABELS: dict[RuleType, str] = {
     "large_buy": "Large Buy",
@@ -43,12 +57,27 @@ class AlertRuleCreate(BaseModel):
     rule_type: RuleType
     threshold: float = Field(gt=0)
     lookback_days: int = Field(default=30, ge=1, le=365)
+    metric_type: MetricType = Field(default="shares")
+    comparator: ComparatorType = Field(default="gte")
+    window: WindowType = Field(default="single")
+    threshold_unit: ThresholdUnit | None = Field(default=None)
     name: str | None = Field(default=None, max_length=120)
 
     @field_validator("ticker")
     @classmethod
     def normalize_ticker(cls, value: str) -> str:
         return value.strip().upper()
+
+    @model_validator(mode="after")
+    def validate_threshold_unit(self) -> "AlertRuleCreate":
+        if self.threshold_unit is None:
+            self.threshold_unit = "shares" if self.metric_type == "shares" else "percent"
+
+        if self.metric_type == "shares" and self.threshold_unit != "shares":
+            raise ValueError("threshold_unit must be 'shares' when metric_type is 'shares'.")
+        if self.metric_type != "shares" and self.threshold_unit != "percent":
+            raise ValueError("threshold_unit must be 'percent' for percentage-based metrics.")
+        return self
 
 
 class AlertRuleOut(BaseModel):
@@ -57,6 +86,10 @@ class AlertRuleOut(BaseModel):
     rule_type: RuleType
     threshold: float
     lookback_days: int
+    metric_type: MetricType
+    comparator: ComparatorType
+    window: WindowType
+    threshold_unit: ThresholdUnit
     name: str
     is_active: bool
     created_at: str
@@ -75,6 +108,10 @@ class AlertEventOut(BaseModel):
     created_at: str
     is_read: bool
     details: dict[str, Any] = Field(default_factory=dict)
+
+
+class AlertFeedItemOut(AlertEventOut):
+    priority_score: float = Field(ge=0)
 
 
 class AlertScanResponse(BaseModel):
@@ -158,6 +195,54 @@ def _parse_number(value: Any) -> float:
     return 0.0
 
 
+def _estimate_float_shares(ticker: str) -> float | None:
+    now_ts = time.time()
+    cached = _float_shares_cache.get(ticker)
+    if cached and (now_ts - cached[0]) < _FLOAT_SHARES_TTL_SECONDS:
+        return cached[1]
+
+    try:
+        import yfinance as yf
+
+        stock = yf.Ticker(ticker)
+        candidates: list[Any] = []
+
+        fast_info = getattr(stock, "fast_info", None) or {}
+        if isinstance(fast_info, dict):
+            candidates.extend(
+                [
+                    fast_info.get("shares"),
+                    fast_info.get("sharesOutstanding"),
+                    fast_info.get("floatShares"),
+                ]
+            )
+
+        info = None
+        try:
+            info = stock.get_info()
+        except Exception:
+            info = getattr(stock, "info", None)
+
+        if isinstance(info, dict):
+            candidates.extend(
+                [
+                    info.get("floatShares"),
+                    info.get("sharesOutstanding"),
+                    info.get("impliedSharesOutstanding"),
+                ]
+            )
+
+        for candidate in candidates:
+            value = _parse_number(candidate)
+            if value > 0:
+                _float_shares_cache[ticker] = (now_ts, value)
+                return value
+    except Exception:
+        logger.debug("Unable to estimate float shares for %s", ticker, exc_info=True)
+
+    return None
+
+
 def _get_user_email(token: str = Depends(oauth2_scheme)) -> str:
     payload = decode_access_token(token)
     if not payload:
@@ -181,12 +266,18 @@ def _period_for_days(days: int) -> str:
 
 
 def _serialize_rule(doc: dict[str, Any]) -> AlertRuleOut:
+    metric_type = str(doc.get("metric_type", "shares"))
+    threshold_unit = str(doc.get("threshold_unit", "shares" if metric_type == "shares" else "percent"))
     return AlertRuleOut(
         id=str(doc["_id"]),
         ticker=str(doc.get("ticker", "")),
         rule_type=doc.get("rule_type"),
         threshold=float(doc.get("threshold", 0)),
         lookback_days=int(doc.get("lookback_days", 30)),
+        metric_type=metric_type,  # type: ignore[arg-type]
+        comparator=str(doc.get("comparator", "gte")),  # type: ignore[arg-type]
+        window=str(doc.get("window", "single")),  # type: ignore[arg-type]
+        threshold_unit=threshold_unit,  # type: ignore[arg-type]
         name=str(doc.get("name", "Alert rule")),
         is_active=bool(doc.get("is_active", True)),
         created_at=_to_iso(doc.get("created_at")),
@@ -221,6 +312,27 @@ def _serialize_summary_item(doc: dict[str, Any]) -> AlertSummaryItemOut:
     )
 
 
+def _alert_priority_score(doc: dict[str, Any]) -> float:
+    created_at = doc.get("created_at")
+    if isinstance(created_at, datetime):
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+        age_hours = max(0.0, (datetime.now(timezone.utc) - created_at).total_seconds() / 3600)
+    else:
+        age_hours = 9999.0
+
+    unread_bonus = 100.0 if not bool(doc.get("is_read", False)) else 0.0
+    severity_bonus = float(SEVERITY_RANK.get(str(doc.get("severity", "medium")), 1) * 10)
+    recency_bonus = max(0.0, 10.0 - min(10.0, age_hours / 2.0))
+    return round(unread_bonus + severity_bonus + recency_bonus, 3)
+
+
+def _serialize_feed_item(doc: dict[str, Any]) -> AlertFeedItemOut:
+    payload = _serialize_event(doc).model_dump()
+    payload["priority_score"] = _alert_priority_score(doc)
+    return AlertFeedItemOut(**payload)
+
+
 def _tx_value(tx: Any, key: str) -> Any:
     if isinstance(tx, dict):
         return tx.get(key)
@@ -252,12 +364,20 @@ def _compute_buys_for_rule(
             continue
 
         shares = _parse_number(_tx_value(tx, "shares"))
+        shares_owned_after = _parse_number(_tx_value(tx, "shares_owned_following_transaction"))
+        ownership_change_pct = None
+        if shares_owned_after > shares > 0:
+            previous_holdings = shares_owned_after - shares
+            if previous_holdings > 0:
+                ownership_change_pct = (shares / previous_holdings) * 100
         owner = str(_tx_value(tx, "reporting_owner_name") or "Unknown Insider").strip()
 
         buys.append(
             {
                 "transaction_day": transaction_day,
                 "shares": shares,
+                "shares_owned_after": shares_owned_after,
+                "ownership_change_pct": ownership_change_pct,
                 "owner": owner,
             }
         )
@@ -307,6 +427,39 @@ def _build_base_event(
     }
 
 
+def _passes_threshold(value: float, threshold: float, comparator: ComparatorType) -> bool:
+    if comparator == "lte":
+        return value <= threshold
+    return value >= threshold
+
+
+def _metric_value_for_large_buy(
+    *,
+    rule: dict[str, Any],
+    ticker: str,
+    buy: dict[str, Any],
+) -> tuple[float | None, dict[str, Any]]:
+    metric_type = str(rule.get("metric_type", "shares"))
+    metadata: dict[str, Any] = {"metric_type": metric_type}
+
+    if metric_type == "shares":
+        return float(buy["shares"]), metadata
+
+    if metric_type == "ownership_change_pct":
+        value = buy.get("ownership_change_pct")
+        return (float(value), metadata) if value is not None else (None, metadata)
+
+    if metric_type == "pct_float":
+        float_shares = _estimate_float_shares(ticker)
+        metadata["float_shares_estimate"] = float_shares
+        if not float_shares:
+            return None, metadata
+        value = (float(buy["shares"]) / float_shares) * 100.0
+        return value, metadata
+
+    return None, metadata
+
+
 def _scan_rule(
     *,
     user_email: str,
@@ -323,10 +476,26 @@ def _scan_rule(
         return 0
 
     if rule_type == "large_buy":
-        min_shares = threshold
+        metric_type = str(rule.get("metric_type", "shares"))
+        comparator: ComparatorType = str(rule.get("comparator", "gte"))  # type: ignore[assignment]
+        threshold_unit = str(rule.get("threshold_unit", "shares" if metric_type == "shares" else "percent"))
         for buy in buys:
-            if buy["shares"] < min_shares:
+            metric_value, metric_metadata = _metric_value_for_large_buy(rule=rule, ticker=ticker, buy=buy)
+            if metric_value is None:
                 continue
+            if not _passes_threshold(metric_value, threshold, comparator):
+                continue
+
+            formatted_metric = (
+                f"{metric_value:.4f}%"
+                if threshold_unit == "percent"
+                else f"{int(metric_value):,} shares"
+            )
+            formatted_threshold = (
+                f"{threshold:.4f}%"
+                if threshold_unit == "percent"
+                else f"{int(threshold):,} shares"
+            )
 
             occurred_at = datetime(
                 buy["transaction_day"].year,
@@ -336,21 +505,32 @@ def _scan_rule(
             )
             fingerprint_key = (
                 f"large_buy|{rule['_id']}|{ticker}|{buy['transaction_day'].isoformat()}|"
-                f"{buy['owner']}|{buy['shares']:.4f}"
+                f"{buy['owner']}|{metric_type}|{metric_value:.8f}|{comparator}|{threshold:.8f}"
             )
             event_doc = _build_base_event(
                 user_email=user_email,
                 rule=rule,
                 ticker=ticker,
                 fingerprint_key=fingerprint_key,
-                title=f"{ticker}: large insider buy detected",
-                message=f"{buy['owner']} bought {int(buy['shares']):,} shares.",
-                severity="high",
+                title=f"{ticker}: insider buy threshold triggered",
+                message=(
+                    f"{buy['owner']} triggered {metric_type} threshold with {formatted_metric} "
+                    f"(rule {comparator} {formatted_threshold})."
+                ),
+                severity="high" if metric_type != "shares" or metric_value >= (threshold * 1.5) else "medium",
                 occurred_at=occurred_at,
                 details={
                     "owner": buy["owner"],
                     "shares": buy["shares"],
-                    "threshold": min_shares,
+                    "threshold": threshold,
+                    "metric_type": metric_type,
+                    "metric_value": metric_value,
+                    "comparator": comparator,
+                    "threshold_unit": threshold_unit,
+                    "window": str(rule.get("window", "single")),
+                    "shares_owned_after": buy.get("shares_owned_after"),
+                    "ownership_change_pct": buy.get("ownership_change_pct"),
+                    **metric_metadata,
                 },
             )
             if _insert_event_if_new(user_email, event_doc):
@@ -435,6 +615,7 @@ def run_alert_scan_for_user(
     Returns: (generated_events, total_active_rules)
     """
     _ensure_indexes()
+    scan_started_at = datetime.now(timezone.utc)
     rules = list(ALERT_RULES_COLLECTION.find({"user_email": user_email, "is_active": True}))
     if not rules:
         return 0, 0
@@ -446,6 +627,19 @@ def run_alert_scan_for_user(
             generated += _scan_rule(user_email=user_email, rule=rule, transactions_cache=cache)
         except Exception as exc:
             logger.warning("Failed to scan alert rule %s: %s", str(rule.get("_id")), exc, exc_info=True)
+
+    if generated > 0:
+        try:
+            from services.notifications_service import dispatch_realtime_notifications_for_user
+
+            new_events = list(
+                ALERT_EVENTS_COLLECTION.find(
+                    {"user_email": user_email, "created_at": {"$gte": scan_started_at}}
+                ).sort("created_at", -1).limit(40)
+            )
+            dispatch_realtime_notifications_for_user(user_email, events=new_events)
+        except Exception as exc:
+            logger.warning("Realtime notification dispatch failed for %s: %s", user_email, exc, exc_info=True)
 
     return generated, len(rules)
 
@@ -505,6 +699,10 @@ def create_alert_rule(
         "rule_type": payload.rule_type,
         "threshold": payload.threshold,
         "lookback_days": payload.lookback_days,
+        "metric_type": payload.metric_type,
+        "comparator": payload.comparator,
+        "window": payload.window,
+        "threshold_unit": payload.threshold_unit,
         "name": rule_name,
         "is_active": True,
         "created_at": now,
@@ -571,6 +769,31 @@ def list_alert_events(
 
     docs = ALERT_EVENTS_COLLECTION.find(query).sort("created_at", -1).limit(limit)
     return [_serialize_event(doc) for doc in docs]
+
+
+@alerts_router.get("/feed", response_model=list[AlertFeedItemOut])
+@limiter.limit("60/minute")
+def list_alert_feed(
+    request: Request,
+    limit: int = Query(25, ge=1, le=200),
+    unread_only: bool = Query(True),
+    user_email: str = Depends(_get_user_email),
+) -> list[AlertFeedItemOut]:
+    _ensure_indexes()
+    query: dict[str, Any] = {"user_email": user_email}
+    if unread_only:
+        query["is_read"] = False
+
+    fetch_limit = max(limit * 4, 50)
+    docs = list(ALERT_EVENTS_COLLECTION.find(query).sort("created_at", -1).limit(fetch_limit))
+    docs.sort(
+        key=lambda doc: (
+            _alert_priority_score(doc),
+            _to_iso(doc.get("created_at")),
+        ),
+        reverse=True,
+    )
+    return [_serialize_feed_item(doc) for doc in docs[:limit]]
 
 
 @alerts_router.get("/summary", response_model=AlertSummaryOut)

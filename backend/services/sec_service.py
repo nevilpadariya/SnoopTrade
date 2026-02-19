@@ -45,8 +45,13 @@ _TXN_PROJECTION = {
     "security_title": 1,
     "transaction_code": 1,
     "shares": 1,
+    "shares_owned_following_transaction": 1,
     "price_per_share": 1,
     "ownership_type": 1,
+    "is_director": 1,
+    "is_officer": 1,
+    "is_ten_percent_owner": 1,
+    "officer_title": 1,
 }
 
 

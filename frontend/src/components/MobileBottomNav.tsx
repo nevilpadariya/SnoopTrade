@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, ArrowLeftRight, TrendingUp, User } from 'lucide-react';
 
@@ -11,41 +12,55 @@ const TABS: { label: string; icon: typeof Home; path: string; hash?: string }[] 
 export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [activeHash, setActiveHash] = useState<string>('');
+
+  useEffect(() => {
+    if (location.pathname !== '/dashboard') {
+      setActiveHash('');
+      return;
+    }
+    if (location.hash) {
+      setActiveHash(location.hash);
+    }
+  }, [location.hash, location.pathname]);
 
   const handleTabPress = (tab: typeof TABS[number]) => {
     if (tab.hash) {
+      setActiveHash(tab.hash);
       if (location.pathname !== '/dashboard') {
-        navigate('/dashboard');
+        navigate({ pathname: '/dashboard', hash: tab.hash });
         // After navigation, scroll to the section
         setTimeout(() => {
           document.querySelector(tab.hash!)?.scrollIntoView({ behavior: 'smooth' });
         }, 300);
       } else {
+        navigate({ pathname: '/dashboard', hash: tab.hash });
         document.querySelector(tab.hash)?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
+      setActiveHash('');
       navigate(tab.path);
     }
   };
 
   const isActive = (tab: typeof TABS[number]) => {
     if (tab.path === '/account') return location.pathname === '/account';
-    if (tab.hash) return false; // hash tabs don't have an "active" state from URL
-    return location.pathname === '/dashboard';
+    if (tab.hash) return location.pathname === '/dashboard' && activeHash === tab.hash;
+    return location.pathname === '/dashboard' && activeHash === '';
   };
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
       style={{
         backgroundColor: 'hsl(var(--card))',
         borderTop: '1px solid hsl(var(--border))',
-        height: 70,
+        height: 74,
         paddingTop: 8,
-        paddingBottom: 10,
+        paddingBottom: 12,
       }}
     >
-      <div className="flex items-center justify-around h-full">
+      <div className="mx-auto flex h-full max-w-2xl items-center justify-around">
         {TABS.map((tab) => {
           const active = isActive(tab);
           const Icon = tab.icon;
@@ -53,11 +68,11 @@ export default function MobileBottomNav() {
             <button
               key={tab.label}
               onClick={() => handleTabPress(tab)}
-              className="flex flex-col items-center justify-center gap-1 flex-1"
+              className="flex flex-1 flex-col items-center justify-center gap-1"
               style={{ color: active ? 'hsl(var(--primary-strong))' : 'hsl(var(--muted-foreground))' }}
             >
-              <Icon size={22} />
-              <span style={{ fontSize: 11, fontWeight: active ? 700 : 400 }}>
+              <Icon size={23} />
+              <span style={{ fontSize: 12, fontWeight: active ? 700 : 500 }}>
                 {tab.label}
               </span>
             </button>

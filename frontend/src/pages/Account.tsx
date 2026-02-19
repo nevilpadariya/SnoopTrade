@@ -527,7 +527,10 @@ const Account = () => {
               variant="outline"
               className={subtleOutlineButtonClass}
             >
-              <Link to="/dashboard">Back to Dashboard</Link>
+              <Link to="/dashboard">
+                <span className="sm:hidden">Dashboard</span>
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Link>
             </Button>
             {(user?.is_admin || userData?.is_admin) && (
               <Button
@@ -1129,7 +1132,7 @@ const Account = () => {
         </div>
       </main>
 
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <MobileBottomNav />
       </div>
     </div>

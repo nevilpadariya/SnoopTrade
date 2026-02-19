@@ -228,6 +228,16 @@ type SignalBacktest = {
 
 type OutcomeType = 'followed' | 'ignored' | 'entered' | 'exited';
 
+type PriceContext = {
+  sessions: number;
+  changePct: number | null;
+  periodHigh: number | null;
+  periodLow: number | null;
+  averageRangePct: number | null;
+  startDate: string;
+  endDate: string;
+};
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -261,6 +271,19 @@ function getUrgencyPillClass(urgency: 'high' | 'medium' | 'low'): string {
 function formatSignedDelta(value: number): string {
   const sign = value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(2)}`;
+}
+
+function formatSignedPercent(value: number | null): string {
+  if (value === null || Number.isNaN(value)) return '--';
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(1)}%`;
+}
+
+function formatShortDate(value?: string | null): string {
+  if (!value) return '--';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function formatNewsTime(dateValue?: string | null): string {
@@ -614,6 +637,17 @@ const Dashboard = () => {
     setActiveWatchlistGroup(ALL_WATCHLIST_SCOPE);
   }, [activeWatchlistGroup, watchlistScopeOptions]);
 
+  const scrollToSection = useCallback((sectionId: string, delayMs = 120) => {
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, delayMs);
+  }, []);
+
+  const shouldAutoScrollForResponsive = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1279px)').matches;
+  }, []);
+
   const handleCompanySelect = useCallback((company: string) => {
     setSelectedCompany(company);
     setSearchTerm('');
@@ -624,7 +658,10 @@ const Dashboard = () => {
     setConvictionData(null);
     setPage(0);
     setRecentTickers((previous) => [company, ...previous.filter((ticker) => ticker !== company)].slice(0, MAX_RECENT));
-  }, []);
+    if (shouldAutoScrollForResponsive()) {
+      scrollToSection('stock-chart', 180);
+    }
+  }, [scrollToSection, shouldAutoScrollForResponsive]);
 
   const toggleWatchlist = useCallback(() => {
     if (!selectedCompany) return;
@@ -1277,12 +1314,13 @@ const Dashboard = () => {
       const result = await response.json();
       setForecastData(result);
       setShowForecast(true);
+      scrollToSection('forecast-chart', 140);
     } catch (error: any) {
       setForecastError(error?.message ?? 'Failed to load forecast. Please try again.');
     } finally {
       setIsPredicting(false);
     }
-  }, [navigate, setToken, token]);
+  }, [navigate, scrollToSection, setToken, token]);
 
   const latestStock = stockData.length ? stockData[stockData.length - 1] : null;
   const fallbackPurchases = tradeData.filter((t) => t.transaction_code === 'P').length;
@@ -1296,6 +1334,55 @@ const Dashboard = () => {
   const selectedCompanyName = selectedCompany ? COMPANY_NAMES[selectedCompany] ?? selectedCompany : '';
   const isInWatchlist = selectedCompany ? watchlist.includes(selectedCompany) : false;
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'Trader';
+  const quickActionTickers = useMemo(() => {
+    const combined = [...watchlist, ...recentTickers, ...STARTER_WATCHLIST];
+    return combined.filter((ticker, index, arr) => arr.indexOf(ticker) === index).slice(0, 6);
+  }, [recentTickers, watchlist]);
+
+  const priceContext = useMemo<PriceContext | null>(() => {
+    if (!stockData.length) return null;
+
+    const firstRow = stockData[0];
+    const lastRow = stockData[stockData.length - 1];
+    const startOpen = Number(firstRow?.open);
+    const endOpen = Number(lastRow?.open);
+    const changePct =
+      Number.isFinite(startOpen) && startOpen > 0 && Number.isFinite(endOpen)
+        ? ((endOpen - startOpen) / startOpen) * 100
+        : null;
+
+    let periodHigh: number | null = null;
+    let periodLow: number | null = null;
+    let rangePctSum = 0;
+    let rangePctCount = 0;
+
+    stockData.forEach((row) => {
+      const high = Number(row?.high);
+      const low = Number(row?.low);
+      const open = Number(row?.open);
+
+      if (Number.isFinite(high)) {
+        periodHigh = periodHigh === null ? high : Math.max(periodHigh, high);
+      }
+      if (Number.isFinite(low)) {
+        periodLow = periodLow === null ? low : Math.min(periodLow, low);
+      }
+      if (Number.isFinite(open) && open > 0 && Number.isFinite(high) && Number.isFinite(low)) {
+        rangePctSum += ((high - low) / open) * 100;
+        rangePctCount += 1;
+      }
+    });
+
+    return {
+      sessions: stockData.length,
+      changePct,
+      periodHigh,
+      periodLow,
+      averageRangePct: rangePctCount > 0 ? rangePctSum / rangePctCount : null,
+      startDate: String(firstRow?.date ?? ''),
+      endDate: String(lastRow?.date ?? ''),
+    };
+  }, [stockData]);
 
   const statCards = [
     { label: 'Open', value: latestStock ? `$${Number(latestStock.open).toFixed(2)}` : '--' },
@@ -1587,7 +1674,7 @@ const Dashboard = () => {
       </header>
 
       <main className="signal-grid-overlay min-h-[calc(100dvh-4rem)]">
-        <div className="mx-auto flex max-w-7xl flex-col px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+        <div className="mx-auto flex max-w-7xl flex-col px-4 pb-28 pt-6 sm:px-6 md:pb-32 lg:px-8 lg:pb-24 lg:pt-8">
           <section className="signal-glass relative order-1 rounded-3xl p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
@@ -2165,24 +2252,94 @@ const Dashboard = () => {
           </section>
 
           {!selectedCompany && (
-            <section className="mt-6 order-8 grid gap-4 md:grid-cols-3">
-              {['AAPL', 'MSFT', 'NVDA'].map((ticker) => (
-                <button
-                  key={ticker}
-                  type="button"
-                  onClick={() => handleCompanySelect(ticker)}
-                  className="signal-glass rounded-2xl p-5 text-left transition hover:-translate-y-0.5"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Quick Load</p>
-                  <p className="mt-2 text-2xl font-bold text-[#21392D] dark:text-[#EAF5EC]">{ticker}</p>
-                  <p className="mt-1 text-sm text-[#5D7669] dark:text-[#AFBFB3]">{COMPANY_NAMES[ticker]}</p>
-                </button>
-              ))}
+            <section className="mt-6 order-8">
+              <div className="signal-glass rounded-3xl p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">
+                      Workspace Actions
+                    </p>
+                    <p className="mt-1 text-xs text-[#8EA197]">
+                      Use this space to continue quickly from your watchlist without cluttering the dashboard.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full border border-[#A8C3AE] bg-[#EEF5F0] px-2.5 py-1 text-[11px] font-semibold text-[#2E5B40] dark:border-[#35503D] dark:bg-[#111A15] dark:text-[#A9D6AF]">
+                      Watchlist {watchlist.length}
+                    </span>
+                    <span className="rounded-full border border-[#A8C3AE] bg-[#EEF5F0] px-2.5 py-1 text-[11px] font-semibold text-[#2E5B40] dark:border-[#35503D] dark:bg-[#111A15] dark:text-[#A9D6AF]">
+                      Recent {recentTickers.length}
+                    </span>
+                    <span className="rounded-full border border-[#A8C3AE] bg-[#EEF5F0] px-2.5 py-1 text-[11px] font-semibold text-[#2E5B40] dark:border-[#35503D] dark:bg-[#111A15] dark:text-[#A9D6AF]">
+                      Unread alerts {alertSummary?.unread_count ?? 0}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (watchlist.length === 0) {
+                        handleUseStarterWatchlist();
+                        return;
+                      }
+                      if (quickActionTickers.length > 0) {
+                        handleCompanySelect(quickActionTickers[0]);
+                      }
+                    }}
+                    className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 text-left transition hover:-translate-y-0.5 hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6759] dark:text-[#A9BCB0]">Primary Action</p>
+                    <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">
+                      {watchlist.length === 0 ? 'Add Starter Watchlist' : `Analyze ${quickActionTickers[0] ?? 'Ticker'}`}
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenAlertsCenter}
+                    className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 text-left transition hover:-translate-y-0.5 hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6759] dark:text-[#A9BCB0]">Alerts</p>
+                    <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">Open Alerts Center</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const firstTicker = watchlist[0] ?? recentTickers[0];
+                      if (firstTicker) handleCompanySelect(firstTicker);
+                    }}
+                    className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 text-left transition hover:-translate-y-0.5 hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6759] dark:text-[#A9BCB0]">Recent</p>
+                    <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">
+                      {recentTickers[0] ? `Resume ${recentTickers[0]}` : 'No recent ticker yet'}
+                    </p>
+                  </button>
+                </div>
+
+                {quickActionTickers.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {quickActionTickers.map((ticker) => (
+                      <button
+                        key={`workspace-action-${ticker}`}
+                        type="button"
+                        onClick={() => handleCompanySelect(ticker)}
+                        className="rounded-full border border-[#A8C3AE] bg-[#EAF4ED] px-3 py-1.5 text-xs font-semibold text-[#2E5B40] transition hover:bg-[#E1EEE6] dark:border-[#35503D] dark:bg-[#142119] dark:text-[#BEE6BE] dark:hover:bg-[#1A2A22]"
+                      >
+                        {ticker}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </section>
           )}
 
           {selectedCompany && (
-            <section className="mt-6 order-2 space-y-6">
+            <section className="mt-6 order-2 space-y-5 sm:space-y-6" id="forecast">
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {statCards.map((card) => (
                   <article key={card.label} className="signal-glass rounded-2xl p-4">
@@ -2192,9 +2349,9 @@ const Dashboard = () => {
                 ))}
               </div>
 
-              <div className="grid gap-6 xl:grid-cols-12">
-                <div className="xl:col-span-8">
-                  <div className="signal-glass rounded-3xl p-4 sm:p-5">
+              <div className="grid items-start gap-6 xl:grid-cols-12">
+                <div className="xl:col-span-8 space-y-6">
+                  <div className="signal-glass rounded-3xl p-4 sm:p-5" id="stock-chart">
                     {isLoadingStock && stockData.length === 0 ? (
                       <div className="space-y-3">
                         <Skeleton className="h-5 w-56" />
@@ -2208,6 +2365,54 @@ const Dashboard = () => {
                         lineColor={COLORS.price}
                         isLogScale={false}
                       />
+                    )}
+                  </div>
+
+                  <div className="signal-glass rounded-3xl p-4 sm:p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">
+                        Price Context
+                      </p>
+                      {priceContext && (
+                        <p className="text-[11px] text-[#8EA197]">
+                          {priceContext.sessions} sessions • {formatShortDate(priceContext.startDate)} - {formatShortDate(priceContext.endDate)}
+                        </p>
+                      )}
+                    </div>
+
+                    {priceContext ? (
+                      <>
+                        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                          <div className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 dark:border-[#35503D] dark:bg-[#111A15]">
+                            <p className="text-[11px] uppercase tracking-[0.08em] text-[#5A7265] dark:text-[#8EA197]">Period Move</p>
+                            <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">{formatSignedPercent(priceContext.changePct)}</p>
+                          </div>
+                          <div className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 dark:border-[#35503D] dark:bg-[#111A15]">
+                            <p className="text-[11px] uppercase tracking-[0.08em] text-[#5A7265] dark:text-[#8EA197]">Range Low</p>
+                            <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">
+                              {priceContext.periodLow !== null ? `$${priceContext.periodLow.toFixed(2)}` : '--'}
+                            </p>
+                          </div>
+                          <div className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 dark:border-[#35503D] dark:bg-[#111A15]">
+                            <p className="text-[11px] uppercase tracking-[0.08em] text-[#5A7265] dark:text-[#8EA197]">Range High</p>
+                            <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">
+                              {priceContext.periodHigh !== null ? `$${priceContext.periodHigh.toFixed(2)}` : '--'}
+                            </p>
+                          </div>
+                          <div className="rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 dark:border-[#35503D] dark:bg-[#111A15]">
+                            <p className="text-[11px] uppercase tracking-[0.08em] text-[#5A7265] dark:text-[#8EA197]">Avg Daily Range</p>
+                            <p className="mt-1 text-sm font-semibold text-[#1F3327] dark:text-[#E6ECE8]">
+                              {priceContext.averageRangePct !== null ? `${priceContext.averageRangePct.toFixed(2)}%` : '--'}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-xs text-[#5A7265] dark:text-[#8EA197]">
+                          Insider flow context: {purchases} purchase{purchases === 1 ? '' : 's'} vs {sales} sale{sales === 1 ? '' : 's'} in the active
+                          window. Net signal: {netSignal}.
+                        </p>
+                      </>
+                    ) : (
+                      <p className="mt-3 text-sm text-[#8EA197]">Price context will appear after loading ticker history.</p>
                     )}
                   </div>
                 </div>
@@ -2336,7 +2541,7 @@ const Dashboard = () => {
               </div>
 
               {showForecast && (
-                <div className="signal-glass rounded-3xl p-4 sm:p-5">
+                <div className="signal-glass rounded-3xl p-4 sm:p-5" id="forecast-chart">
                   <ForecastChartContainer
                     title="Predicted Stock Price Trends"
                     data={forecastData}
@@ -2392,7 +2597,7 @@ const Dashboard = () => {
         </div>
       </main>
 
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <MobileBottomNav />
       </div>
     </div>

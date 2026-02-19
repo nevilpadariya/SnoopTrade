@@ -81,13 +81,24 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false
   );
+  const [isTablet, setIsTablet] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(min-width: 768px) and (max-width: 1023px)').matches
+      : false
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mql = window.matchMedia('(max-width: 767px)');
-    const handler = (event: MediaQueryListEvent) => setIsMobile(event.matches);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
+    const mobileMql = window.matchMedia('(max-width: 767px)');
+    const tabletMql = window.matchMedia('(min-width: 768px) and (max-width: 1023px)');
+    const mobileHandler = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    const tabletHandler = (event: MediaQueryListEvent) => setIsTablet(event.matches);
+    mobileMql.addEventListener('change', mobileHandler);
+    tabletMql.addEventListener('change', tabletHandler);
+    return () => {
+      mobileMql.removeEventListener('change', mobileHandler);
+      tabletMql.removeEventListener('change', tabletHandler);
+    };
   }, []);
 
   const chartId = useId().replace(/:/g, '');
@@ -285,8 +296,16 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
           </div>
         )}
 
-        <ResponsiveContainer width="100%" height={isMobile ? 340 : 430}>
-          <ComposedChart data={chartData} margin={{ top: 16, right: 18, left: isMobile ? 0 : 4, bottom: 8 }}>
+        <ResponsiveContainer width="100%" height={isMobile ? 300 : isTablet ? 360 : 430}>
+          <ComposedChart
+            data={chartData}
+            margin={{
+              top: isMobile ? 8 : 16,
+              right: isMobile ? 8 : 18,
+              left: isMobile ? -12 : 4,
+              bottom: isMobile ? 2 : 8,
+            }}
+          >
             <defs>
               <linearGradient id={`forecastStroke-${chartId}`} x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor={lineColor} stopOpacity={0.9} />
@@ -315,8 +334,9 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
               dataKey="date"
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
-              tickMargin={8}
-              minTickGap={isMobile ? 18 : 12}
+              tickMargin={isMobile ? 6 : 8}
+              minTickGap={isMobile ? 28 : 12}
+              interval="preserveStartEnd"
               tickFormatter={(value: string) => formatAxisDate(value, isMobile)}
             />
 
@@ -325,7 +345,7 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
               domain={isLogScale ? ['auto', 'auto'] : yDomain}
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
-              width={isMobile ? 46 : 66}
+              width={isMobile ? 36 : 66}
               tickFormatter={formatAxisCurrency}
             />
 
@@ -449,22 +469,24 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
           </ComposedChart>
         </ResponsiveContainer>
 
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground md:text-sm">
-          {legendItems.map((item) => (
-            <span key={item.label} className="inline-flex items-center gap-2">
-              <span
-                className={`inline-block ${item.band ? 'h-2.5 w-5 rounded-sm' : 'h-[3px] w-6 rounded-full'} ${item.dashed ? 'ring-1 ring-offset-1 ring-offset-transparent' : ''}`}
-                style={{
-                  background: item.band
-                    ? `${item.color}33`
-                    : item.color,
-                  border: item.band ? `1px solid ${item.color}88` : 'none',
-                }}
-              />
-              <span>{item.label}</span>
-            </span>
-          ))}
-        </div>
+        {!isMobile && (
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground md:text-sm">
+            {legendItems.map((item) => (
+              <span key={item.label} className="inline-flex items-center gap-2">
+                <span
+                  className={`inline-block ${item.band ? 'h-2.5 w-5 rounded-sm' : 'h-[3px] w-6 rounded-full'} ${item.dashed ? 'ring-1 ring-offset-1 ring-offset-transparent' : ''}`}
+                  style={{
+                    background: item.band
+                      ? `${item.color}33`
+                      : item.color,
+                    border: item.band ? `1px solid ${item.color}88` : 'none',
+                  }}
+                />
+                <span>{item.label}</span>
+              </span>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -148,106 +148,127 @@ const Login = () => {
           <title>Login - SnoopTrade</title>
         </Helmet>
 
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <section className="signal-glass hidden rounded-3xl p-10 lg:block">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">SnoopTrade</p>
-              <h1 className="mt-5 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Welcome back</h1>
-              <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
-                Sign in to monitor insider behavior, confidence signals, and market-moving activity.
-              </p>
-
-              <div className="mt-10 grid grid-cols-2 gap-4">
-                <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Daily filings tracked</p>
-                  <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">14,832</p>
-                </article>
-                <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg signal latency</p>
-                  <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">3.2m</p>
-                </article>
-              </div>
-
-              <div className="mt-8 rounded-2xl border border-[#2B4134] bg-[#101A14] p-6">
-                <h2 className="text-lg font-bold text-[#EAF5EC]">Why analysts choose SnoopTrade</h2>
-                <ul className="mt-4 space-y-2 text-sm text-[#BDCDC0]">
-                  <li>- Fast SEC event detection</li>
-                  <li>- Explainable transaction signals</li>
-                  <li>- Clean workflows for daily monitoring</li>
-                </ul>
-              </div>
-            </section>
-
-            <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">SnoopTrade</p>
-              <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Login</h2>
-              <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Use your email and password to continue.</p>
-
-              <form onSubmit={handleFormSubmit} className="mt-8 space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-semibold text-[#A7B7AC]">
-                    Email
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    className="signal-input h-12 rounded-2xl border px-4 text-base"
-                    placeholder="you@example.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-semibold text-[#A7B7AC]">
-                    Password
-                  </label>
-                  <Input
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    className="signal-input h-12 rounded-2xl border px-4 text-base"
-                    placeholder="Enter your password"
-                  />
-                </div>
-
-                {loginError && (
-                  <p className="rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm font-medium text-[#F7D1D1]">
-                    {loginError}
-                  </p>
-                )}
-
-                <Button type="submit" disabled={submitting} className="signal-cta h-12 w-full rounded-2xl text-base font-bold">
-                  {submitting ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Logging in...
-                    </span>
-                  ) : (
-                    'Login'
-                  )}
-                </Button>
-              </form>
-
-              <div className="my-6 flex items-center gap-3">
-                <div className="h-px flex-1 bg-[#2E4337]" />
-                <span className="text-xs font-semibold tracking-[0.14em] text-[#8EA197]">OR</span>
-                <div className="h-px flex-1 bg-[#2E4337]" />
-              </div>
-
-              <GoogleLoginButton onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
-
-              <p className="mt-7 text-center text-sm text-[#9AA99F]">
-                No account yet?{' '}
-                <Link to="/signup" className="font-bold text-[#B9EDAF] hover:underline">
-                  Sign up
-                </Link>
-              </p>
-            </section>
+        <header className="sticky top-0 z-40 border-b border-[#2D4035] bg-[#101813]/90 backdrop-blur">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Link to="/dashboard" className="text-xl font-bold tracking-tight text-[#E6ECE8] sm:text-2xl">
+              SnoopTrade
+            </Link>
+            <Button
+              asChild
+              variant="outline"
+              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+            >
+              <Link to="/signup">Sign up</Link>
+            </Button>
           </div>
-        </div>
+        </header>
+
+        <main className="signal-grid-overlay min-h-[calc(100dvh-4rem)]">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <section className="signal-glass hidden rounded-3xl p-10 lg:block">
+                <Link to="/dashboard" className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197] transition hover:text-[#E6ECE8]">
+                  SnoopTrade
+                </Link>
+                <h1 className="mt-5 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Welcome back</h1>
+                <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
+                  Sign in to monitor insider behavior, confidence signals, and market-moving activity.
+                </p>
+
+                <div className="mt-10 grid grid-cols-2 gap-4">
+                  <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Daily filings tracked</p>
+                    <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">14,832</p>
+                  </article>
+                  <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg signal latency</p>
+                    <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">3.2m</p>
+                  </article>
+                </div>
+
+                <div className="mt-8 rounded-2xl border border-[#2B4134] bg-[#101A14] p-6">
+                  <h2 className="text-lg font-bold text-[#EAF5EC]">Why analysts choose SnoopTrade</h2>
+                  <ul className="mt-4 space-y-2 text-sm text-[#BDCDC0]">
+                    <li>- Fast SEC event detection</li>
+                    <li>- Explainable transaction signals</li>
+                    <li>- Clean workflows for daily monitoring</li>
+                  </ul>
+                </div>
+              </section>
+
+              <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
+                <Link to="/dashboard" className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] transition hover:text-[#E6ECE8] lg:hidden">
+                  SnoopTrade
+                </Link>
+                <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Login</h2>
+                <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Use your email and password to continue.</p>
+
+                <form onSubmit={handleFormSubmit} className="mt-8 space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-semibold text-[#A7B7AC]">
+                      Email
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      className="signal-input h-12 rounded-2xl border px-4 text-base"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="password" className="text-sm font-semibold text-[#A7B7AC]">
+                      Password
+                    </label>
+                    <Input
+                      id="password"
+                      type="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      className="signal-input h-12 rounded-2xl border px-4 text-base"
+                      placeholder="Enter your password"
+                    />
+                  </div>
+
+                  {loginError && (
+                    <p className="rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm font-medium text-[#F7D1D1]">
+                      {loginError}
+                    </p>
+                  )}
+
+                  <Button type="submit" disabled={submitting} className="signal-cta h-12 w-full rounded-2xl text-base font-bold">
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Logging in...
+                      </span>
+                    ) : (
+                      'Login'
+                    )}
+                  </Button>
+                </form>
+
+                <div className="my-6 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-[#2E4337]" />
+                  <span className="text-xs font-semibold tracking-[0.14em] text-[#8EA197]">OR</span>
+                  <div className="h-px flex-1 bg-[#2E4337]" />
+                </div>
+
+                <GoogleLoginButton onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
+
+                <p className="mt-7 text-center text-sm text-[#9AA99F]">
+                  No account yet?{' '}
+                  <Link to="/signup" className="font-bold text-[#B9EDAF] hover:underline">
+                    Sign up
+                  </Link>
+                </p>
+              </section>
+            </div>
+          </div>
+        </main>
       </div>
     </GoogleOAuthProvider>
   );

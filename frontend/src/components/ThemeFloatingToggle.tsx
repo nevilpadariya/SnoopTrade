@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import { getThemePreference, hasThemePreference, syncThemeWithPreference, toggleThemePreference, type ThemeMode } from '../utils/theme';
 
 const ThemeFloatingToggle = () => {
   const [mode, setMode] = useState<ThemeMode>('dark');
+  const location = useLocation();
 
   useEffect(() => {
     setMode(syncThemeWithPreference());
@@ -32,13 +34,18 @@ const ThemeFloatingToggle = () => {
   };
 
   const isDark = mode === 'dark';
+  const shouldHide =
+    location.pathname.startsWith('/account') ||
+    location.pathname.startsWith('/dashboard');
+
+  if (shouldHide) return null;
 
   return (
     <button
       type="button"
       onClick={onToggle}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      className="fixed bottom-20 right-4 z-50 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card/90 text-foreground shadow-lg backdrop-blur transition hover:scale-[1.02] hover:bg-muted/80 md:bottom-5"
+      className="fixed bottom-24 right-4 z-50 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card/90 text-foreground shadow-lg backdrop-blur transition hover:scale-[1.02] hover:bg-muted/80 md:bottom-5"
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}

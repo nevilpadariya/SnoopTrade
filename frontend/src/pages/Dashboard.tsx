@@ -1994,22 +1994,22 @@ const Dashboard = () => {
                         key={item.ticker}
                         type="button"
                         onClick={() => handleCompanySelect(item.ticker)}
-                        className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                        className="rounded-2xl border border-[#A8C3AE] bg-[#EEF5F0] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
-                          <p className="text-xs font-semibold text-[#A9BCB0]">{item.label}</p>
+                          <p className="text-base font-bold text-[#1F3327] dark:text-[#E6ECE8]">{item.ticker}</p>
+                          <p className="text-xs font-semibold text-[#4F6759] dark:text-[#A9BCB0]">{item.label}</p>
                         </div>
-                        <p className="mt-1 text-xs text-[#8EA197]">
+                        <p className="mt-1 text-xs text-[#5A7265] dark:text-[#8EA197]">
                           Buys {item.purchases} | Sales {item.sales} | Buyers {item.unique_buyers}
                         </p>
-                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#D4E5D8] dark:bg-[#24352B]">
                           <div
                             className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
                             style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
                           />
                         </div>
-                        <p className="mt-2 text-xs text-[#A8BCB0]">
+                        <p className="mt-2 text-xs text-[#4E6658] dark:text-[#A8BCB0]">
                           Score {item.score.toFixed(1)}
                           {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
                         </p>
@@ -2017,22 +2017,22 @@ const Dashboard = () => {
                     ))}
                   </div>
                   {radarData.sector_rollups?.length > 0 && (
-                    <div className="mt-4 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
+                    <div className="mt-4 rounded-2xl border border-[#A8C3AE] bg-[#EEF5F0] p-3 dark:border-[#35503D] dark:bg-[#111A15]">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Sector Rollups</p>
-                        <p className="text-[11px] text-[#8EA197]">{radarData.sector_rollups.length} sector{radarData.sector_rollups.length === 1 ? '' : 's'}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F6759] dark:text-[#A9BCB0]">Sector Rollups</p>
+                        <p className="text-[11px] text-[#5A7265] dark:text-[#8EA197]">{radarData.sector_rollups.length} sector{radarData.sector_rollups.length === 1 ? '' : 's'}</p>
                       </div>
                       <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                         {radarData.sector_rollups.map((sector) => (
-                          <div key={sector.sector} className="rounded-xl border border-[#334A3A] bg-[#101913] p-2.5">
-                            <p className="text-sm font-semibold text-[#D6E8D8]">{sector.sector}</p>
-                            <p className="mt-1 text-xs text-[#8EA197]">
+                          <div key={sector.sector} className="rounded-xl border border-[#A8C3AE] bg-[#E7F1EA] p-2.5 dark:border-[#334A3A] dark:bg-[#101913]">
+                            <p className="text-sm font-semibold text-[#1F3327] dark:text-[#D6E8D8]">{sector.sector}</p>
+                            <p className="mt-1 text-xs text-[#5A7265] dark:text-[#8EA197]">
                               {sector.ticker_count} ticker{sector.ticker_count === 1 ? '' : 's'} • Top {sector.top_ticker}
                             </p>
-                            <p className="mt-1 text-xs text-[#A9BCB0]">
+                            <p className="mt-1 text-xs text-[#4E6658] dark:text-[#A9BCB0]">
                               Avg {sector.average_score.toFixed(1)} • High {sector.high_conviction_count} • Risk-off {sector.risk_off_count}
                             </p>
-                            <p className="mt-1 text-[11px] text-[#7F978A]">Top score {sector.top_score.toFixed(1)}</p>
+                            <p className="mt-1 text-[11px] text-[#5D7669] dark:text-[#7F978A]">Top score {sector.top_score.toFixed(1)}</p>
                           </div>
                         ))}
                       </div>
@@ -2076,23 +2076,23 @@ const Dashboard = () => {
                       key={`${item.ticker}-${index}`}
                       type="button"
                       onClick={() => handleCompanySelect(item.ticker)}
-                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                      className="rounded-2xl border border-[#A8C3AE] bg-[#EEF5F0] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
-                        <span className="rounded-md border border-[#33533F] bg-[#17261E] px-2 py-0.5 text-[10px] font-semibold text-[#A9D6AF]">
+                        <p className="text-base font-bold text-[#1F3327] dark:text-[#E6ECE8]">{item.ticker}</p>
+                        <span className="rounded-md border border-[#A8C3AE] bg-[#E7F1EA] px-2 py-0.5 text-[10px] font-semibold text-[#2E5B40] dark:border-[#33533F] dark:bg-[#17261E] dark:text-[#A9D6AF]">
                           #{index + 1}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs font-semibold text-[#B7C8BC]">{item.action}</p>
-                      <p className="mt-1 text-xs text-[#8EA197]">{item.reason}</p>
-                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                      <p className="mt-1 text-xs font-semibold text-[#3E5A4B] dark:text-[#B7C8BC]">{item.action}</p>
+                      <p className="mt-1 text-xs text-[#5A7265] dark:text-[#8EA197]">{item.reason}</p>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#D4E5D8] dark:bg-[#24352B]">
                         <div
                           className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
                           style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
                         />
                       </div>
-                      <p className="mt-2 text-xs text-[#A8BCB0]">
+                      <p className="mt-2 text-xs text-[#4E6658] dark:text-[#A8BCB0]">
                         Score {item.score.toFixed(1)} • {item.label}
                         {item.latest_buy_days_ago !== null ? ` • Latest buy ${item.latest_buy_days_ago}d ago` : ''}
                       </p>
@@ -2135,12 +2135,12 @@ const Dashboard = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => trackWatchlistNewsClick(item)}
-                      className="group rounded-xl border border-[#35503D] bg-[#111A15] px-3 py-2 transition hover:border-[#496B55] hover:bg-[#15221B]"
+                      className="group rounded-xl border border-[#A8C3AE] bg-[#EEF5F0] px-3 py-2 transition hover:border-[#90B69A] hover:bg-[#E5F0E8] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:border-[#496B55] dark:hover:bg-[#15221B]"
                     >
-                      <p className="line-clamp-2 text-sm font-semibold text-[#E6ECE8] group-hover:text-[#D7F0DA]">
+                      <p className="line-clamp-2 text-sm font-semibold text-[#1F3327] group-hover:text-[#2E5B40] dark:text-[#E6ECE8] dark:group-hover:text-[#D7F0DA]">
                         {item.title}
                       </p>
-                      <div className="mt-2 flex items-center gap-2 text-xs text-[#8EA197]">
+                      <div className="mt-2 flex items-center gap-2 text-xs text-[#5A7265] dark:text-[#8EA197]">
                         <span>{item.source}</span>
                         <span>•</span>
                         <span>{formatNewsTime(item.published_at)}</span>
@@ -2149,7 +2149,7 @@ const Dashboard = () => {
                       {item.ticker_mentions && item.ticker_mentions.length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {item.ticker_mentions.slice(0, 3).map((ticker) => (
-                            <span key={ticker} className="rounded-md border border-[#34513E] bg-[#17271E] px-2 py-0.5 text-[10px] font-semibold text-[#A9D6AF]">
+                            <span key={ticker} className="rounded-md border border-[#9CB9A3] bg-[#E7F1EA] px-2 py-0.5 text-[10px] font-semibold text-[#2E5B40] dark:border-[#34513E] dark:bg-[#17271E] dark:text-[#A9D6AF]">
                               {ticker}
                             </span>
                           ))}

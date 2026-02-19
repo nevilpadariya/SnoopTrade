@@ -488,6 +488,18 @@ const Account = () => {
 
   const initials = getInitials(userData?.name);
   const loginBadge = userData?.login_type === 'google' ? 'Google' : userData?.login_type === 'both' ? 'Google + Email' : 'Email';
+  const subtleOutlineButtonClass =
+    'h-10 rounded-xl border border-[#B8CCBF] bg-[#F4FAF6] px-4 text-sm font-semibold text-[#274234] hover:bg-[#E6F1EA] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6] dark:hover:bg-[#203027]';
+  const enabledToggleClass =
+    'border-[#8BCF95] bg-[#E4F5E8] text-[#1E402C] hover:bg-[#D6ECD9] dark:border-[#91D88C] dark:bg-[#1F3325] dark:text-[#DFF0DF] dark:hover:bg-[#294131]';
+  const disabledToggleClass =
+    'border-[#B8CCBF] bg-[#F1F7F3] text-[#4F685C] hover:bg-[#E3EFE7] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#AFC0B3] dark:hover:bg-[#1E2D23]';
+  const successBannerClass =
+    'rounded-xl border border-[#98C8A1] bg-[#E9F6EC] px-4 py-3 text-sm text-[#2A5A39] dark:border-[#35503D] dark:bg-[#18291F] dark:text-[#BEE6BE]';
+  const errorBannerClass =
+    'rounded-xl border border-[#D2A7A7] bg-[#F8ECEC] px-4 py-3 text-sm text-[#7B2C2C] dark:border-[#603333] dark:bg-[#2B1717] dark:text-[#F5CACA]';
+  const dangerOutlineButtonClass =
+    'h-11 rounded-xl border border-[#D2A7A7] bg-[#F9EEEE] px-4 text-sm font-semibold text-[#7B2F2F] hover:bg-[#F2E2E2] dark:border-[#513434] dark:bg-[#2B1717] dark:text-[#F6D8D8] dark:hover:bg-[#341D1D]';
 
   return (
     <div className="signal-surface signal-page text-[#E6ECE8]">
@@ -505,7 +517,7 @@ const Account = () => {
               type="button"
               variant="outline"
               onClick={handleThemeToggle}
-              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-3 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+              className={subtleOutlineButtonClass}
             >
               {themeMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               <span className="sr-only">Toggle theme</span>
@@ -513,7 +525,7 @@ const Account = () => {
             <Button
               asChild
               variant="outline"
-              className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+              className={subtleOutlineButtonClass}
             >
               <Link to="/dashboard">Back to Dashboard</Link>
             </Button>
@@ -521,7 +533,7 @@ const Account = () => {
               <Button
                 asChild
                 variant="outline"
-                className="h-10 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                className={subtleOutlineButtonClass}
               >
                 <Link to="/admin-ops">Admin Ops</Link>
               </Button>
@@ -571,7 +583,7 @@ const Account = () => {
 
                 <Button
                   onClick={handleLogout}
-                  className="mt-6 h-11 w-full rounded-xl border border-[#603333] bg-[#2B1717] text-sm font-bold text-[#F6D8D8] hover:bg-[#341D1D]"
+                  className="mt-6 h-11 w-full rounded-xl border border-[#D2A7A7] bg-[#F9EEEE] text-sm font-bold text-[#7B2F2F] hover:bg-[#F2E2E2] dark:border-[#603333] dark:bg-[#2B1717] dark:text-[#F6D8D8] dark:hover:bg-[#341D1D]"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
@@ -587,14 +599,14 @@ const Account = () => {
                 </p>
 
                 {successMessage && (
-                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#35503D] bg-[#18291F] px-4 py-3 text-sm text-[#BEE6BE]">
+                  <div className={`mt-5 flex items-center gap-2 ${successBannerClass}`}>
                     <CheckCircle className="h-4 w-4" />
                     <span>{successMessage}</span>
                   </div>
                 )}
 
                 {formError && (
-                  <div className="mt-5 flex items-center gap-2 rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm text-[#F5CACA]">
+                  <div className={`mt-5 flex items-center gap-2 ${errorBannerClass}`}>
                     <AlertCircle className="h-4 w-4" />
                     <span>{formError}</span>
                   </div>
@@ -693,14 +705,14 @@ const Account = () => {
                   </p>
 
                   {personalizationMessage && (
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#35503D] bg-[#18291F] px-4 py-3 text-sm text-[#BEE6BE]">
+                    <div className={`mt-4 flex items-center gap-2 ${successBannerClass}`}>
                       <CheckCircle className="h-4 w-4" />
                       <span>{personalizationMessage}</span>
                     </div>
                   )}
 
                   {personalizationError && (
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm text-[#F5CACA]">
+                    <div className={`mt-4 flex items-center gap-2 ${errorBannerClass}`}>
                       <AlertCircle className="h-4 w-4" />
                       <span>{personalizationError}</span>
                     </div>
@@ -720,13 +732,13 @@ const Account = () => {
                           disabled={personalizationSaving}
                           className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
                             personalizationSettings.enabled
-                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                              ? enabledToggleClass
+                              : disabledToggleClass
                           }`}
                         >
                           Personalization: {personalizationSettings.enabled ? 'On' : 'Off'}
                         </button>
-                        <div className="rounded-xl border border-[#35503D] bg-[#18241D] px-4 py-3 text-sm text-[#D4E2D6]">
+                        <div className="rounded-xl border border-[#B8CCBF] bg-[#F1F7F3] px-4 py-3 text-sm text-[#4F685C] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6]">
                           Effective lookback: {personalizationSettings.lookback_days}d
                         </div>
                       </div>
@@ -810,14 +822,14 @@ const Account = () => {
                   </p>
 
                   {notificationMessage && (
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#35503D] bg-[#18291F] px-4 py-3 text-sm text-[#BEE6BE]">
+                    <div className={`mt-4 flex items-center gap-2 ${successBannerClass}`}>
                       <CheckCircle className="h-4 w-4" />
                       <span>{notificationMessage}</span>
                     </div>
                   )}
 
                   {notificationError && (
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#603333] bg-[#2B1717] px-4 py-3 text-sm text-[#F5CACA]">
+                    <div className={`mt-4 flex items-center gap-2 ${errorBannerClass}`}>
                       <AlertCircle className="h-4 w-4" />
                       <span>{notificationError}</span>
                     </div>
@@ -847,8 +859,8 @@ const Account = () => {
                           disabled={notificationSaving}
                           className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
                             notificationPrefs.email_enabled
-                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                              ? enabledToggleClass
+                              : disabledToggleClass
                           }`}
                         >
                           Email Alerts: {notificationPrefs.email_enabled ? 'On' : 'Off'}
@@ -859,8 +871,8 @@ const Account = () => {
                           disabled={notificationSaving}
                           className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
                             notificationPrefs.webhook_enabled
-                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                              ? enabledToggleClass
+                              : disabledToggleClass
                           }`}
                         >
                           Webhook Alerts: {notificationPrefs.webhook_enabled ? 'On' : 'Off'}
@@ -871,8 +883,8 @@ const Account = () => {
                           disabled={notificationSaving}
                           className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
                             notificationPrefs.push_enabled
-                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                              ? enabledToggleClass
+                              : disabledToggleClass
                           }`}
                         >
                           Push Alerts: {notificationPrefs.push_enabled ? 'On' : 'Off'}
@@ -883,8 +895,8 @@ const Account = () => {
                           disabled={notificationSaving}
                           className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition ${
                             notificationPrefs.daily_digest_enabled
-                              ? 'border-[#91D88C] bg-[#1F3325] text-[#DFF0DF]'
-                              : 'border-[#35503D] bg-[#18241D] text-[#AFC0B3] hover:bg-[#1E2D23]'
+                              ? enabledToggleClass
+                              : disabledToggleClass
                           }`}
                         >
                           Daily Digest: {notificationPrefs.daily_digest_enabled ? 'On' : 'Off'}
@@ -997,7 +1009,7 @@ const Account = () => {
                             variant="outline"
                             onClick={() => void registerPushToken()}
                             disabled={pushActionLoading}
-                            className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                            className="h-11 rounded-xl border border-[#B8CCBF] bg-[#F4FAF6] px-4 text-sm font-semibold text-[#274234] hover:bg-[#E6F1EA] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6] dark:hover:bg-[#203027]"
                           >
                             {pushActionLoading ? 'Saving...' : 'Register Token'}
                           </Button>
@@ -1006,7 +1018,7 @@ const Account = () => {
                             variant="outline"
                             onClick={() => void removePushToken()}
                             disabled={pushActionLoading}
-                            className="h-11 rounded-xl border-[#513434] bg-[#2B1717] px-4 text-sm font-semibold text-[#F6D8D8] hover:bg-[#341D1D]"
+                            className={dangerOutlineButtonClass}
                           >
                             {pushActionLoading ? 'Updating...' : 'Remove Token'}
                           </Button>
@@ -1041,7 +1053,7 @@ const Account = () => {
                           type="button"
                           variant="outline"
                           onClick={() => void sendNotificationTest()}
-                          className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                          className="h-11 rounded-xl border border-[#B8CCBF] bg-[#F4FAF6] px-4 text-sm font-semibold text-[#274234] hover:bg-[#E6F1EA] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6] dark:hover:bg-[#203027]"
                         >
                           Send Test Notification
                         </Button>
@@ -1050,7 +1062,7 @@ const Account = () => {
                           type="button"
                           variant="outline"
                           onClick={() => void sendDigestNow()}
-                          className="h-11 rounded-xl border-[#35503D] bg-[#18241D] px-4 text-sm font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                          className="h-11 rounded-xl border border-[#B8CCBF] bg-[#F4FAF6] px-4 text-sm font-semibold text-[#274234] hover:bg-[#E6F1EA] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6] dark:hover:bg-[#203027]"
                         >
                           Send Digest Now
                         </Button>
@@ -1066,7 +1078,7 @@ const Account = () => {
                             type="button"
                             variant="outline"
                             onClick={() => void fetchDispatchLog()}
-                            className="h-9 rounded-lg border-[#35503D] bg-[#18241D] px-3 text-xs font-semibold text-[#D4E2D6] hover:bg-[#203027]"
+                            className="h-9 rounded-lg border border-[#B8CCBF] bg-[#F4FAF6] px-3 text-xs font-semibold text-[#274234] hover:bg-[#E6F1EA] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#D4E2D6] dark:hover:bg-[#203027]"
                           >
                             Refresh
                           </Button>
@@ -1078,7 +1090,7 @@ const Account = () => {
                             Loading delivery log...
                           </div>
                         ) : dispatchError ? (
-                          <p className="rounded-lg border border-[#603333] bg-[#2B1717] px-3 py-2 text-sm text-[#F5CACA]">
+                          <p className={`rounded-lg ${errorBannerClass}`}>
                             {dispatchError}
                           </p>
                         ) : dispatchLog.length > 0 ? (

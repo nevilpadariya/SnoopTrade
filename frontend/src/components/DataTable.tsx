@@ -136,7 +136,7 @@ const DataTable = ({
     <Card className="w-full bg-card/80 backdrop-blur-sm border-border/50 shadow-lg">
       <CardHeader className="space-y-1 pb-4">
         <CardTitle className="text-2xl font-bold text-card-foreground font-display">
-          Transaction History
+          Insider Transaction History
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Detailed breakdown of all insider trading transactions

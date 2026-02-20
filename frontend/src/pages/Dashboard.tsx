@@ -1940,12 +1940,12 @@ const Dashboard = () => {
                     <ShieldAlert className="h-4 w-4 text-[#A7E89A]" />
                     <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Today Feed</p>
                   </div>
-                  <p className="mt-1 text-xs text-[#8EA197]">
+                  <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Actionable watchlist alerts ranked by urgency and conviction. Scope: {activeScopeLabel}.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <label htmlFor="todayFeedScope" className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8EA197]">
+                  <label htmlFor="todayFeedScope" className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">
                     Scope
                   </label>
                   <select
@@ -1965,7 +1965,7 @@ const Dashboard = () => {
                     ))}
                   </select>
                   {todaySignals && (
-                    <p className="text-[11px] text-[#8EA197]">
+                    <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">
                       {todaySignals.evaluated} ticker{todaySignals.evaluated === 1 ? '' : 's'} evaluated
                     </p>
                   )}
@@ -1999,26 +1999,26 @@ const Dashboard = () => {
                           {item.urgency}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs font-semibold text-[#B7C8BC]">{item.action}</p>
-                      <p className="mt-1 text-xs text-[#8EA197]">{item.reason}</p>
-                      <p className="mt-1 text-xs text-[#9FB5A7]">{item.one_line_explanation}</p>
+                      <p className="mt-1 text-xs font-semibold text-[#3E5A4B] dark:text-[#B7C8BC]">{item.action}</p>
+                      <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">{item.reason}</p>
+                      <p className="mt-1 text-xs text-[#5A7265] dark:text-[#9FB5A7]">{item.one_line_explanation}</p>
                       <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
                         <div
                           className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
                           style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
                         />
                       </div>
-                      <p className="mt-2 text-xs text-[#A8BCB0]">
+                      <p className="mt-2 text-xs text-[#5D7568] dark:text-[#A8BCB0]">
                         Score {item.score.toFixed(1)} • {item.label} • Delta {formatSignedDelta(item.change_24h)}
                       </p>
                       {item.personalization_samples > 0 && Math.abs(item.personalization_delta) >= 0.05 && (
-                        <p className="mt-1 text-[11px] text-[#9AB9A1]">
+                        <p className="mt-1 text-[11px] text-[#577162] dark:text-[#9AB9A1]">
                           Personalized {item.personalization_delta >= 0 ? '+' : ''}
                           {item.personalization_delta.toFixed(2)} • base {item.base_score.toFixed(1)} • {item.personalization_samples} outcome
                           {item.personalization_samples === 1 ? '' : 's'}
                         </p>
                       )}
-                      <p className="mt-1 text-[11px] text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
+                      <p className="mt-1 text-[11px] text-[#4F675B] dark:text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
                       <div className="mt-2 grid grid-cols-2 gap-1.5">
                         {(['followed', 'ignored', 'entered', 'exited'] as OutcomeType[]).map((outcome) => (
                           <button
@@ -2035,12 +2035,12 @@ const Dashboard = () => {
                           </button>
                         ))}
                       </div>
-                      <p className="mt-2 text-[10px] text-[#7D9487]">Decision support only. Verify before trading.</p>
+                      <p className="mt-2 text-[10px] text-[#4A6255] dark:text-[#7D9487]">Decision support only. Verify before trading.</p>
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#8EA197]">
+                <p className="mt-4 text-sm text-[#4F675B] dark:text-[#8EA197]">
                   {activeWatchlistGroup === ALL_WATCHLIST_SCOPE
                     ? 'Add watchlist tickers to generate your today feed.'
                     : `No ranked signals for "${activeWatchlistGroup}" in this window.`}
@@ -2054,12 +2054,12 @@ const Dashboard = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist Radar</p>
-                  <p className="mt-1 text-xs text-[#8EA197]">
+                  <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Ranked by insider conviction for the active {selectedTimePeriod.toUpperCase()} window. Scope: {activeScopeLabel}.
                   </p>
                 </div>
                 {radarData && (
-                  <p className="text-[11px] text-[#8EA197]">
+                  <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">
                     {radarData.evaluated} ticker{radarData.evaluated === 1 ? '' : 's'} analyzed
                   </p>
                 )}

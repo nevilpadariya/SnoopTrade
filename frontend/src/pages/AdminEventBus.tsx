@@ -410,20 +410,20 @@ const AdminEventBus = () => {
             {statusData ? (
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-3">
-                  <p className="text-xs text-[#8EA197]">Backend</p>
-                  <p className="mt-1 text-lg font-semibold text-[#DCEADA]">{statusData.backend || 'unknown'}</p>
+                  <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">Backend</p>
+                  <p className="mt-1 text-lg font-semibold text-[#33503D] dark:text-[#DCEADA]">{statusData.backend || 'unknown'}</p>
                 </div>
                 <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-3">
-                  <p className="text-xs text-[#8EA197]">Running</p>
-                  <p className="mt-1 text-lg font-semibold text-[#DCEADA]">{statusData.running ? 'Yes' : 'No'}</p>
+                  <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">Running</p>
+                  <p className="mt-1 text-lg font-semibold text-[#33503D] dark:text-[#DCEADA]">{statusData.running ? 'Yes' : 'No'}</p>
                 </div>
                 <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-3">
-                  <p className="text-xs text-[#8EA197]">DLQ Failed</p>
-                  <p className="mt-1 text-lg font-semibold text-[#DCEADA]">{statusData.dead_letters_failed ?? 0}</p>
+                  <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">DLQ Failed</p>
+                  <p className="mt-1 text-lg font-semibold text-[#33503D] dark:text-[#DCEADA]">{statusData.dead_letters_failed ?? 0}</p>
                 </div>
                 <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-3">
-                  <p className="text-xs text-[#8EA197]">Republished</p>
-                  <p className="mt-1 text-lg font-semibold text-[#DCEADA]">{statusData.dead_letters_republished ?? 0}</p>
+                  <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">Republished</p>
+                  <p className="mt-1 text-lg font-semibold text-[#33503D] dark:text-[#DCEADA]">{statusData.dead_letters_republished ?? 0}</p>
                 </div>
               </div>
             ) : (
@@ -475,7 +475,7 @@ const AdminEventBus = () => {
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[860px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-[#2D4035] text-[#8EA197]">
+                  <tr className="border-b border-[#2D4035] text-[#4F675B] dark:text-[#8EA197]">
                     <th className="px-2 py-2 font-semibold">Created</th>
                     <th className="px-2 py-2 font-semibold">Topic</th>
                     <th className="px-2 py-2 font-semibold">Status</th>
@@ -617,7 +617,7 @@ const AdminEventBus = () => {
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-[#2D4035] text-[#8EA197]">
+                  <tr className="border-b border-[#2D4035] text-[#4F675B] dark:text-[#8EA197]">
                     <th className="px-2 py-2 font-semibold">Created</th>
                     <th className="px-2 py-2 font-semibold">Dataset</th>
                     <th className="px-2 py-2 font-semibold">Ticker</th>

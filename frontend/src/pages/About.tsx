@@ -61,7 +61,7 @@ const About = () => {
         <main className="signal-grid-overlay">
           <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6 lg:px-8">
             <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">About SnoopTrade</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">About SnoopTrade</p>
               <h1 className="mt-2 text-4xl font-extrabold text-[#EAF5EC] sm:text-5xl">Engineering Signal Clarity</h1>
               <p className="mt-4 max-w-3xl text-base leading-relaxed text-[#B9C9BD] sm:text-lg">
                 We are building a pragmatic platform that turns SEC insider activity into clear market context for everyday users.

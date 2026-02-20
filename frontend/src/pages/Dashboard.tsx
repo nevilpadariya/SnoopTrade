@@ -1570,8 +1570,8 @@ const Dashboard = () => {
               <DropdownMenuContent align="end" className="w-80 rounded-xl border-border bg-card p-2 text-foreground shadow-2xl">
                 <div className="mb-2 flex items-center justify-between gap-2 px-1">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Notifications</p>
-                    <p className="text-xs text-[#A9BCB0]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Notifications</p>
+                    <p className="text-xs text-[#4E6659] dark:text-[#A9BCB0]">
                       {(alertSummary?.unread_count ?? 0)} unread
                       {(alertSummary?.high_severity_unread ?? 0) > 0 ? ` • ${alertSummary?.high_severity_unread} high` : ''}
                     </p>
@@ -1599,8 +1599,8 @@ const Dashboard = () => {
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="truncate text-xs font-bold text-[#EAF5EC]">{item.title}</p>
-                            <p className="mt-1 line-clamp-2 text-xs text-[#A9BCB0]">{item.message}</p>
-                            <p className="mt-1 text-[11px] text-[#8EA197]">
+                            <p className="mt-1 line-clamp-2 text-xs text-[#4E6659] dark:text-[#A9BCB0]">{item.message}</p>
+                            <p className="mt-1 text-[11px] text-[#4F675B] dark:text-[#8EA197]">
                               {item.ticker} • {formatAlertTime(item.created_at)}
                             </p>
                           </div>
@@ -1616,7 +1616,7 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="px-1 py-2 text-xs text-[#8EA197]">No unread alerts.</p>
+                  <p className="px-1 py-2 text-xs text-[#4F675B] dark:text-[#8EA197]">No unread alerts.</p>
                 )}
                 <button
                   type="button"
@@ -1628,7 +1628,7 @@ const Dashboard = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="hidden text-right sm:block">
-              <p className="text-xs text-[#8EA197]">{getGreeting()}</p>
+              <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">{getGreeting()}</p>
               <p className="text-sm font-semibold text-[#D4E2D6]">{user?.name || user?.first_name || 'Trader'}</p>
             </div>
             <DropdownMenu>
@@ -1678,12 +1678,12 @@ const Dashboard = () => {
           <section className="signal-glass relative order-1 rounded-3xl p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8EA197]">Insider Intelligence</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4F675B] dark:text-[#8EA197]">Insider Intelligence</p>
                 <h1 className="mt-2 text-3xl font-extrabold text-[#1F3327] dark:text-[#EAF5EC] sm:text-4xl">What should I look at now?</h1>
-                <p className="mt-2 text-xs text-[#8EA197]">Educational decision support only. Not financial advice.</p>
+                <p className="mt-2 text-xs text-[#4F675B] dark:text-[#8EA197]">Educational decision support only. Not financial advice.</p>
               </div>
               <div className="relative w-full max-w-2xl">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8EA197]" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F675B] dark:text-[#8EA197]" />
                 <Input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value.toUpperCase())}
@@ -1757,7 +1757,7 @@ const Dashboard = () => {
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <BookmarkCheck className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Watchlist</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">Watchlist</p>
                 </div>
                 {watchlist.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -1778,7 +1778,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-xs text-[#8EA197]">No saved tickers yet.</p>
+                    <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">No saved tickers yet.</p>
                     <button
                       type="button"
                       onClick={handleUseStarterWatchlist}
@@ -1793,7 +1793,7 @@ const Dashboard = () => {
               <div className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <History className="h-4 w-4 text-[#A7E89A]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Recent</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">Recent</p>
                 </div>
                 {recentTickers.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -1813,14 +1813,14 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#8EA197]">No recent selections.</p>
+                  <p className="text-xs text-[#4F675B] dark:text-[#8EA197]">No recent selections.</p>
                 )}
               </div>
             </div>
 
             <div className="mt-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Watchlist Groups</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">Watchlist Groups</p>
                 <p className="text-[11px] text-[#7F978A]">
                   {groupedWatchlistEntries.length}/{MAX_WATCHLIST_GROUPS} groups
                 </p>
@@ -1842,7 +1842,7 @@ const Dashboard = () => {
                 </button>
               </div>
               {watchlistGroupMessage && (
-                <p className="mt-2 text-xs text-[#A8BCB0]">{watchlistGroupMessage}</p>
+                <p className="mt-2 text-xs text-[#5D7568] dark:text-[#A8BCB0]">{watchlistGroupMessage}</p>
               )}
               {groupedWatchlistEntries.length > 0 ? (
                 <div className="mt-3 grid gap-2 lg:grid-cols-2">
@@ -1894,7 +1894,7 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-[#8EA197]">
+                <p className="mt-3 text-xs text-[#4F675B] dark:text-[#8EA197]">
                   No groups yet. Create one to segment your watchlist by strategy.
                 </p>
               )}
@@ -1902,8 +1902,8 @@ const Dashboard = () => {
 
             {hasHydratedWatchlist && watchlist.length === 0 && (
               <div className="mt-3 rounded-2xl border border-[#35503D] bg-[#111A15] p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">2-Minute Onboarding</p>
-                <ol className="mt-2 space-y-1 text-xs text-[#9EB2A5]">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">2-Minute Onboarding</p>
+                <ol className="mt-2 space-y-1 text-xs text-[#587063] dark:text-[#9EB2A5]">
                   <li>1. Add a starter watchlist (5 tickers) to activate Today Feed.</li>
                   <li>2. Create your first alert rule in Alerts Center.</li>
                   <li>3. Run a scan and review prioritized alerts.</li>
@@ -1919,7 +1919,7 @@ const Dashboard = () => {
                   <button
                     type="button"
                     onClick={handleOpenAlertsCenter}
-                    className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-1.5 text-xs font-semibold text-[#DCEADA] transition hover:bg-[#1E2D23]"
+                    className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-1.5 text-xs font-semibold text-[#33503D] dark:text-[#DCEADA] transition hover:bg-[#1E2D23]"
                   >
                     Open Alerts Center
                   </button>
@@ -1955,7 +1955,7 @@ const Dashboard = () => {
                       setTodayFeedMessage('');
                       setActiveWatchlistGroup(event.target.value);
                     }}
-                    className="h-8 rounded-lg border border-[#35503D] bg-[#18241D] px-2 text-xs font-semibold text-[#DCEADA]"
+                    className="h-8 rounded-lg border border-[#35503D] bg-[#18241D] px-2 text-xs font-semibold text-[#33503D] dark:text-[#DCEADA]"
                   >
                     <option value={ALL_WATCHLIST_SCOPE}>All Watchlist</option>
                     {watchlistScopeOptions.map((groupName) => (
@@ -2127,7 +2127,7 @@ const Dashboard = () => {
                   )}
                 </>
               ) : (
-                <p className="mt-4 text-sm text-[#8EA197]">Add a watchlist ticker to see ranked opportunities.</p>
+                <p className="mt-4 text-sm text-[#4F675B] dark:text-[#8EA197]">Add a watchlist ticker to see ranked opportunities.</p>
               )}
             </div>
           </section>
@@ -2137,12 +2137,12 @@ const Dashboard = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Daily Brief</p>
-                  <p className="mt-1 text-xs text-[#8EA197]">
+                  <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Actionable summary built from live insider conviction for {activeScopeLabel}.
                   </p>
                 </div>
                 {dailyBrief && (
-                  <p className="text-[11px] text-[#8EA197]">
+                  <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">
                     Mood: {dailyBrief.market_mood} • Avg {dailyBrief.average_score.toFixed(1)}
                   </p>
                 )}
@@ -2187,7 +2187,7 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#8EA197]">Add watchlist tickers to generate a daily brief.</p>
+                <p className="mt-4 text-sm text-[#4F675B] dark:text-[#8EA197]">Add watchlist tickers to generate a daily brief.</p>
               )}
             </div>
           </section>
@@ -2197,11 +2197,11 @@ const Dashboard = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist News</p>
-                  <p className="mt-1 text-xs text-[#8EA197]">
+                  <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Live insider-related headlines for your tracked tickers in {activeScopeLabel}.
                   </p>
                 </div>
-                <p className="text-[11px] text-[#8EA197]">{radarTickers.length} ticker{radarTickers.length === 1 ? '' : 's'} monitored</p>
+                <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">{radarTickers.length} ticker{radarTickers.length === 1 ? '' : 's'} monitored</p>
               </div>
 
               {isLoadingWatchlistNews ? (
@@ -2246,7 +2246,7 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#8EA197]">No watchlist headlines available right now.</p>
+                <p className="mt-4 text-sm text-[#4F675B] dark:text-[#8EA197]">No watchlist headlines available right now.</p>
               )}
             </div>
           </section>
@@ -2259,7 +2259,7 @@ const Dashboard = () => {
                     <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">
                       Workspace Actions
                     </p>
-                    <p className="mt-1 text-xs text-[#8EA197]">
+                    <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                       Use this space to continue quickly from your watchlist without cluttering the dashboard.
                     </p>
                   </div>
@@ -2374,7 +2374,7 @@ const Dashboard = () => {
                         Price Context
                       </p>
                       {priceContext && (
-                        <p className="text-[11px] text-[#8EA197]">
+                        <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">
                           {priceContext.sessions} sessions • {formatShortDate(priceContext.startDate)} - {formatShortDate(priceContext.endDate)}
                         </p>
                       )}
@@ -2412,7 +2412,7 @@ const Dashboard = () => {
                         </p>
                       </>
                     ) : (
-                      <p className="mt-3 text-sm text-[#8EA197]">Price context will appear after loading ticker history.</p>
+                      <p className="mt-3 text-sm text-[#4F675B] dark:text-[#8EA197]">Price context will appear after loading ticker history.</p>
                     )}
                   </div>
                 </div>
@@ -2427,92 +2427,92 @@ const Dashboard = () => {
                       <Badge variant="sale" className="px-3 py-1.5 text-sm">Sales: {sales}</Badge>
                     </div>
                     <p className="mt-4 text-xl font-bold text-[#2F5D43] dark:text-[#A7E89A]">Net signal: {netSignal}</p>
-                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
+                    <div className="mt-4 rounded-xl border border-[#A8C3AE] bg-[#ECF3EE] p-3 dark:border-[#35503D] dark:bg-[#111A15]">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Conviction Score</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">Conviction Score</p>
                         {convictionData && (
-                          <p className="text-[11px] text-[#8EA197]">{convictionData.lookback_days}d window</p>
+                          <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">{convictionData.lookback_days}d window</p>
                         )}
                       </div>
                       {isLoadingConviction ? (
-                        <p className="mt-2 text-sm text-[#9EB2A5]">Analyzing insider conviction...</p>
+                        <p className="mt-2 text-sm text-[#587063] dark:text-[#9EB2A5]">Analyzing insider conviction...</p>
                       ) : convictionError ? (
                         <p className="mt-2 text-sm text-[#E9B5B5]">{convictionError}</p>
                       ) : (
                         <>
                           <div className="mt-2 flex items-center justify-between gap-3">
-                            <p className="text-2xl font-bold text-[#E6ECE8]">{convictionData ? convictionData.score.toFixed(1) : '--'}</p>
+                            <p className="text-2xl font-bold text-[#1F3327] dark:text-[#E6ECE8]">{convictionData ? convictionData.score.toFixed(1) : '--'}</p>
                             {convictionData?.latest_buy_days_ago !== null && convictionData?.latest_buy_days_ago !== undefined && (
-                              <p className="text-xs text-[#9EB2A5]">Latest buy {convictionData.latest_buy_days_ago}d ago</p>
+                              <p className="text-xs text-[#587063] dark:text-[#9EB2A5]">Latest buy {convictionData.latest_buy_days_ago}d ago</p>
                             )}
                           </div>
                           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
                             <div className={`h-full rounded-full transition-all ${convictionFillClass}`} style={{ width: `${Math.max(0, Math.min(100, convictionScore))}%` }} />
                           </div>
                           {convictionData?.explanation?.[0] && (
-                            <p className="mt-2 text-xs text-[#A8BCB0]">{convictionData.explanation[0]}</p>
+                            <p className="mt-2 text-xs text-[#5D7568] dark:text-[#A8BCB0]">{convictionData.explanation[0]}</p>
                           )}
                         </>
                       )}
                     </div>
 
-                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
+                    <div className="mt-4 rounded-xl border border-[#A8C3AE] bg-[#ECF3EE] p-3 dark:border-[#35503D] dark:bg-[#111A15]">
                       <div className="flex items-center gap-2">
                         <Target className="h-4 w-4 text-[#A7E89A]" />
-                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">What Changed Since Yesterday</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">What Changed Since Yesterday</p>
                       </div>
                       {isLoadingSignalDelta || isLoadingSignalExplain ? (
-                        <p className="mt-2 text-sm text-[#9EB2A5]">Loading delta intelligence...</p>
+                        <p className="mt-2 text-sm text-[#587063] dark:text-[#9EB2A5]">Loading delta intelligence...</p>
                       ) : signalDeltaError || signalExplainError ? (
                         <p className="mt-2 text-sm text-[#E9B5B5]">{signalDeltaError || signalExplainError}</p>
                       ) : signalDelta ? (
                         <>
-                          <p className="mt-2 text-sm font-semibold text-[#D7E8DA]">{signalDelta.summary}</p>
-                          <p className="mt-1 text-xs text-[#9EB2A5]">
+                          <p className="mt-2 text-sm font-semibold text-[#3E5A4B] dark:text-[#D7E8DA]">{signalDelta.summary}</p>
+                          <p className="mt-1 text-xs text-[#587063] dark:text-[#9EB2A5]">
                             Score {signalDelta.score_prev.toFixed(1)} → {signalDelta.score_now.toFixed(1)} • Buyers {signalDelta.buyers_prev} → {signalDelta.buyers_now}
                           </p>
                           {signalExplain && (
                             <>
-                              <p className="mt-2 text-xs font-semibold text-[#C6D8CB]">{signalExplain.action}</p>
-                              <p className="mt-1 text-xs text-[#8EA197]">{signalExplain.one_line_explanation}</p>
+                              <p className="mt-2 text-xs font-semibold text-[#3F5A4B] dark:text-[#C6D8CB]">{signalExplain.action}</p>
+                              <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">{signalExplain.one_line_explanation}</p>
                               {signalExplain.key_factors.length > 0 && (
-                                <p className="mt-1 text-xs text-[#8EA197]">{signalExplain.key_factors[0]}</p>
+                                <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">{signalExplain.key_factors[0]}</p>
                               )}
                             </>
                           )}
                         </>
                       ) : (
-                        <p className="mt-2 text-sm text-[#9EB2A5]">No delta insight available yet.</p>
+                        <p className="mt-2 text-sm text-[#587063] dark:text-[#9EB2A5]">No delta insight available yet.</p>
                       )}
                     </div>
 
-                    <div className="mt-4 rounded-xl border border-[#35503D] bg-[#111A15] p-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A9BCB0]">Backtest Credibility</p>
+                    <div className="mt-4 rounded-xl border border-[#A8C3AE] bg-[#ECF3EE] p-3 dark:border-[#35503D] dark:bg-[#111A15]">
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4E6659] dark:text-[#A9BCB0]">Backtest Credibility</p>
                       {isLoadingBacktest ? (
-                        <p className="mt-2 text-sm text-[#9EB2A5]">Running lightweight backtest...</p>
+                        <p className="mt-2 text-sm text-[#587063] dark:text-[#9EB2A5]">Running lightweight backtest...</p>
                       ) : backtestError ? (
                         <p className="mt-2 text-sm text-[#E9B5B5]">{backtestError}</p>
                       ) : backtestData ? (
                         <>
-                          <p className="mt-2 text-xs text-[#9EB2A5]">
+                          <p className="mt-2 text-xs text-[#587063] dark:text-[#9EB2A5]">
                             {backtestData.sample_size} evaluated signals over {backtestData.lookback_days}d, horizon {backtestData.horizon_days}d.
                           </p>
-                          <p className="mt-2 text-sm font-semibold text-[#D7E8DA]">
+                          <p className="mt-2 text-sm font-semibold text-[#3E5A4B] dark:text-[#D7E8DA]">
                             Win rate {backtestData.win_rate !== null ? `${backtestData.win_rate.toFixed(1)}%` : 'N/A'}
                             {' • '}
                             Avg return {backtestData.average_return_pct !== null ? `${backtestData.average_return_pct.toFixed(2)}%` : 'N/A'}
                           </p>
-                          <p className="mt-1 text-xs text-[#8EA197]">
+                          <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                             Median {backtestData.median_return_pct !== null ? `${backtestData.median_return_pct.toFixed(2)}%` : 'N/A'}
                             {' • '}
                             Best {backtestData.best_return_pct !== null ? `${backtestData.best_return_pct.toFixed(2)}%` : 'N/A'}
                             {' • '}
                             Worst {backtestData.worst_return_pct !== null ? `${backtestData.worst_return_pct.toFixed(2)}%` : 'N/A'}
                           </p>
-                          <p className="mt-1 text-[11px] text-[#7D9487]">{backtestData.note}</p>
+                          <p className="mt-1 text-[11px] text-[#4A6255] dark:text-[#7D9487]">{backtestData.note}</p>
                         </>
                       ) : (
-                        <p className="mt-2 text-sm text-[#9EB2A5]">No backtest data available.</p>
+                        <p className="mt-2 text-sm text-[#587063] dark:text-[#9EB2A5]">No backtest data available.</p>
                       )}
                     </div>
 

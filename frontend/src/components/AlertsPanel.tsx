@@ -315,7 +315,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
     <section className="signal-glass rounded-3xl p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Alerts Engine</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Alerts Engine</p>
           <h2 className="mt-1 text-2xl font-extrabold text-[#1F3327] dark:text-[#EAF5EC]">Realtime Alerts</h2>
         </div>
         <Button

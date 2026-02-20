@@ -294,7 +294,7 @@ const Landing = () => {
         <main className="signal-grid-overlay">
           <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-12 lg:px-8 lg:pb-24 lg:pt-20">
             <div className="lg:col-span-6">
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">
+              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">
                 Insider Intelligence Platform
               </p>
               <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
@@ -319,11 +319,11 @@ const Landing = () => {
             </div>
 
             <div className="signal-glass rounded-3xl p-5 sm:p-7 lg:col-span-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">{heroTicker} Live Signal</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">{heroTicker} Live Signal</p>
               <p className="mt-3 font-mono text-2xl font-bold text-[#CFF1C7] sm:text-3xl">
                 {loadingHeroMetrics ? 'Loading live metrics...' : heroHeadline}
               </p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">
                 Updated {heroUpdatedLabel}
               </p>
               <div className="mt-4 grid gap-2 rounded-2xl border border-[#35503D] bg-[#111A15] p-3 sm:grid-cols-2">
@@ -369,13 +369,13 @@ const Landing = () => {
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">24h Transactions</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">24h Transactions</p>
                   <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{dailyTransactionsLabel}</p>
                 </div>
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg Filing Lag</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Avg Filing Lag</p>
                   <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{latencyLabel}</p>
-                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Sample {lagSampleLabel}</p>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">Sample {lagSampleLabel}</p>
                 </div>
               </div>
             </div>
@@ -385,10 +385,10 @@ const Landing = () => {
             <div className="signal-glass rounded-3xl p-5 sm:p-7">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">Live Insider Pulse</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">Live Insider Pulse</p>
                   <h2 className="mt-1 text-2xl font-extrabold text-[#EAF5EC] sm:text-3xl">Realtime Insider Trade News</h2>
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Updated {refreshLabel}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Updated {refreshLabel}</p>
               </div>
 
               {loadingNews ? (
@@ -399,7 +399,7 @@ const Landing = () => {
                 </div>
               ) : activeNews ? (
                 <div className="mt-5 rounded-2xl border border-[#35503D] bg-[#111A15] p-5 sm:p-6">
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-[#8EA197]">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-[#4F675B] dark:text-[#8EA197]">
                     <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#8FE78E]" />
                     <span>{activeNews.source}</span>
                     <span aria-hidden>•</span>

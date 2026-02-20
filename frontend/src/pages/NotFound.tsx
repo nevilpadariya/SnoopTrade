@@ -10,7 +10,7 @@ const NotFound = () => {
       </Helmet>
 
       <div className="mx-auto flex signal-page max-w-3xl flex-col items-center justify-center px-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197]">404</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">404</p>
         <h1 className="mt-3 text-5xl font-extrabold text-[#EAF5EC] sm:text-6xl">Page not found</h1>
         <p className="mt-4 text-base text-[#B6C8BB] sm:text-lg">
           The page you requested does not exist or may have moved.

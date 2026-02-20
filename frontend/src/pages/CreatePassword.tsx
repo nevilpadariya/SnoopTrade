@@ -102,13 +102,13 @@ const CreatePassword = () => {
       <main className="signal-grid-overlay">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-16">
           <section className="signal-glass hidden rounded-3xl p-10 lg:block">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197]">Account Security</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197]">Account Security</p>
             <h1 className="mt-4 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Create a password</h1>
             <p className="mt-5 max-w-lg text-xl leading-relaxed text-[#BED0C2]">
               You signed in with Google. Set a password so you can also sign in with email and password.
             </p>
             <div className="mt-10 rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Security tip</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Security tip</p>
               <p className="mt-3 text-sm leading-relaxed text-[#C6D7CB]">
                 Use a unique password with at least 8 characters, numbers, and symbols to improve account security.
               </p>
@@ -116,7 +116,7 @@ const CreatePassword = () => {
           </section>
 
           <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] lg:hidden">Account Security</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197] lg:hidden">Account Security</p>
             <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Create Password</h2>
             <p className="mt-2 text-sm text-[#98AB9E] sm:text-base">Add a password to complete your account setup.</p>
 

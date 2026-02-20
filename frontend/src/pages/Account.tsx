@@ -560,7 +560,7 @@ const Account = () => {
             <div className="grid gap-6 lg:grid-cols-12">
               <section className="signal-glass rounded-3xl p-6 lg:col-span-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#3D5A45] bg-[#213329] text-xl font-bold text-[#DCEADA]">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#3D5A45] bg-[#213329] text-xl font-bold text-[#33503D] dark:text-[#DCEADA]">
                     {initials}
                   </div>
                   <div className="min-w-0">
@@ -573,13 +573,13 @@ const Account = () => {
                 </div>
 
                 <div className="mt-6 space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Account Information</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Account Information</p>
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-[#8EA197]">Email</label>
+                    <label className="text-xs font-semibold text-[#4F675B] dark:text-[#8EA197]">Email</label>
                     <Input disabled value={userData?.email || ''} className="signal-input h-11 rounded-xl border opacity-80" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-[#8EA197]">Name</label>
+                    <label className="text-xs font-semibold text-[#4F675B] dark:text-[#8EA197]">Name</label>
                     <Input disabled value={userData?.name || ''} className="signal-input h-11 rounded-xl border opacity-80" />
                   </div>
                 </div>
@@ -846,7 +846,7 @@ const Account = () => {
                   ) : notificationPrefs ? (
                     <div className="mt-5 space-y-4">
                       <div className="rounded-xl border border-[#35503D] bg-[#111A15] px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Digest Mode</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">Digest Mode</p>
                         <p className="mt-1 text-sm text-[#D4E2D6]">
                           Scheduled at {notificationPrefs.digest_hour_local.toString().padStart(2, '0')}:00 ({notificationPrefs.timezone})
                         </p>
@@ -976,7 +976,7 @@ const Account = () => {
                       </div>
 
                       <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Push Token Management</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">Push Token Management</p>
                         <p className="mt-1 text-xs text-[#9BAEA1]">
                           Register your Expo push token to receive mobile push alerts and digests.
                         </p>
@@ -1074,7 +1074,7 @@ const Account = () => {
                       <div className="rounded-xl border border-[#35503D] bg-[#111A15] p-4">
                         <div className="mb-3 flex items-center justify-between gap-3">
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#8EA197]">Delivery Log</p>
+                            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">Delivery Log</p>
                             <p className="mt-0.5 text-[11px] text-[#7F978A]">Recent channel dispatch attempts for your account.</p>
                           </div>
                           <Button
@@ -1112,7 +1112,7 @@ const Account = () => {
                                   <p className={`text-xs font-semibold ${item.success ? 'text-[#BEE6BE]' : 'text-[#F5CACA]'}`}>
                                     {item.success ? 'Sent' : 'Failed'}
                                   </p>
-                                  <p className="text-[11px] text-[#8EA197]">{formatDispatchTimestamp(item.created_at)}</p>
+                                  <p className="text-[11px] text-[#4F675B] dark:text-[#8EA197]">{formatDispatchTimestamp(item.created_at)}</p>
                                 </div>
                               </div>
                             ))}

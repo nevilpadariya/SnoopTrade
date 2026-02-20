@@ -167,7 +167,7 @@ const Login = () => {
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
             <div className="grid gap-6 lg:grid-cols-2">
               <section className="signal-glass hidden rounded-3xl p-10 lg:block">
-                <Link to="/dashboard" className="text-sm font-semibold uppercase tracking-[0.16em] text-[#8EA197] transition hover:text-[#E6ECE8]">
+                <Link to="/dashboard" className="text-sm font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197] transition hover:text-[#E6ECE8]">
                   SnoopTrade
                 </Link>
                 <h1 className="mt-5 text-5xl font-extrabold leading-tight text-[#EAF5EC]">Welcome back</h1>
@@ -177,11 +177,11 @@ const Login = () => {
 
                 <div className="mt-10 grid grid-cols-2 gap-4">
                   <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Daily filings tracked</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Daily filings tracked</p>
                     <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">14,832</p>
                   </article>
                   <article className="rounded-2xl border border-[#35503E] bg-[#122019] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8EA197]">Avg signal latency</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Avg signal latency</p>
                     <p className="mt-3 font-mono text-4xl font-bold text-[#D5E9D6]">3.2m</p>
                   </article>
                 </div>
@@ -197,7 +197,7 @@ const Login = () => {
               </section>
 
               <section className="signal-glass rounded-3xl p-6 sm:p-8 lg:p-10">
-                <Link to="/dashboard" className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8EA197] transition hover:text-[#E6ECE8] lg:hidden">
+                <Link to="/dashboard" className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4F675B] dark:text-[#8EA197] transition hover:text-[#E6ECE8] lg:hidden">
                   SnoopTrade
                 </Link>
                 <h2 className="mt-2 text-3xl font-extrabold text-[#EAF5EC] sm:text-4xl">Login</h2>
@@ -253,7 +253,7 @@ const Login = () => {
 
                 <div className="my-6 flex items-center gap-3">
                   <div className="h-px flex-1 bg-[#2E4337]" />
-                  <span className="text-xs font-semibold tracking-[0.14em] text-[#8EA197]">OR</span>
+                  <span className="text-xs font-semibold tracking-[0.14em] text-[#4F675B] dark:text-[#8EA197]">OR</span>
                   <div className="h-px flex-1 bg-[#2E4337]" />
                 </div>
 

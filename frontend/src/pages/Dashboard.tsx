@@ -1836,7 +1836,7 @@ const Dashboard = () => {
                   type="button"
                   onClick={handleCreateGroupFromSelected}
                   disabled={!selectedCompany || !watchlist.includes(selectedCompany)}
-                  className="rounded-lg border border-[#35503D] bg-[#18241D] px-3 py-2 text-xs font-semibold text-[#BEE6BE] transition hover:bg-[#1E2D23] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="whitespace-nowrap rounded-lg border border-[#9FB9A6] bg-[#EFF6F1] px-3 py-2 text-xs font-semibold text-[#2A553C] transition hover:bg-[#E5F1E9] disabled:cursor-not-allowed disabled:border-[#C8D8CD] disabled:bg-[#F4F9F6] disabled:text-[#8BA396] dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#BEE6BE] dark:hover:bg-[#1E2D23] dark:disabled:border-[#35503D] dark:disabled:bg-[#18241D] dark:disabled:text-[#6F8A7B]"
                 >
                   Add selected ticker
                 </button>
@@ -1991,34 +1991,34 @@ const Dashboard = () => {
                       key={item.signal_id}
                       type="button"
                       onClick={() => handleCompanySelect(item.ticker)}
-                      className="rounded-2xl border border-[#35503D] bg-[#111A15] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#16231C]"
+                      className="rounded-2xl border border-[#A8C3AE] bg-[#ECF3EE] p-3 text-left transition hover:-translate-y-0.5 hover:bg-[#E5F0E9] dark:border-[#35503D] dark:bg-[#111A15] dark:hover:bg-[#16231C]"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-base font-bold text-[#E6ECE8]">{item.ticker}</p>
+                        <p className="text-base font-bold text-[#1F3327] dark:text-[#E6ECE8]">{item.ticker}</p>
                         <span className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase ${getUrgencyPillClass(item.urgency)}`}>
                           {item.urgency}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs font-semibold text-[#3E5A4B] dark:text-[#B7C8BC]">{item.action}</p>
-                      <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">{item.reason}</p>
-                      <p className="mt-1 text-xs text-[#5A7265] dark:text-[#9FB5A7]">{item.one_line_explanation}</p>
-                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#24352B]">
+                      <p className="mt-1 text-xs font-semibold text-[#2E4A3D] dark:text-[#B7C8BC]">{item.action}</p>
+                      <p className="mt-1 text-xs text-[#3F594C] dark:text-[#8EA197]">{item.reason}</p>
+                      <p className="mt-1 text-xs text-[#496255] dark:text-[#9FB5A7]">{item.one_line_explanation}</p>
+                      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#D3E2D8] dark:bg-[#24352B]">
                         <div
                           className={`h-full rounded-full transition-all ${getScoreBarClass(item.score)}`}
                           style={{ width: `${Math.max(0, Math.min(100, item.score))}%` }}
                         />
                       </div>
-                      <p className="mt-2 text-xs text-[#5D7568] dark:text-[#A8BCB0]">
+                      <p className="mt-2 text-xs text-[#4A6558] dark:text-[#A8BCB0]">
                         Score {item.score.toFixed(1)} • {item.label} • Delta {formatSignedDelta(item.change_24h)}
                       </p>
                       {item.personalization_samples > 0 && Math.abs(item.personalization_delta) >= 0.05 && (
-                        <p className="mt-1 text-[11px] text-[#577162] dark:text-[#9AB9A1]">
+                        <p className="mt-1 text-[11px] text-[#466153] dark:text-[#9AB9A1]">
                           Personalized {item.personalization_delta >= 0 ? '+' : ''}
                           {item.personalization_delta.toFixed(2)} • base {item.base_score.toFixed(1)} • {item.personalization_samples} outcome
                           {item.personalization_samples === 1 ? '' : 's'}
                         </p>
                       )}
-                      <p className="mt-1 text-[11px] text-[#4F675B] dark:text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
+                      <p className="mt-1 text-[11px] text-[#3F594C] dark:text-[#8EA197]">Confidence {(item.confidence * 100).toFixed(0)}%</p>
                       <div className="mt-2 grid grid-cols-2 gap-1.5">
                         {(['followed', 'ignored', 'entered', 'exited'] as OutcomeType[]).map((outcome) => (
                           <button
@@ -2029,13 +2029,13 @@ const Dashboard = () => {
                               void trackOutcome(item, outcome);
                             }}
                             disabled={Boolean(outcomeSavingBySignal[item.signal_id])}
-                            className="rounded-md border border-[#35503D] bg-[#18241D] px-2 py-1 text-[10px] font-semibold uppercase text-[#BEE6BE] transition hover:bg-[#1E2D23] disabled:cursor-not-allowed disabled:opacity-50"
+                            className="rounded-md border border-[#9FB9A6] bg-[#EFF6F1] px-2 py-1 text-[10px] font-semibold uppercase text-[#2A553C] transition hover:bg-[#E5F1E9] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#35503D] dark:bg-[#18241D] dark:text-[#BEE6BE] dark:hover:bg-[#1E2D23]"
                           >
                             {outcomeSavingBySignal[item.signal_id] === outcome ? 'Saving...' : outcome}
                           </button>
                         ))}
                       </div>
-                      <p className="mt-2 text-[10px] text-[#4A6255] dark:text-[#7D9487]">Decision support only. Verify before trading.</p>
+                      <p className="mt-2 text-[10px] text-[#415B4D] dark:text-[#7D9487]">Decision support only. Verify before trading.</p>
                     </button>
                   ))}
                 </div>

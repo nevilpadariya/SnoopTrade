@@ -337,6 +337,23 @@ html:not(.dark) .bg-\[\#213329\] {
   background-color: #f1f7f3 !important;
 }
 
+/* Dashboard cards/panels that use dark-only hex (no light variant in component) */
+html:not(.dark) .bg-\[\#101913\] {
+  background-color: #e8f0eb !important;
+}
+html:not(.dark) .bg-\[\#16231C\] {
+  background-color: #dcece2 !important;
+}
+html:not(.dark) .bg-\[\#121E17\] {
+  background-color: #e2efe6 !important;
+}
+html:not(.dark) .border-\[\#334A3A\] {
+  border-color: #a8c4b2 !important;
+}
+html:not(.dark) .text-\[\#BFE3C1\] {
+  color: #2d5c3e !important;
+}
+
 html:not(.dark) .border-\[\#2D4035\],
 html:not(.dark) .border-\[\#35503D\],
 html:not(.dark) .border-\[\#35503E\],
@@ -350,6 +367,24 @@ html:not(.dark) .hover\:bg-\[\#1E2C24\]:hover,
 html:not(.dark) .hover\:bg-\[\#1F2F25\]:hover,
 html:not(.dark) .hover\:bg-\[\#22372B\]:hover {
   background-color: #dbe9df !important;
+}
+
+/* Error/alert boxes: light theme variants (dark red box → light red) */
+html:not(.dark) .border-\[\#603333\] {
+  border-color: #c85a5a !important;
+}
+html:not(.dark) .bg-\[\#2B1717\] {
+  background-color: #fde8e8 !important;
+}
+html:not(.dark) .text-\[\#F7D1D1\],
+html:not(.dark) .text-\[\#F6CCCC\],
+html:not(.dark) .text-\[\#F5CACA\],
+html:not(.dark) .text-\[\#F6D8D8\] {
+  color: #7b2c2c !important;
+}
+html:not(.dark) .hover\:bg-\[\#341D1D\]:hover,
+html:not(.dark) .hover\:bg-\[\#2F1A1A\]:hover {
+  background-color: #f5d2d2 !important;
 }
 
 main {
@@ -369,10 +404,10 @@ main {
   border-radius: 5px;
 }
 
-/* Login/signup error box: force white text (unlayered so it overrides Tailwind) */
+/* Login/signup error box: theme-aware (unlayered so it overrides Tailwind) */
 .login-error-message,
 .login-error-message * {
-  color: #ffffff !important;
+  color: hsl(var(--destructive-foreground)) !important;
 }
 
 /* Stock data range: 4 buttons in one row */

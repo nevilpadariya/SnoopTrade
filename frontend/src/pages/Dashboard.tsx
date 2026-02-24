@@ -263,9 +263,13 @@ function getScoreBarClass(score: number): string {
 }
 
 function getUrgencyPillClass(urgency: 'high' | 'medium' | 'low'): string {
-  if (urgency === 'high') return 'border-[#824343] bg-[#3A1D1D] text-[#FFD2D2]';
-  if (urgency === 'medium') return 'border-[#6A5A2D] bg-[#2E2512] text-[#FFE8AE]';
-  return 'border-[#34513E] bg-[#17271E] text-[#BEE6BE]';
+  if (urgency === 'high') {
+    return 'border-[#c97a7a] bg-[#fde8e8] text-[#7a2828] dark:border-[#824343] dark:bg-[#3A1D1D] dark:text-[#FFD2D2]';
+  }
+  if (urgency === 'medium') {
+    return 'border-[#b89b4a] bg-[#fdf4e3] text-[#6b5a2e] dark:border-[#6A5A2D] dark:bg-[#2E2512] dark:text-[#FFE8AE]';
+  }
+  return 'border-[#84b88f] bg-[#e8f4ea] text-[#2d4a34] dark:border-[#34513E] dark:bg-[#17271E] dark:text-[#BEE6BE]';
 }
 
 function formatSignedDelta(value: number): string {
@@ -418,7 +422,9 @@ const Dashboard = () => {
   const [activeWatchlistGroup, setActiveWatchlistGroup] = useState<string>(ALL_WATCHLIST_SCOPE);
   const [hasHydratedWatchlist, setHasHydratedWatchlist] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
-  const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() =>
+    typeof document !== 'undefined' ? getThemePreference() : 'dark'
+  );
   const watchlistRef = useRef<string[]>([]);
   const recentTickersRef = useRef<string[]>([]);
   const watchlistGroupsRef = useRef<WatchlistGroups>({});

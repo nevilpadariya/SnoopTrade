@@ -1,0 +1,4 @@
+# Optional heavier features; not installed on Render Free.
+-r requirements.txt
+prophet>=1.1.5
+kafka-python>=2.0.2

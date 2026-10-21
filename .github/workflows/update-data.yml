@@ -30,6 +30,13 @@ on:
           - sec
           - both
 
+permissions:
+  contents: read
+
+concurrency:
+  group: update-stock-sec-data
+  cancel-in-progress: false
+
 env:
   PYTHON_VERSION: '3.11'
 
@@ -75,7 +82,6 @@ jobs:
               sys.exit(1)
           
           print(f'Testing MongoDB connection...')
-          print(f'URI starts with: {uri[:30]}...')
           
           try:
               client = MongoClient(uri, serverSelectionTimeoutMS=10000)
@@ -89,18 +95,17 @@ jobs:
       
       - name: Update stock data for ${{ matrix.ticker }}
         if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
-        continue-on-error: true
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
           cd backend
           python -c "
           import os
-          os.environ['MONGODB_URI'] = '${{ secrets.MONGODB_URI }}'
           from scripts.stock_finance_data_extracton_script import save_stock_data
           print('Updating stock data for ${{ matrix.ticker }}...')
           try:
-              save_stock_data('${{ matrix.ticker }}')
+              if not save_stock_data('${{ matrix.ticker }}'):
+                  raise RuntimeError('Stock update did not complete')
               print('✓ Stock data update complete for ${{ matrix.ticker }}')
           except Exception as e:
               print(f'✗ Error updating ${{ matrix.ticker }}: {e}')
@@ -190,7 +195,6 @@ jobs:
               sys.exit(1)
           
           print(f'Testing MongoDB connection...')
-          print(f'URI starts with: {uri[:30]}...')
           
           try:
               client = MongoClient(uri, serverSelectionTimeoutMS=10000)
@@ -204,7 +208,6 @@ jobs:
       
       - name: Update SEC data for ${{ matrix.ticker }}
         if: ${{ github.event.inputs.ticker == '' || github.event.inputs.ticker == matrix.ticker }}
-        continue-on-error: true
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
@@ -212,7 +215,6 @@ jobs:
           python -c "
           import os
           import time
-          os.environ['MONGODB_URI'] = '${{ secrets.MONGODB_URI }}'
           from scripts.sec_filing_data_extraction_script import insert_form4_data
           print('Updating SEC Form 4 data for ${{ matrix.ticker }} (CIK: ${{ matrix.cik }})...')
           # Add delay to respect SEC rate limits

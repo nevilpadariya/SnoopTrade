@@ -37,7 +37,7 @@ def validate_mongodb_uri(uri: str) -> tuple[bool, str]:
         return False, "MONGODB_URI environment variable is not set"
     
     if not uri.startswith(("mongodb://", "mongodb+srv://")):
-        return False, f"Invalid MongoDB URI format. Must start with 'mongodb://' or 'mongodb+srv://'. Got: {uri[:30]}..."
+        return False, "Invalid MongoDB URI format. Must start with mongodb:// or mongodb+srv://."
     
     # Check for common typos
     if "mongodb+srv://" in uri:
@@ -85,7 +85,6 @@ def get_db():
             _db = _client["sec_data"]
         except Exception as e:
             logger.error(f"Failed to connect to MongoDB: {e}")
-            logger.error(f"MongoDB URI (first 30 chars): {MONGODB_URI[:30] if MONGODB_URI else 'None'}...")
             raise
     return _db
 

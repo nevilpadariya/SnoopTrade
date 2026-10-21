@@ -18,7 +18,7 @@ More infomation for the project is mentiond in Class project-insider trades.docx
 * Backend -> Python, FastAPI
 * Database -> MongoDB
 * Frontend -> React, Material UI
-* Deployment -> AWS/GCP
+* Backend deployment -> Render Free + MongoDB Atlas Free (see [deployment guide](docs/deployment.md))
 
 ---
 ## Architecture and Deployment Diagram:
@@ -59,7 +59,7 @@ Most endpoints require authentication with a valid access token in the `Authoriz
 
 We have used the Swagger UI for API documentation and testing. The Swagger UI can be accessed at the following URL:
 
-[http://cmpe272teamsnooptrade.us-west-2.elasticbeanstalk.com/docs](http://cmpe272teamsnooptrade.us-west-2.elasticbeanstalk.com/docs)
+Open `/docs` on your deployed API URL. See [deployment setup](docs/deployment.md).
 
 ---
 
@@ -126,11 +126,11 @@ This frontend provides a user-friendly interface for visualizing insider trading
 ### Integration
 
 * Communicates with the backend via REST APIs.
-* Deployed on AWS/GCP for scalability.
+* Configure `VITE_API_BASE_URL` with your deployed backend URL.
 
-### Link to the website
+### Deployment
 
-[http://cmpe272frontend.us-west-2.elasticbeanstalk.com/dashboard](http://cmpe272frontend.us-west-2.elasticbeanstalk.com)
+Follow the [Render + MongoDB Atlas deployment guide](docs/deployment.md).
 
 ---
 

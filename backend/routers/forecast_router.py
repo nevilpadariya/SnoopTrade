@@ -9,6 +9,7 @@ from datetime import timedelta, datetime
 from services.auth_services import decode_access_token
 from services.sec_service import get_all_transactions
 import logging
+import os
 from models.forecast import ForecastInput, ForecastOutput
 from dateutil.parser import parse
 from utils.limiter import limiter
@@ -139,7 +140,6 @@ def fallback_forecast(df: pd.DataFrame, periods: int = 30) -> List[ForecastOutpu
 
     y = df["y"].values
     last_date = df["ds"].iloc[-1]
-    last_val = float(y[-1])
 
     # Calculate trend using EWM
     ewm_series = pd.Series(y).ewm(span=min(10, len(y)), adjust=False).mean()
@@ -164,7 +164,6 @@ def fallback_forecast(df: pd.DataFrame, periods: int = 30) -> List[ForecastOutpu
     insider_val = float(df.get('insider_signal', pd.Series([0.0])).iloc[-1])
 
     output = []
-    prev_trend = ewm_last
     prev_momentum = daily_drift
 
     for i in range(1, periods + 1):
@@ -205,8 +204,8 @@ async def generate_forecast(
         ticker: Optional[str] = None,
 ):
     """
-    Generate a 30-day forecast using Prophet with insider trading signals.
-    Falls back to EWM-based forecast if Prophet/Stan fails.
+    Generate a 30-day forecast. FORECAST_ENGINE=ewm uses the lightweight model;
+    auto uses Prophet when installed, with an EWM fallback.
     """
     if not data:
         raise HTTPException(
@@ -228,6 +227,14 @@ async def generate_forecast(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid values (NaN or Inf) in price data.",
         )
+
+    return await run_in_threadpool(run_forecast, df)
+
+
+def run_forecast(df: pd.DataFrame) -> List[ForecastOutput]:
+    """Run model computation off the API event loop."""
+    if os.getenv("FORECAST_ENGINE", "auto").strip().lower() == "ewm":
+        return fallback_forecast(df, periods=30)
 
     try:
         from prophet import Prophet

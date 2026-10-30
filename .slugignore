@@ -1,0 +1,15 @@
+/frontend/
+/mobile/
+/packages/
+/node_modules/
+/backend/.venv/
+/backend/tests/
+/backend/integration_tests/
+/docs/
+/.github/
+/package.json
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
+**/__pycache__/
+**/*.log
+**/.env

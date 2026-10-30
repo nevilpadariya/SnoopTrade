@@ -36,7 +36,9 @@ jobs:
         run: pnpm test
 
   backend-sanity:
-    runs-on: ubuntu-latest
+    # MongoDB 8.0 cannot start on the latest runner's 6.19+ kernel
+    # (SERVER-121912). The 22.04 runner uses the compatible 6.8 kernel.
+    runs-on: ubuntu-22.04
     services:
       mongodb:
         image: mongo:8.0
@@ -56,7 +58,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install backend dependencies
         run: |

@@ -1,0 +1,2 @@
+# Heroku's Python buildpack installs runtime dependencies from the repo root.
+-r backend/requirements.txt

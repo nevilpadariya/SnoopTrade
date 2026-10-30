@@ -1,0 +1,43 @@
+{
+  "name": "SnoopTrade API",
+  "description": "FastAPI backend using your existing MongoDB Atlas cluster. One Basic dyno costs $7/month before student credits.",
+  "repository": "https://github.com/nevilpadariya/SnoopTrade",
+  "stack": "heroku-24",
+  "buildpacks": [{ "url": "heroku/python" }],
+  "formation": {
+    "web": { "quantity": 1, "size": "basic" }
+  },
+  "addons": [],
+  "env": {
+    "MONGODB_URI": {
+      "description": "Atlas Drivers connection string for the existing users, stock_data and sec_data databases. Enter it only in Heroku."
+    },
+    "FRONTEND_URL": {
+      "description": "Your frontend's HTTPS origin, without a trailing slash."
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Existing Google OAuth web client ID. Optional for email/password login.",
+      "required": false
+    },
+    "GOOGLE_CLIENT_IDS": {
+      "description": "Optional additional Google OAuth client IDs for mobile, separated by commas.",
+      "required": false
+    },
+    "JWT_SECRET_KEY": {
+      "description": "Generated signing key. Reuse the existing key before cutover if you need to preserve current sessions.",
+      "generator": "secret"
+    },
+    "ADMIN_API_KEY": {
+      "description": "Generated key protecting admin and external cron endpoints.",
+      "generator": "secret"
+    },
+    "ENABLE_SCHEDULER": { "value": "false" },
+    "FORECAST_ENGINE": { "value": "ewm" },
+    "EVENT_BUS_BACKEND": { "value": "memory" },
+    "ALLOW_INSECURE_ADMIN": { "value": "false" },
+    "PYTHONUNBUFFERED": { "value": "1" },
+    "OPENBLAS_NUM_THREADS": { "value": "1" },
+    "OMP_NUM_THREADS": { "value": "1" }
+  },
+  "success_url": "/health/ready"
+}

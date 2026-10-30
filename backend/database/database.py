@@ -10,7 +10,7 @@ Optimizations applied:
   6. retryWrites: already in URI, but connection is configured for resilience
 """
 
-from pymongo import MongoClient, ReadPreference
+from pymongo import MongoClient
 import os
 from pathlib import Path
 

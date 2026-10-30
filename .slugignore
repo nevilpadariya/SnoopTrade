@@ -1,7 +1,8 @@
 /frontend/
 /mobile/
-/packages/
 /node_modules/
+/.pytest_cache/
+/.ruff_cache/
 /backend/.venv/
 /backend/tests/
 /backend/integration_tests/
@@ -13,3 +14,5 @@
 **/__pycache__/
 **/*.log
 **/.env
+/*.docx
+/*.pdf

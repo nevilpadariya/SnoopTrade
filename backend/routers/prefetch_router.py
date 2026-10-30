@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from typing import List, Optional, Any
+from typing import List, Any
 
 # Services
 from services.stock_service import fetch_stock_data

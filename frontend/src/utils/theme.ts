@@ -25,18 +25,12 @@ export function getThemePreference(): ThemeMode {
   return getSystemTheme();
 }
 
-export function applyTheme(theme: ThemeMode, persist = false): void {
+function applyTheme(theme: ThemeMode, persist = false): void {
   if (typeof document === 'undefined') return;
   document.documentElement.classList.toggle(DARK_CLASS, theme === 'dark');
   if (persist && typeof window !== 'undefined') {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }
-}
-
-export function clearThemePreference(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem(THEME_STORAGE_KEY);
-  applyTheme(getSystemTheme(), false);
 }
 
 export function toggleThemePreference(): ThemeMode {

@@ -7,3 +7,6 @@ __pycache__
 *.log
 .DS_Store
 tests
+integration_tests
+.pytest_cache
+.ruff_cache

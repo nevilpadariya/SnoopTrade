@@ -5,7 +5,7 @@ from typing import List, Optional
 import pandas as pd
 import numpy as np
 from starlette import status
-from datetime import timedelta, datetime
+from datetime import timedelta
 from services.auth_services import decode_access_token
 from services.sec_service import get_all_transactions
 import logging

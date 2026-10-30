@@ -2,7 +2,6 @@
 
 Mobile app scaffold for SnoopTrade based on the wireframes in:
 - `docs/mobile-ui/SnoopTrade-mobile-wireframes.svg`
-- `docs/mobile-ui/SnoopTrade-mobile-ui-spec.md`
 
 ## Stack
 - Expo + React Native + TypeScript
@@ -24,25 +23,25 @@ Mobile app scaffold for SnoopTrade based on the wireframes in:
 ```bash
 cp .env.example .env
 ```
-2. Install dependencies:
+2. Install dependencies from the repository root:
 ```bash
-npm install
+pnpm install --frozen-lockfile
 ```
 3. Start app:
 ```bash
-npm run start
+pnpm --filter snooptrade-mobile start
 ```
 
 ## Google Sign-In Testing
 Use a development build for OAuth testing on device:
 ```bash
-npx expo run:android
+pnpm --filter snooptrade-mobile exec expo run:android
 # or
-npx expo run:ios
+pnpm --filter snooptrade-mobile exec expo run:ios
 ```
 Then launch Metro with:
 ```bash
-npm run start
+pnpm --filter snooptrade-mobile start
 ```
 
 ## Environment

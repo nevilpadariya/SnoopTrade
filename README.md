@@ -17,7 +17,7 @@ More infomation for the project is mentiond in Class project-insider trades.docx
 ## Project Technologies Stack:
 * Backend -> Python, FastAPI
 * Database -> MongoDB
-* Frontend -> React, Material UI
+* Frontend -> React, Tailwind CSS, Radix UI, Recharts
 * Backend deployment -> Render Free + MongoDB Atlas Free (see [deployment guide](docs/deployment.md))
 
 ---
@@ -119,9 +119,9 @@ This frontend provides a user-friendly interface for visualizing insider trading
 ### Tech Stack
 
 * React
-* Material UI
-* Axios
-* Chart.js
+* Tailwind CSS and Radix UI
+* Fetch API
+* Recharts
 
 ### Integration
 

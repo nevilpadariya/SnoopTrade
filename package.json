@@ -6,7 +6,6 @@
     "node": ">=24"
   },
   "workspaces": [
-    "packages/*",
     "frontend",
     "mobile"
   ],

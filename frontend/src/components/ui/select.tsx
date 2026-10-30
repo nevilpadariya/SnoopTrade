@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils"
 
 const Select = SelectPrimitive.Root
 
-const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
@@ -115,11 +114,8 @@ SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayNam
 
 export {
   Select,
-  SelectGroup,
   SelectValue,
   SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
 }

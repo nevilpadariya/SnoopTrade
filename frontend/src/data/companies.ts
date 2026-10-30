@@ -25,8 +25,3 @@ export const COMPANY_NAMES: Record<string, string> = {
     PEP: 'PepsiCo',
     WMT: 'Walmart',
 };
-
-export const getRandomCompanies = (count: number) => {
-    const shuffled = [...COMPANIES].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-};

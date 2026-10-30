@@ -5,15 +5,15 @@ React + TypeScript frontend built with Vite.
 ## Stack
 
 - Vite
-- React 18
+- React 19
 - TypeScript
 - Tailwind CSS
 - React Router
 
 ## Prerequisites
 
-- Node.js 20+
-- pnpm 9+
+- Node.js 24+
+- pnpm 12.16.1 (pinned in the root package.json)
 
 ## Environment
 

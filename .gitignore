@@ -38,3 +38,10 @@ yarn-error.log*
 .pnpm-store/
 backend/.venv/
 **/.venv/
+
+# Tool caches and generated test output
+**/.pytest_cache/
+**/.ruff_cache/
+**/.expo/
+**/coverage/
+**/*.tsbuildinfo

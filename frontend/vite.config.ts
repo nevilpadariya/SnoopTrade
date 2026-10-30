@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(import.meta.dirname, './src'),
         },
     },
     server: {
@@ -18,11 +18,12 @@ export default defineConfig({
         target: 'es2020',
         rollupOptions: {
             output: {
-                manualChunks: {
-                    // Split heavy libraries into their own cacheable chunks
-                    'vendor-react': ['react', 'react-dom'],
-                    'vendor-router': ['react-router-dom'],
-                    'vendor-charts': ['recharts'],
+                // Vite 8 uses Rolldown; select chunks with its function API.
+                manualChunks(id) {
+                    if (!id.includes('node_modules')) return;
+                    if (id.includes('recharts')) return 'vendor-charts';
+                    if (id.includes('react-router')) return 'vendor-router';
+                    if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'vendor-react';
                 },
             },
         },

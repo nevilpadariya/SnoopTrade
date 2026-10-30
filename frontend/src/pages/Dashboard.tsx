@@ -1944,14 +1944,14 @@ const Dashboard = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-[#A7E89A]" />
-                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Today Feed</p>
+                    <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">Today Feed</p>
                   </div>
                   <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Actionable watchlist alerts ranked by urgency and conviction. Scope: {activeScopeLabel}.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <label htmlFor="todayFeedScope" className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">
+                  <label htmlFor="todayFeedScope" className="text-[11px] font-semibold uppercase tracking-widest text-[#4F675B] dark:text-[#8EA197]">
                     Scope
                   </label>
                   <select
@@ -2059,7 +2059,7 @@ const Dashboard = () => {
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist Radar</p>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">Watchlist Radar</p>
                   <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Ranked by insider conviction for the active {selectedTimePeriod.toUpperCase()} window. Scope: {activeScopeLabel}.
                   </p>
@@ -2142,7 +2142,7 @@ const Dashboard = () => {
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Daily Brief</p>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">Daily Brief</p>
                   <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Actionable summary built from live insider conviction for {activeScopeLabel}.
                   </p>
@@ -2202,7 +2202,7 @@ const Dashboard = () => {
             <div className="signal-glass rounded-3xl p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Watchlist News</p>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">Watchlist News</p>
                   <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
                     Live insider-related headlines for your tracked tickers in {activeScopeLabel}.
                   </p>
@@ -2262,7 +2262,7 @@ const Dashboard = () => {
               <div className="signal-glass rounded-3xl p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">
+                    <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">
                       Workspace Actions
                     </p>
                     <p className="mt-1 text-xs text-[#4F675B] dark:text-[#8EA197]">
@@ -2376,7 +2376,7 @@ const Dashboard = () => {
 
                   <div className="signal-glass rounded-3xl p-4 sm:p-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">
+                      <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">
                         Price Context
                       </p>
                       {priceContext && (
@@ -2426,7 +2426,7 @@ const Dashboard = () => {
                   <div className="signal-glass rounded-3xl p-5">
                     <div className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-[#A7E89A]" />
-                      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#33503D] dark:text-[#CFE7CE]">Signal Summary</p>
+                      <p className="text-sm font-semibold uppercase tracking-widest text-[#33503D] dark:text-[#CFE7CE]">Signal Summary</p>
                     </div>
                     <div className="mt-4 space-y-3">
                       <Badge variant="purchase" className="px-3 py-1.5 text-sm">Purchases: {purchases}</Badge>

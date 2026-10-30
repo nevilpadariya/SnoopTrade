@@ -152,7 +152,7 @@ const PieChartContainer: React.FC<PieChartContainerProps> = ({
                 padding: '12px 16px',
               }}
               itemStyle={{ color: 'hsl(var(--card-foreground))' }}
-              formatter={(value: number | string, name: string) => [Number(value).toLocaleString(), formatLegendValue(name)]}
+              formatter={(value, name) => [Number(value ?? 0).toLocaleString(), formatLegendValue(String(name ?? ''))]}
               labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
             />
           </PieChart>

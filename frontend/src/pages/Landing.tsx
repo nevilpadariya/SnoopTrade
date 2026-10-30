@@ -375,7 +375,7 @@ const Landing = () => {
                 <div className="rounded-xl border border-[#34503E] bg-[#122019] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4F675B] dark:text-[#8EA197]">Avg Filing Lag</p>
                   <p className="mt-2 font-mono text-2xl font-bold text-[#D7E8D8]">{latencyLabel}</p>
-                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4F675B] dark:text-[#8EA197]">Sample {lagSampleLabel}</p>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-[#4F675B] dark:text-[#8EA197]">Sample {lagSampleLabel}</p>
                 </div>
               </div>
             </div>

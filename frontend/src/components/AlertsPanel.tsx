@@ -339,7 +339,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       </div>
 
       <form onSubmit={handleCreateRule} className="mt-5 grid gap-3 rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15] sm:grid-cols-2 lg:grid-cols-8">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Ticker
           <select
             value={ticker}
@@ -354,7 +354,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Rule
           <select
             value={ruleType}
@@ -369,7 +369,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Metric
           <select
             value={metricType}
@@ -385,7 +385,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Comparator
           <select
             value={comparator}
@@ -398,7 +398,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Window
           <select
             value={windowMode}
@@ -411,7 +411,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           {RULE_META[ruleType].thresholdLabel}
           <Input
             value={threshold}
@@ -423,7 +423,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">
           Lookback (days)
           <Input
             value={lookbackDays}
@@ -469,7 +469,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
       <div className="mt-5 grid gap-4 xl:grid-cols-2">
         <div className="rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15]">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">Rules</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">Rules</p>
             {isLoadingRules && <Loader2 className="h-4 w-4 animate-spin text-[#5A7265] dark:text-[#8EA197]" />}
           </div>
           {rules.length === 0 ? (
@@ -509,7 +509,7 @@ const AlertsPanel = ({ selectedCompany, watchlist, onAlertsChanged }: AlertsPane
         <div className="rounded-2xl border border-[#A8C3AE] bg-[#F3F8F4] p-4 dark:border-[#35503D] dark:bg-[#111A15]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.1em] text-[#4F6759] dark:text-[#8EA197]">Prioritized Feed</p>
+              <p className="text-sm font-semibold uppercase tracking-widest text-[#4F6759] dark:text-[#8EA197]">Prioritized Feed</p>
               <p className="mt-0.5 text-[11px] text-[#6A8375] dark:text-[#7F978A]">Sorted by unread state, severity, and recency.</p>
             </div>
             <div className="flex items-center gap-2">

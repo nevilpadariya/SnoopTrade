@@ -243,7 +243,7 @@ const ForecastChartContainer: React.FC<ForecastChartContainerProps> = React.memo
 
   return (
     <Card className="relative overflow-hidden border-border/70 bg-card/90 p-3 shadow-lg backdrop-blur md:p-6">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/15 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-primary/15 to-transparent" />
       <CardContent className="relative p-0">
         <div className="mb-2 flex flex-wrap items-start justify-between gap-3 md:mb-4">
           <h3 className="text-base font-semibold text-card-foreground md:text-2xl">{title}</h3>

@@ -364,7 +364,15 @@ def insert_form4_data(ticker: str, cik: str, days_back: int = 365, batch_size: i
     
     db = get_db()
     collection = db[f"form_4_links_{ticker}"]
-    collection.create_index([("_dedupe_key", 1)], unique=True, background=True)
+    # Legacy records predate _dedupe_key. A full unique index treats their
+    # missing/null keys as duplicates; constrain only keyed transactions.
+    # Use a distinct name so an existing index's options are never changed.
+    collection.create_index(
+        [("_dedupe_key", 1)],
+        name="idx_dedupe_key_unique_strings",
+        unique=True,
+        partialFilterExpression={"_dedupe_key": {"$type": "string"}},
+    )
     
     # Fetch links
     form_4_links = fetch_form_4_links(cik, days_back=days_back)
@@ -406,6 +414,7 @@ def insert_form4_data(ticker: str, cik: str, days_back: int = 365, batch_size: i
                     logger.debug(f"Upserted batch of {len(batch_data)} records for {ticker}")
                 except Exception as e:
                     logger.error(f"Error upserting batch for {ticker}: {e}")
+                    raise
                 
                 batch_data = []
                 gc.collect()
